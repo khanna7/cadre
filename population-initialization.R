@@ -54,12 +54,21 @@ female <- rbinom(n, 1, prob=female.prop)
 net %v% "female" <- female
 table(net %v% "female")
 
+
 # Add Smoking Profiles --------------
 
-smoking.prev <- 0.15
-smoker <- rbinom(n, 1, smoking.prev)
-net %v% "smoker" <- smoker
-table(net %v% "smoker")
+smoking.prev <- 0.15 
+net %v% "smoking.prob" <- smoking.prev
+smoking.prob <- net %v% "smoking.prob"
+ # assign smoker status after factoring in incareration x race
+
+
+
+# Add Alcohol Use Profile --------------
+  # parameterize as ordinal variables:
+  # "abstainers", "occassional", "regular", "high-risk" (See Apostolopoulos 2017)
+  # should alcohol use disorder (AUD) be one of the categories?
+  # initial value parameters???
 
 
 # Initialize incarceration --------------
@@ -92,21 +101,68 @@ incarceration.2week.prob <- 1.7/100
   xtabs(~num_incs + ever_inc)
   net %v% "num_incs" <- num_incs
   
+  # other predictors of incarceration?
+  
   # other parameters:
   #- sentence duration: see macmadu 2021 (Table 1) for male/female distribution
   # recidivism probability: as above
 
+# Initialize housing
+  #stably housed persons (https://www.census.gov/quickfacts/RI)
+  stably.housed.prop <- 87.4/100
+  stably.housed <- rbinom(n, 1, stably.housed.prop)
+  table(stably.housed)
+  net %v% "stably.housed" <- stably.housed
   
+  # correlation between unstable housing and current incarceration
+  xtabs(~net %v% "stably.housed" + 
+          net %v% "curr_loc")
+  
+  # correlation between unstable housing and smoking?
+  xtabs(~net %v% "stably.housed" + 
+          net %v% "smoker")
+
+  
+    
 # Individual Feedback between incarceration and smoking --------------
+  
+  # Black men with incarceration history 1.77x as likely to smoke as those w/o inc history
+  # Black women with incarceration history 1.61x as likely 
+  # (reference: Bailey 2015, AJPH)
+  xtabs(~net %v% "race" + net %v%"smoker" +
+          net %v% "female")
 
+  mult.black.inc.male.smk <- 1.77 #see above
+  mult.black.inc.female.smk <- 1.61 #see above
+  
+  black.male.idx <- intersect(which(net %v% "race" == "Black"), 
+                                   which(net %v% "female" == 0)) 
+  black.male.inc.idx <- intersect(black.male.idx, 
+                                 (which(net %v% "ever_inc" == 1))) 
+  
+  black.female.idx <- intersect(which(net %v% "race" == "Black"), 
+                             which(net %v% "female" == 1)) 
+  black.female.inc.idx <- intersect(black.female.idx, 
+                                 (which(net %v% "ever_inc" == 1))) 
+  
+  smoking.prob[black.male.inc.idx] <- smoking.prev * mult.black.inc.male.smk
+  smoking.prob[black.female.inc.idx] <- smoking.prev * mult.black.inc.female.smk
+  table(smoking.prob)
+  net %v% "smoking.prob" <- smoking.prob
+  
+  # assign smoker status
+  smoker <- rbinom(n, 1, smoking.prob)
+  net %v% "smoker" <- smoker
+  table(net %v% "smoker") #1= current smoker, 0=former/never smoker
+  
+# Individual Feedback between incarceration and alcohol use --------------
+  # see Tsai 2019 and Fazel 2017
 
-
+# Smoking-alcohol use association --------------
+  
 
 # Initialize Network --------------
-
-#stably housed persons (https://www.census.gov/quickfacts/RI)
-stably.housed.prop <- 87.4/100
-
+  
 # persons per househould (https://www.census.gov/quickfacts/RI)
 persons.per.household <- 2.47
 
@@ -117,4 +173,6 @@ persons.per.household <- 2.47
 # Smoking Effects in Networks --------------
 
 # parameters:
-  # five years of smoking correlated with 1.23x greater odds of smoking (Howell 2015, Addictive Behaviors)
+  # five years of smoking correlated with 1.23x greater odds of smoking 
+    #(Howell 2015, Addictive Behaviors)
+
