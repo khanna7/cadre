@@ -50,22 +50,24 @@ plot(sim1)
 theta.form.2 <- theta.form.1
 theta.form.2[1] <- theta.form.2[1] - theta.diss
 
+time.slices = 2e4
+
 sim2 <- simulate(net,
                  formation=formation.net,
                  dissolution=~edges,
                  coef.form=theta.form.2,
                  coef.diss=theta.diss,
-                 #time.slices=2e4,
-                 time.slices=5e4,
+                 time.slices=time.slices,
+                 #time.slices=1,
                  constraints=constraints,
                  monitor="all"
 )
 summary(sim2)
 network.collapse(sim2, at=1)
 network.collapse(sim2, at=100)
-network.collapse(sim2, at=5e4-1)
-network.collapse(sim2, at=5e4)
-network.collapse(sim2, at=5e4+100)
+network.collapse(sim2, at=time.slices-1)
+network.collapse(sim2, at=time.slices)
+network.collapse(sim2, at=time.slices+100)
 
 
 # Save Object --------------

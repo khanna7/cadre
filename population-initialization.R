@@ -88,9 +88,16 @@ incarceration.2week.prob <- 1.7/100
            size = n
     )
   
-   net %v% "curr_loc" <- curr_loc
-   table(net %v% "curr_loc")
-   
+  incarcerated <- recode(curr_loc, "H" = "0", "CS" = "1")
+  incarcerated <- as.numeric(incarcerated)
+  table(incarcerated)
+  
+  net %v% "curr_loc" <- curr_loc
+  table(net %v% "curr_loc")
+  
+  net %v% "incarcerated" <- incarcerated
+  table(net %v% "incarcerated")
+  
   # ever incarcerated
   ever_inc <- ifelse(curr_loc=="CS", 1, 0) 
   xtabs(~curr_loc + ever_inc)
