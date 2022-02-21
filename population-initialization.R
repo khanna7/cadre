@@ -1,3 +1,4 @@
+#INITIALIZE POPULATION
 # set up structure for incarceration and smoking
 
 rm(list=ls())
@@ -10,7 +11,6 @@ library(network)
 
 
 # Initialize Population --------------
-
 
 n <- 5000
 net <- network.initialize(n, directed = FALSE)
@@ -176,3 +176,5 @@ persons.per.household <- 2.47
   # five years of smoking correlated with 1.23x greater odds of smoking 
     #(Howell 2015, Addictive Behaviors)
 
+# Save Object --------------
+save.image(file="init-population.RData")
