@@ -29,18 +29,18 @@ duration <- 2500
 theta.diss <- log(duration-1)
 dissolution <- ~offset(edges)
 
-formation.n0 <- update.formula(formation, n0~.)
+formation.net <- update.formula(formation, net~.)
 
-n0 <- network.initialize(n, directed=FALSE, bipartite=FALSE)
+#net <- network.initialize(n, directed=FALSE, bipartite=FALSE)
 
-fit1 <- ergm(formation.n0, 
+fit1 <- ergm(formation.net, 
             target.stats=target.stats, 
             constraints=constraints,
             eval.loglik=FALSE,
             verbose=TRUE,
             control=control.ergm(MCMLE.maxit=500)
             )
-summary(fi1t)
+summary(fit1)
 theta.form.1 <- fit1$coef 
 
 sim1 <- simulate(fit1,nsim=1,
@@ -50,8 +50,8 @@ plot(sim1)
 theta.form.2 <- theta.form.1
 theta.form.2[1] <- theta.form.2[1] - theta.diss
 
-sim2 <- simulate(n0,
-                 formation=formation.n0,
+sim2 <- simulate(net,
+                 formation=formation.net,
                  dissolution=~edges,
                  coef.form=theta.form.2,
                  coef.diss=theta.diss,
@@ -67,4 +67,6 @@ network.collapse(sim2, at=5e4-1)
 network.collapse(sim2, at=5e4)
 network.collapse(sim2, at=5e4+100)
 
+
+# Save Object --------------
 save.image(file="intialized-network.RData")
