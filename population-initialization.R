@@ -179,6 +179,14 @@ persons.per.household <- 2.47
 
 # Smoking Effects in Networks --------------
 
+## See following paper:
+   # Schaefer DR, Adams J, Haas SA. Social networks and smoking
+      # Health Educ Behav. 2013 Oct;40(1 Suppl):24S-32S. PMID: 24084397; and
+   # Adams J, Schaefer DR. How Initial Prevalence Moderates Network-based Smoking Change
+      # J Health Soc Behav. 2016 Mar;57(1):22-38. PMID: 26957133; AND
+  # Haynie DL, Whichard C, Kreager DA, Schaefer DR, Wakefield S. Social Networks and Health in a Prison Unit. 
+      #J Health Soc Behav. 2018 Sep;59(3):318-334. Epub 2018 Aug 2. PMID: 30070603.
+  
 # parameters:
   # five years of smoking correlated with 1.23x greater odds of smoking 
     #(Howell 2015, Addictive Behaviors)
