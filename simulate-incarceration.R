@@ -15,6 +15,8 @@ library(dplyr)
 
 load(file="intialized-network.RData")
 
+# Common Functions ---------------------------
+source("common-functions.R")
 
 # Set up network ---------------------------
 
@@ -58,10 +60,10 @@ set.vertex.attribute(pop_net, "num_incs", v=newly_incarcerated_ids, value = num_
 
 ## for incarcerated people, when rand.draw < daily_release_prob,
    # update "incarceration" attribute to 0
-release <- which(release_coin_flips < daily_release_prob)
-set.vertex.attribute(pop_net, "incarceration", v=release, value = 0)
+newly_released_ids <- which(release_coin_flips < daily_release_prob)
+set.vertex.attribute(pop_net, "incarceration", v=newly_released_ids, value = 0)
 
-# test values
+## test values
 xtabs(~ factor(pop_net %v% "incarceration", exclude=NULL)+
         factor(pop_net %v% "num_incs", exclude=NULL))
 xtabs(~ factor(pop_net %v% "incarceration", exclude=NULL)+
@@ -69,7 +71,28 @@ xtabs(~ factor(pop_net %v% "incarceration", exclude=NULL)+
 xtabs(~ factor(pop_net %v% "num_incs", exclude=NULL)+
         factor(pop_net %v% "ever_inc", exclude=NULL))
 
-# for people with incarceration history, update smoking probability
+# Update smoking probability for newly released Black men and women ---------------------------
+# (reference: Bailey 2015, AJPH)
+
+summary((pop_net%v%"smoking.prob")[newly_incarcerated_ids])
+
+newly_rel_black_male <- 
+   intersect_all(which(pop_net %v% "race" == "Black"), 
+                 which(pop_net %v% "female" == 0),
+                 newly_released_ids
+   )
+
+newly_rel_black_female <- 
+   intersect_all(which(pop_net %v% "race" == "Black"), 
+                 which(pop_net %v% "female" == 1),
+                 newly_released_ids
+   )
+
+smoking.prob[newly_rel_black_male] <- smoking.prev * mult.black.inc.male.smk
+smoking.prob[newly_rel_black_female] <- smoking.prev * mult.black.inc.female.smk
+
+# Update smoking probability for newly released non-Black men and women ---------------------------
+
 
 # for people in networks of incarceration history, update smoking probability
 
