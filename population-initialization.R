@@ -98,6 +98,8 @@ net %v% "alcohol_use_state" <- alcohol_use_state
 
 table(net %v% "alcohol_use_state")
 
+## For now, assume that transitions between use states do not occur.
+
 
 # Initialize incarceration --------------
 
@@ -195,6 +197,20 @@ incarceration.2week.prob <- 1.7/100
   # (and Tsai 2019)
 
 # Smoking-alcohol use association --------------
+  # From, Tsai 2019, 
+  # p1 = % of persons with AUD w no incarceration history = 7550/8183
+  # p2 = % of persons with AUD w incarceration history = 2388/2670
+  # OR for AUD with incarceration to no incarceration = (p2/1-p2)/(p1/1-p1) = 0.71
+  # (paper gives this ratio as 0.75)
+  
+  # Taking p1 = 5.6% (from National Comorbidity Survey Replication, Kalaydjian 2009, we get:)
+    # p2 =
+    # ie., % of persons with AUD who have incarceration history ....
+  
+  # What about % of persons with incarceration history who have AUD?
+  # See Chamberlain et al https://ascpjournal.biomedcentral.com/articles/10.1186/s13722-019-0136-6
+  
+  # simulate feedback between AUD and incarceration
   
 
 # Initialize Network --------------
