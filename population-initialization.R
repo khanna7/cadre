@@ -163,7 +163,8 @@ incarceration.2week.prob <- 1.7/100
   table(net %v% "smoker") #1= current smoker, 0=former/never smoker
   
 # Individual Feedback between incarceration and alcohol use --------------
-  # see Tsai 2019 and Fazel 2017
+  # see meta analysis Fazel 2017: https://www.dropbox.com/s/tpe2hb49csizrpr/Fazel2017.pdf?dl=0
+  # (and Tsai 2019)
 
 # Smoking-alcohol use association --------------
   

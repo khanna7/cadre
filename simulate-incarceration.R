@@ -92,7 +92,7 @@ smoking.prob[newly_rel_black_male] <- smoking.prev * mult.black.inc.male.smk
 smoking.prob[newly_rel_black_female] <- smoking.prev * mult.black.inc.female.smk
 
 # Update smoking probability for newly released non-Black men and women ---------------------------
-
+  # see Ahalt 2019: https://www.dropbox.com/s/xjcx45h293nobgl/Ahalt2019.pdf?dl=0
 
 # for people in networks of incarceration history, update smoking probability
 
