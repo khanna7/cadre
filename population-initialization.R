@@ -8,6 +8,7 @@ rm(list=ls())
 
 library(ergm)
 library(network)
+library(dplyr)
 
 
 # Initialize Population --------------
@@ -66,9 +67,36 @@ smoking.prob <- net %v% "smoking.prob"
 
 # Add Alcohol Use Profile --------------
   # parameterize as ordinal variables:
-  # "abstainers", "occassional", "regular", "high-risk" (See Apostolopoulos 2017)
-  # should alcohol use disorder (AUD) be one of the categories?
+  # "abstainers", "occassional", "regular", "high-risk/AUD" (See Apostolopoulos 2017)
   # initial value parameters???
+  # See National Comorbidity Survey Replication, Kalaydjian 2009 et al: 
+  # (https://www.dropbox.com/s/cod0ojty84xa00y/Kalaydijan2009-alcoholuse-state-transitions.pdf?dl=0)
+    # (A) 91.7% (SE=0.9) reported >1 sip of alcohol at some time in their life, 
+    # (B) 72.9% (1.3) reported using alcohol regularly at some time in their life
+    # (C) 13.2% (0.6) met criteria for alcohol abuse at some time in their life, and 
+    # (D) 5.4% (0.3) met criteria for alcohol dependence at some time in their life.
+ # so, we derive 1-A = 8.3% as abstainers
+ # For simplicity, let us assume Occasional = B, Regular = C, 
+ # & High-Risk/AUD = 1-(A+B+C) = 5.6 (which is almost the same as D)
+
+alcohol_abstainers <- 8.3/100
+alcohol_occasional_users <- 72.9/100
+alcohol_regular_users <- 13.2/100
+alcohol_dep <- 1 - (alcohol_abstainers+alcohol_occasional_users+alcohol_regular_users)
+
+alcohol_cats <- c("abstainer", "occasional_user", 
+                  "regular_user", "dependence/AUD")
+
+alcohol_props <- c(alcohol_abstainers, alcohol_occasional_users,
+                    alcohol_regular_users, alcohol_dep)
+
+alcohol_use_state <- sample(alcohol_cats, alcohol_props, replace = TRUE, size=n)
+
+table(alcohol_use_state, exclude = NULL)
+
+net %v% "alcohol_use_state" <- alcohol_use_state
+
+table(net %v% "alcohol_use_state")
 
 
 # Initialize incarceration --------------
