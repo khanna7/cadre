@@ -187,9 +187,47 @@ a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the
 ```
   
 
-### Initialization in the Model
+### Modeling Impact of Incarceration on Smoking
 
-### Modeling Feedback between Incarceration and Smoking
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# Black men with incarceration history 1.77x as likely to smoke as those w/o inc history
+  # Black women with incarceration history 1.61x as likely 
+  # (reference: Bailey 2015, AJPH)
+  xtabs(~net %v% "race" + net %v%"smoker" +
+          net %v% "female")
+
+  mult.black.inc.male.smk <- 1.77 #see above
+  mult.black.inc.female.smk <- 1.61 #see above
+  
+  black.male.idx <- intersect(which(net %v% "race" == "Black"), 
+                                   which(net %v% "female" == 0)) 
+  black.male.inc.idx <- intersect(black.male.idx, 
+                                 (which(net %v% "ever_inc" == 1))) 
+  
+  black.female.idx <- intersect(which(net %v% "race" == "Black"), 
+                             which(net %v% "female" == 1)) 
+  black.female.inc.idx <- intersect(black.female.idx, 
+                                 (which(net %v% "ever_inc" == 1))) 
+  
+  smoking.prob[black.male.inc.idx] <- smoking.prev * mult.black.inc.male.smk
+  smoking.prob[black.female.inc.idx] <- smoking.prev * mult.black.inc.female.smk
+  table(smoking.prob)
+  net %v% "smoking.prob" <- smoking.prob
+  
+  # assign smoker status
+  smoker <- rbinom(n, 1, smoking.prob)
+  net %v% "smoker" <- smoker
+  table(net %v% "smoker") #1= current smoker, 0=former/never smoker
+  ```
+
+Incarceration-induced stressors can increase the smoking by justice-involved persons. From data collected in  
+the National Survey of Americal Life, @Bailey2015 report that Black men with incarceration history  `r{mult.black.inc.male.smk}` times as likely to smoke as those without incarceration
+history, and Black women with incarceration history `r{mult.black.inc.female.smk} times as likely to smoke as women withoout incarceration history. For agents belonging to all race/ethnicities, 
+we model increased odds of smoking as per the magnitudes reported by @Bailey2015.
+(__Note: We may need to find data that stratify impact of incarceration on smoking
+  by race/ethnicity__).
+
 
 ### Modeling Feedback between Incarceration and Alcohol Use
 
