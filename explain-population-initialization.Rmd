@@ -1,11 +1,15 @@
 ---
-title: "Population Initialization"
+title: "Appendix"
 output: html_notebook
+bibliography: cadre-appendix-library.bib
 ---
 
 ## Introduction
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) notebook that explains the population initialization for my CADRE project model. Narrative text and the R code are interwoven. The computer code is available in a public [GitHub repository](https://github.com/khanna7/cadre). 
+This is an early draft of what will become the companion Appendix to the modeling 
+papers that we publish. Narrative text and the R code are interwoven. The computer code is also available in a public [GitHub repository](https://github.com/khanna7/cadre). 
+
+(Written in  [R Markdown](http://rmarkdown.rstudio.com)). 
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 # Libraries ----------
@@ -18,9 +22,9 @@ library(dplyr)
  
 ## Population Overview
 
-A synhetic population consisting of 5,000 agents between 18 and 64 years of age is simulated in an agent-based model (ABM) with social network structure. This simulated population is broadly representative of the 18-64 year old population of RI. The population size is deliberately kept small in the early stages to make the model more  efficient in terms of computation time. 
+A synthetic population consisting of `r n` agents between 18 and 64 years of age is simulated in an agent-based model (ABM) with social network structure. This simulated population is broadly representative of the 18-64 year old population of RI. The population size is deliberately kept small in the early stages to make the model more  efficient in terms of computation time. 
 
-Each individual is assigned a set of demographic characteristics (age, race, sex), behavioral profiles (smoking, alcohol use), incarceration history. Feeback loops betwee the impacts of incarceration on smoking and alcohol use are simulated in the criminal-justice involved persons, and their social networks.   
+Each individual is assigned a set of demographic characteristics (age, race, sex), behavioral profiles (smoking, alcohol use), incarceration history. Feedback loops between the impacts of incarceration on smoking and alcohol use are simulated in the criminal-justice involved persons, and their social networks.   
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 # Initialize Population --------------
@@ -35,7 +39,7 @@ net <- network.initialize(n, directed = FALSE)
 Per [census data](https://censusreporter.org/profiles/04000US44-rhode-island/), 
 63% of the RI population is in the range of our interest (18-64 years). We consider the population to be uniformly distributed across this range, which might not be unreasonable given the shape of the distribution above.
 
-```{r, results='show', echo=TRUE, message=FALSE}
+```{r, results='hide', echo=TRUE, message=FALSE, fig.show='hide'}
 age.min <- 18
 age.max <- 64
 age <- runif(n, age.min, age.max)
@@ -47,8 +51,8 @@ hist(net %v% "age")
 ### Race
 Per [census data](see https://www.census.gov/quickfacts/RI), we parameterize the population as belonging to 5 race/ethnic categories: White, Black, Hispanic, Asian, and Other.
 
-```{r, results='show', echo=TRUE, message=FALSE}
-white_alone <- 71.4/100 #not hispanic or latino
+```{r, results='hide', echo=TRUE, message=FALSE}
+white_alone <- 71.4/100 #not Hispanic or Latino
 black_alone <- 8.5/100
 hispanic_alone <- 16.3/100
 asian_alone <- 3.7/100
@@ -76,7 +80,7 @@ We dichotomize `r female.prop*100`% of our our agents as being female, and
 `r 100-female.prop*100`% as being male.
 
 
-```{r, results='show', echo=TRUE, message=FALSE}
+```{r, results='hide', echo=TRUE, message=FALSE}
 
 # sex (https://www.census.gov/quickfacts/RI)
 female.prop <- 51.3/100
@@ -91,15 +95,41 @@ table(net %v% "female")
 
 ### Smoking
 
+Per the [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm), the national prevalence of current smokers in the US is `r smoking.prev*100`%. 
+( The CDC defines "a current smoker" as someone who "who reported smoking at least 100 cigarettes during their lifetime and who, at the time they participated in a survey about this topic, reported smoking every day or some days.")
+
 ```{r, results='show', echo=TRUE, message=FALSE}
-smoking.prev <- 0.15 
+smoking.prev <- 0.13
 net %v% "smoking.prob" <- smoking.prev
 smoking.prob <- net %v% "smoking.prob"
-```{r, results='show', echo=TRUE, message=FALSE}
 ```
+
+The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm)
+also stratifies the national smoking rates by age, sex, and race/ethnicity. 
+There is also a geographic prevalence of smoking (about 10% in the northeastern US),
+that  is not stratified by demographic variables.  
+
 
 
 ### Alcohol Use
+
+We classify alcohol use behaviors in one of four categories, defined as in a previous pair of 
+by frequency of use, as per @Apostolopoulos2018I; @Apostolopoulos2018II.
+The four categories are: "abstainers", "occassional users", "regular users", "persons with high-risk use or Alcohol Use Disorder (AUD)". 
+
+To parameterize the distribution of persons in each of these categories, 
+data from the National Comorbidity Survey Replication, as published in 
+@Kalaydjian2009, where:
+
+    * (A) 91.7% (SE=0.9) reported >1 sip of alcohol at some time in their life, 
+    * (B) 72.9% (1.3) reported using alcohol regularly at some time in their life
+    * (C) 13.2% (0.6) met criteria for alcohol abuse at some time in their life, and 
+    * (D) 5.4% (0.3) met criteria for alcohol dependence at some time in their life.
+ 
+ Thus, the proportion of abstainers is $1-A = 8.3%$. For simplicity, 
+ Category B above is taken to be "occasional users", Category C as "regular users". 
+ Category D as High-Risk/AUD = 100-(A+B+C) = 5.6%, which is almost the same as 
+ D reported by @Kalaydjian2009.
 
 ## Incarceration
 
@@ -113,15 +143,9 @@ smoking.prob <- net %v% "smoking.prob"
 ## Social Networks
 
 
+## Next Steps
 
-## Instructions to Operate Markdown
+- Stratify current smokers by age, race, and sex.
 
-Note for Users: 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
-
+### References
