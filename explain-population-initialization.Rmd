@@ -240,7 +240,8 @@ we model increased odds of smoking as per the magnitudes reported by @Bailey2015
   by race/ethnicity.__ Currenly, the magnitude of 
   the effect of incarceration on smoking for all race/ethnicities is assumed to be 
   the same as for Black persons, as per @Bailey2015).
-
+  
+See @DeAndrade2017 for "Systematic review of health and behavioural outcomes of smoking cessation interventions in prisons".
 
 ### Modeling Feedback between Incarceration and Alcohol Use
 
@@ -259,6 +260,7 @@ Based on data from the [Transitions Clinic Network](https://transitionsclinic.or
 
 (__ I might email the authors and ask if they can tell me the % of persons reporting AUD before incarceration and after release__).
 
+See @DeAndrade2018 for additional data on incarceration, recidivism, and drug and alcohol interventions.
 
 ### Social Networks
 
