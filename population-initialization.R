@@ -58,7 +58,7 @@ table(net %v% "female")
 
 # Add Smoking Profiles --------------
 
-smoking.prev <- 0.15 
+smoking.prev <- 0.13
 net %v% "smoking.prob" <- smoking.prev
 smoking.prob <- net %v% "smoking.prob"
  # assign smoker status after factoring in incareration x race
