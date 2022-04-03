@@ -1,5 +1,5 @@
 ---
-title: "Appendix"
+title: "Technical Appendix"
 output: html_notebook
 bibliography: cadre-appendix-library.bib
 ---
@@ -9,10 +9,11 @@ bibliography: cadre-appendix-library.bib
 This is an early draft of what will become the companion Appendix to the modeling 
 papers that we publish. Narrative text and the R code are interwoven. The computer code is also available in a public [GitHub repository](https://github.com/khanna7/cadre). 
 
-This is written in  [R Markdown](http://rmarkdown.rstudio.com) to facilitate [reproducibility](https://bookdown.org/m_p_sperrin/intro_to_r_2020/projects-and-reproducibility.html), i.e. the document can be automatically updated whenever underlying code or data changes.
+This is written in  [R Markdown](http://rmarkdown.rstudio.com) to facilitate [reproducibility](https://bookdown.org/m_p_sperrin/intro_to_r_2020/projects-and-reproducibility.html). One advantage of this format is that the data sources, decisions about parameterization, and the computer code implementing these decisions all exist in one place. This makes it easier to understand the reasoning behind the decisions made, and document the data sources as I go. The document can also be automatically updated whenever the underlying code or data change.
+
 This is my first attempt at a full-scale reproducible document; 
 please bear with me as I figure out kinks and assess if this would be a workable 
-format for writing technical Appendices. 
+format. 
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 # Libraries ----------
@@ -248,12 +249,15 @@ we model increased odds of smoking as per the magnitudes reported by @Bailey2015
 As with smoking, pre-incarceration behaviors related to alcohol use may be altered upon release. Using data from the National Epidemiologic Survey on Alcohol and Related Conditions-III, for persons with alcohol use disorder, @Tsai2019 report an odds ratio of 0.75 (95% CI: 0.63, 0.89) among persons with incarceration history to persons without. We can combine this information with the proportion of persons with AUD in section on [Alcohol Use] above, where the proportion of persons suffering from AUD was computed to be `r AUD`%.
 
 Table 2 in @Tsai2019 reports that percent of persons with AUD without incarceration history is 7550/8183 (we call this $p_1$) and proportion of persons with AUD with incarceration history is 2388/2670 (call this $p_2$). Then, the OR can be computed as
-$(p_2/1-p_2)/(p_1/1-p_1) = 0.71$ (though @Tsai2019 gives this OR as 0.75). We take the published value of 0.75, set $p_1=5.6%$ as stated in [Alcohol Use], and solve for 
-to get $p_2 = 4.3%.$ Thus, proportion of proportion of persons with AUD who have incarceration history is 4.3%. 
+$(p_2/1-p_2)/(p_1/1-p_1) = 0.71$ (though @Tsai2019 gives this OR as 0.75). We take the published value of 0.75, set $p_1=5.6$% as stated in [Alcohol Use], and solve for 
+to get $p_2 = 4.3$%. Thus, proportion of proportion of persons with AUD who have incarceration history is 4.3%. 
 
 #### Persons with incarceration history who have AUD
 
+Based on data from the [Transitions Clinic Network](https://transitionsclinic.org) --
+"a national consortium of 24 primary care centers that serve the health needs of individuals returning from incarceration", @Chamberlain2019 report data on 751 participants who received medical care following release from prison, including 695 who reported an AUD diagnosis. Of persons reporting illicit substance use since release (n=134), there were 34 (27%) who had AUD. Of the 617 persons not reporting any illicit substance use since release, 171 (30%) had AUD. The proportion of persons reporting AUD was not statistically different in the groups reporting and not reporting substance use since release.   
 
+(__ I might email the authors and ask if they can tell me the % of persons reporting AUD before incarceration and after release__).
 
 
 ### Social Networks
