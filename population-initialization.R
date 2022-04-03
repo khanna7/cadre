@@ -203,16 +203,22 @@ incarceration.2week.prob <- 1.7/100
   # OR for AUD with incarceration to no incarceration = (p2/1-p2)/(p1/1-p1) = 0.71
   # (paper gives this ratio as 0.75)
   
-  # Taking p1 = 5.6% (from National Comorbidity Survey Replication, Kalaydjian 2009, we get:)
-    # p2 =
-    # ie., % of persons with AUD who have incarceration history ....
+  # Taking p1 = 5.6% (from National Comorbidity Survey Replication, 
+    # Kalaydjian 2009) we solve for p2.
   
+  # Solving the above equation, with RHS = 0.75 (as in the paper), 
+    # and setting p1=5.6%, give p2=21/493 = 0.0423.
+    # ie., % of persons with AUD who have incarceration history is 4.3%.
+
   # What about % of persons with incarceration history who have AUD?
-  # See Chamberlain et al https://ascpjournal.biomedcentral.com/articles/10.1186/s13722-019-0136-6
+    # See Chamberlain et al https://ascpjournal.biomedcentral.com/articles/10.1186/s13722-019-0136-6
+    # See support for reduced post-release (relative to pre-incarceration) alcohol use: 
+      # Tangney 2016 https://www.dropbox.com/s/8qggviinrt4lzoi/Tangney2016.pdf?dl=0   
   
   # simulate feedback between AUD and incarceration
-  
 
+  
+  
 # Initialize Network --------------
   
 # persons per househould (https://www.census.gov/quickfacts/RI)

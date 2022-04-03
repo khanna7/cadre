@@ -1,0 +1,127 @@
+---
+title: "Population Initialization"
+output: html_notebook
+---
+
+## Introduction
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) notebook that explains the population initialization for my CADRE project model. Narrative text and the R code are interwoven. The computer code is available in a public [GitHub repository](https://github.com/khanna7/cadre). 
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# Libraries ----------
+
+library(ergm)
+library(network)
+library(dplyr)
+
+```
+ 
+## Population Overview
+
+A synhetic population consisting of 5,000 agents between 18 and 64 years of age is simulated in an agent-based model (ABM) with social network structure. This simulated population is broadly representative of the 18-64 year old population of RI. The population size is deliberately kept small in the early stages to make the model more  efficient in terms of computation time. 
+
+Each individual is assigned a set of demographic characteristics (age, race, sex), behavioral profiles (smoking, alcohol use), incarceration history. Feeback loops betwee the impacts of incarceration on smoking and alcohol use are simulated in the criminal-justice involved persons, and their social networks.   
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# Initialize Population --------------
+
+n <- 5000
+net <- network.initialize(n, directed = FALSE)
+```
+
+## Demographic Characteristics
+
+### Age
+Per [census data](https://censusreporter.org/profiles/04000US44-rhode-island/), 
+63% of the RI population is in the range of our interest (18-64 years). We consider the population to be uniformly distributed across this range, which might not be unreasonable given the shape of the distribution above.
+
+```{r, results='show', echo=TRUE, message=FALSE}
+age.min <- 18
+age.max <- 64
+age <- runif(n, age.min, age.max)
+net %v% "age" <- age
+hist(net %v% "age")
+```
+
+
+### Race
+Per [census data](see https://www.census.gov/quickfacts/RI), we parameterize the population as belonging to 5 race/ethnic categories: White, Black, Hispanic, Asian, and Other.
+
+```{r, results='show', echo=TRUE, message=FALSE}
+white_alone <- 71.4/100 #not hispanic or latino
+black_alone <- 8.5/100
+hispanic_alone <- 16.3/100
+asian_alone <- 3.7/100
+other <- 1- sum(c(white_alone, black_alone, asian_alone, hispanic_alone))
+
+race_cats <- c("White", "Black", "Hispanic", "Asian", "Other")
+
+race <- 
+  sample(x=race_cats, 
+       prob = c(white_alone, black_alone, hispanic_alone, asian_alone, other),
+       replace = TRUE,
+       size = n
+       )
+net %v% "race" <- race
+table(net %v% "race")
+
+```
+
+
+### Sex
+
+Per [census data](see https://www.census.gov/quickfacts/RI),   
+the proportion of females in RI is `r female.prop*100`. 
+We dichotomize `r female.prop*100`% of our our agents as being female, and
+`r 100-female.prop*100`% as being male.
+
+
+```{r, results='show', echo=TRUE, message=FALSE}
+
+# sex (https://www.census.gov/quickfacts/RI)
+female.prop <- 51.3/100
+female <- rbinom(n, 1, prob=female.prop)
+
+net %v% "female" <- female
+table(net %v% "female")
+```
+
+
+## Substance Use Behaviors
+
+### Smoking
+
+```{r, results='show', echo=TRUE, message=FALSE}
+smoking.prev <- 0.15 
+net %v% "smoking.prob" <- smoking.prev
+smoking.prob <- net %v% "smoking.prob"
+```{r, results='show', echo=TRUE, message=FALSE}
+```
+
+
+### Alcohol Use
+
+## Incarceration
+
+## Incarceration-Substance Use Feedbacks
+
+### Incarceration and Smoking
+
+### Incarceration and Alcohol
+
+
+## Social Networks
+
+
+
+## Instructions to Operate Markdown
+
+Note for Users: 
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
