@@ -77,12 +77,6 @@ table(net %v% "race")
 
 ### Sex
 
-Per [census data](see https://www.census.gov/quickfacts/RI),   
-the proportion of females in RI is `r female.prop*100`. 
-We dichotomize `r female.prop*100`% of our our agents as being female, and
-`r 100-female.prop*100`% as being male.
-
-
 ```{r, results='hide', echo=TRUE, message=FALSE}
 
 # sex (https://www.census.gov/quickfacts/RI)
@@ -93,19 +87,23 @@ net %v% "female" <- female
 table(net %v% "female")
 ```
 
+Per [census data](see https://www.census.gov/quickfacts/RI), the proportion of females in RI is `r female.prop*100`%. We dichotomize `r female.prop*100`% of our our agents as being female, and `r 100-female.prop*100`% as being male.
+
 
 ## Substance Use Behaviors
 
 ### Smoking
-
-Per the [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm), the national prevalence of current smokers in the US is `r smoking.prev*100`%. 
-( The CDC defines "a current smoker" as someone who "who reported smoking at least 100 cigarettes during their lifetime and who, at the time they participated in a survey about this topic, reported smoking every day or some days.")
 
 ```{r, results='show', echo=TRUE, message=FALSE}
 smoking.prev <- 0.13
 net %v% "smoking.prob" <- smoking.prev
 smoking.prob <- net %v% "smoking.prob"
 ```
+
+
+Per the [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm), the national prevalence of current smokers in the US is `r smoking.prev*100`%. 
+( The CDC defines "a current smoker" as someone who "who reported smoking at least 100 cigarettes during their lifetime and who, at the time they participated in a survey about this topic, reported smoking every day or some days.")
+
 
 The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm)
 also stratifies the national smoking rates by age, sex, and race/ethnicity. 
@@ -115,6 +113,16 @@ that  is not stratified by demographic variables.
 
 
 ### Alcohol Use
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+
+one.sip <- 91.7
+occasional <- 72.9
+regular <- 13.2
+
+abstainers <- 100-one.sip
+AUD <- 100 - (abstainers + occasional + regular)
+```
 
 We classify alcohol use behaviors in one of four categories, defined as in a previous pair of 
 by frequency of use, as per @Apostolopoulos2018I; @Apostolopoulos2018II.
@@ -186,11 +194,12 @@ a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the
   # recidivism probability: as above
 ```
   
+## Modeling Feedback between Incarceration and Substance Use
 
 ### Modeling Impact of Incarceration on Smoking
 
-
 ```{r, results='hide', echo=FALSE, message=FALSE}
+
 # Black men with incarceration history 1.77x as likely to smoke as those w/o inc history
   # Black women with incarceration history 1.61x as likely 
   # (reference: Bailey 2015, AJPH)
@@ -219,17 +228,33 @@ a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the
   smoker <- rbinom(n, 1, smoking.prob)
   net %v% "smoker" <- smoker
   table(net %v% "smoker") #1= current smoker, 0=former/never smoker
-  ```
+  
+```
 
-Incarceration-induced stressors can increase the smoking by justice-involved persons. From data collected in  
+  Incarceration-induced stressors can increase the smoking by justice-involved persons. From data collected in  
 the National Survey of Americal Life, @Bailey2015 report that Black men with incarceration history  `r{mult.black.inc.male.smk}` times as likely to smoke as those without incarceration
 history, and Black women with incarceration history `r{mult.black.inc.female.smk} times as likely to smoke as women withoout incarceration history. For agents belonging to all race/ethnicities, 
 we model increased odds of smoking as per the magnitudes reported by @Bailey2015.
 (__Note: We may need to find data that stratify impact of incarceration on smoking
-  by race/ethnicity__).
+  by race/ethnicity.__ Currenly, the magnitude of 
+  the effect of incarceration on smoking for all race/ethnicities is assumed to be 
+  the same as for Black persons, as per @Bailey2015).
 
 
 ### Modeling Feedback between Incarceration and Alcohol Use
+
+#### Persons with AUD who have incarceration history
+
+As with smoking, pre-incarceration behaviors related to alcohol use may be altered upon release. Using data from the National Epidemiologic Survey on Alcohol and Related Conditions-III, for persons with alcohol use disorder, @Tsai2019 report an odds ratio of 0.75 (95% CI: 0.63, 0.89) among persons with incarceration history to persons without. We can combine this information with the proportion of persons with AUD in section on [Alcohol Use] above, where the proportion of persons suffering from AUD was computed to be `r AUD`%.
+
+Table 2 in @Tsai2019 reports that percent of persons with AUD without incarceration history is 7550/8183 (we call this $p_1$) and proportion of persons with AUD with incarceration history is 2388/2670 (call this $p_2$). Then, the OR can be computed as
+$(p_2/1-p_2)/(p_1/1-p_1) = 0.71$ (though @Tsai2019 gives this OR as 0.75). We take the published value of 0.75, set $p_1=5.6%$ as stated in [Alcohol Use], and solve for 
+to get $p_2 = 4.3%.$ Thus, proportion of proportion of persons with AUD who have incarceration history is 4.3%. 
+
+#### Persons with incarceration history who have AUD
+
+
+
 
 ### Social Networks
 
@@ -239,6 +264,8 @@ we model increased odds of smoking as per the magnitudes reported by @Bailey2015
 - Stratify current smokers by age, race, and sex
 
 - Incarceration: Sentence duration and recidivism probability
+
+- Stratify impact of incarceration on smoking/alcohol use by race/ethnicity?
 
 
 ### References
