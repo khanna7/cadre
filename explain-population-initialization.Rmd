@@ -9,7 +9,10 @@ bibliography: cadre-appendix-library.bib
 This is an early draft of what will become the companion Appendix to the modeling 
 papers that we publish. Narrative text and the R code are interwoven. The computer code is also available in a public [GitHub repository](https://github.com/khanna7/cadre). 
 
-(Written in  [R Markdown](http://rmarkdown.rstudio.com)). 
+This is written in  [R Markdown](http://rmarkdown.rstudio.com) to facilitate [reproducibility](https://bookdown.org/m_p_sperrin/intro_to_r_2020/projects-and-reproducibility.html), i.e. the document can be automatically updated whenever underlying code or data changes.
+This is my first attempt at a full-scale reproducible document; 
+please bear with me as I figure out kinks and assess if this would be a workable 
+format for writing technical Appendices. 
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 # Libraries ----------
@@ -131,21 +134,73 @@ data from the National Comorbidity Survey Replication, as published in
  Category D as High-Risk/AUD = 100-(A+B+C) = 5.6%, which is almost the same as 
  D reported by @Kalaydjian2009.
 
-## Incarceration
+## Initiatializing the Incarceration Process in the Model
 
-## Incarceration-Substance Use Feedbacks
+```{r, results='hide', echo=FALSE, message=FALSE}
+# 2-week risk #macmadu 2021 (table 1)
+incarceration.2week.prob <- 1.7/100
+  # we'll break down the above by age and race
+```
 
-### Incarceration and Smoking
+Incarceration fuctions by defining two locations: 
+a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the 
+2-week incarceration probability for RI persons is 
+`r incarceration.2week.prob*100`%. We thus initialize the model with `r incarceration.2week.prob*100`% of persons in the correctional setting.  
 
-### Incarceration and Alcohol
+```{r, results='hide', echo=FALSE, message=FALSE}
+# attributes:
+  # current location (Correctional Setting vs Home)
+  locations <- c("CS", "H")
 
+  curr_loc <- 
+    sample(x=locations, 
+           prob = c(incarceration.2week.prob, 1-incarceration.2week.prob),
+           replace = TRUE,
+           size = n
+    )
+  
+  incarcerated <- recode(curr_loc, "H" = "0", "CS" = "1")
+  incarcerated <- as.numeric(incarcerated)
+  table(incarcerated)
+  
+  net %v% "curr_loc" <- curr_loc
+  table(net %v% "curr_loc")
+  
+  net %v% "incarcerated" <- incarcerated
+  table(net %v% "incarcerated")
+  
+  # ever incarcerated
+  ever_inc <- ifelse(curr_loc=="CS", 1, 0) 
+  xtabs(~curr_loc + ever_inc)
+  net%v% "ever_inc" <- ever_inc
+    
+  # number of times incarcerated
+  num_incs <- ifelse(ever_inc == 1, 1, 0)
+  xtabs(~num_incs + ever_inc)
+  net %v% "num_incs" <- num_incs
+  
+  # other predictors of incarceration?
+  
+  # other parameters:
+  #- sentence duration: see macmadu 2021 (Table 1) for male/female distribution
+  # recidivism probability: as above
+```
+  
 
-## Social Networks
+### Initialization in the Model
+
+### Modeling Feedback between Incarceration and Smoking
+
+### Modeling Feedback between Incarceration and Alcohol Use
+
+### Social Networks
 
 
 ## Next Steps
 
-- Stratify current smokers by age, race, and sex.
+- Stratify current smokers by age, race, and sex
+
+- Incarceration: Sentence duration and recidivism probability
 
 
 ### References
