@@ -1,0 +1,128 @@
+---
+title: "ALcohol and Incarceration Coding Problem 5/12"
+author: "Yurui Zhang"
+date: '2022-05-19'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+Consider a population of 1000 agents. And the their behavior states of alcohol use can be described into four levels "Abstainers", "Occasional Drinkers", "Regular Drinkers", "High Risk/ AUD".
+
+Based on our data, we know that 8.3% of our population is an abstainer, 72.9% of our population is an occasional drinker, 13.2/100% of our population is a regular drinker, and the rest are those in the high-risk/AUD (AUD is alcohol use disorder) category.
+
+```{r}
+library("markovchain")
+```
+
+###	Initialize a set of 1000 agents.
+
+```{r}
+x_start<-rep(c("Abstainers", "Occasional Drinkers", "Regular Drinkers", "High Risk/ AUD"),times=c(8.3/100*1000,72.9/100*1000,13.2/100*1000,5.6/100*1000))
+
+set.seed(872436)           # Set seed
+x_start <- sample(x_start)        # Sample vector
+
+track_df <- data.frame(
+   initial_start = x_start
+)
+
+
+
+
+```
+
+
+
+
+```{r}
+
+library(dplyr)
+
+change <- function(times, start_state) {
+   for(i in 1:times){
+     for (k in 1:length(start_state)){
+       if (nth(start_state, k) == "Abstainers"){
+         if (runif(1,0,1)>0.9){
+           start_state<-replace(start_state, k, "Occasional Drinkers")
+         }
+       }
+       else if (nth(start_state, k) == "Occasional Drinkers"){
+         if (runif(1,0,1)<0.05){
+           start_state<-replace(start_state, k, "Abstainers")
+         }
+         else if (runif(1,0,1)>0.85){
+           start_state<-replace(start_state, k,  "Regular Drinkers")
+         }
+       }
+       else if (nth(start_state, k) == "Regular Drinkers"){
+         if (runif(1,0,1)<0.05){
+           start_state<-replace(start_state, k,  "Occasional Drinkers")
+         }
+         else if (runif(1,0,1)>0.85){
+           start_state<-replace(start_state, k,  "High Risk/ AUD")
+         }
+       }
+       else if (nth(start_state, k) == "High Risk/ AUD"){
+         if (runif(1,0,1)<0.05){
+           start_state<-replace(start_state, k,  "Regular Drinkers")
+         }
+       }
+     }
+   }
+  return(start_state)
+}
+  
+
+
+
+m <- change(10000, x_start) 
+
+track_df$change_10000 <- m
+track_df
+```
+
+
+###	Classify each agent initially as belonging to one of these four categories. 
+
+
+
+###	Model a system where any person has a 10% chance at any time of “levelling up” in their alcohol use (e.g., an abstainer can become an occasional drinker, or a regular drinker can become “high risk/AUD”).
+
+```{r}
+
+alcoholStates <- c("Abstainers", "Occasional Drinkers", "Regular Drinkers", "High Risk/ AUD")
+byRow = TRUE
+alcoholMatrix <- matrix(data = c(0.99, 0.01, 0, 0,
+                                0.01, 0.98, 0.01, 0,
+                                0, 0.01, 0.98, 0.01,
+                                0, 0, 0.01, 0.99), byrow = byRow, nrow = 4,dimnames = list(alcoholStates, alcoholStates))
+
+
+mcalcohol <- new("markovchain", states = alcoholStates, byrow = byRow,
+transitionMatrix = alcoholMatrix, name = "alcohol")
+mcalcohol
+```
+
+```{r}
+initialState <- c(1,0,0,0)
+after2Days <- initialState * (mcalcohol * mcalcohol)
+after7Days <- initialState * (mcalcohol^7)
+after100Days <- initialState * (mcalcohol^100)
+after10000Days <- initialState * (mcalcohol^10000)
+
+after2Days
+after7Days
+after100Days
+after10000Days
+```
+
+###	Model a system where any person has a 5% chance at any time of “levelling down” in their alcohol use. 
+
+
+
+
+
