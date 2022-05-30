@@ -38,13 +38,13 @@ class Person():
             str(statistics.median(alc_use_status_vals)))
 
     # add alcohol transition function here
-    def transition_alc_use(self, max=1):
+    def transition_alc_use(max=1):
         print(random.random(max))
 
 
 def main():
     Person.initialize_population(1001)
-    #Person.transition_alc_use(1)
+    Person.transition_alc_use(1)
   
 if __name__ == "__main__":
     main()
