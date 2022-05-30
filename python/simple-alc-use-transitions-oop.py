@@ -13,11 +13,13 @@ class Person():
         self.alc_use_status = alc_use_status
 
     def initialize_population(n:int=10):
+        # QT: didn't use self here because then I couldn't override the default param val in main
         my_persons = {}
         age_sum = 0
         alc_use_status = {}
         alc_use_status_vals = {}
         
+        # initialize agents and attributes
         for i in range(n):
             my_persons[i] = Person()
             my_persons[i].name = i
@@ -41,14 +43,20 @@ class Person():
         print("Min level of alcohol use is " + 
             str(min(alc_use_status_vals)))
 
+        # transition agents from alc use states
+        # QT: Can this be its own method? If so, how do I get it to access the objects it needs from above methods? 
+        
+
 
     # add alcohol transition function here
     def transition_alc_use():
         pass
     
 def main():
-    Person.initialize_population(10001)
-    Person.transition_alc_use()
+    Person.initialize_population(10001) #QT: See above for overriding default params
+    #Person.transition_alc_use()
+
+    #QT: Where would a time loop go?
   
 if __name__ == "__main__":
     main()
