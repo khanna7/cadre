@@ -6,7 +6,7 @@ class Person():
         if age == None:
             age = random.randint(18, 65)
         if alc_use_status == None:
-            alc_use_status = random.randint(0, 3)
+            alc_use_status = random.randint(0, 4) # (0,3) gives a max of 2 
 
         self.name = name    
         self.age = age
@@ -36,15 +36,19 @@ class Person():
             str(age_sum/len(my_persons)))
         print("Median level of alcohol use is " + 
             str(statistics.median(alc_use_status_vals)))
+        print("Max level of alcohol use is " + 
+            str(max(alc_use_status_vals)))
+        print("Min level of alcohol use is " + 
+            str(min(alc_use_status_vals)))
+
 
     # add alcohol transition function here
-    def transition_alc_use(max=1):
-        print(random.random(max))
-
-
+    def transition_alc_use():
+        pass
+    
 def main():
-    Person.initialize_population(1001)
-    Person.transition_alc_use(1)
+    Person.initialize_population(10001)
+    Person.transition_alc_use()
   
 if __name__ == "__main__":
     main()
