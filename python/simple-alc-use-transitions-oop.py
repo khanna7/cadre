@@ -45,8 +45,54 @@ class Person():
 
         # transition agents from alc use states
         # QT: Can this be its own method? If so, how do I get it to access the objects it needs from above methods? 
-        
+        # transition probabilities
+        # level up
+        trans_prob_0_1 = 0/100 
+        trans_prob_1_2 = 1/100
+        trans_prob_2_3 = 1/100
+        # level down
+        trans_prob_1_0 = 0.5/100
+        trans_prob_2_1 = 0.5/100
+        trans_prob_3_2 = 0.5/100
 
+        changes = 0
+
+        for i in range(len(my_persons)):
+            prob = random.uniform(0, 1)
+
+            if my_persons[i].alc_use_status == 0:
+                if (prob <= trans_prob_0_1):
+                    my_persons[i].alc_use_status += 1
+                    changes+=1
+                    print("change!")
+
+            elif my_persons[i].alc_use_status == 1:
+                if (prob <= trans_prob_1_2):
+                    my_persons[i].alc_use_status += 1
+                    changes+=1
+                    print("change!")
+                elif (prob > 1-trans_prob_1_0):
+                    my_persons[i].alc_use_status -= 1
+                    changes += 1
+                    print("change!")
+            
+            elif my_persons[i].alc_use_status == 2:
+                if (prob <= trans_prob_2_3):
+                    my_persons[i].alc_use_status += 1
+                    changes += 1
+                    print("change!")
+                elif (prob > 1-trans_prob_2_1):
+                    my_persons[i].alc_use_status -= 1
+                    changes += 1
+                    print("change!")
+
+            elif my_persons[i].alc_use_status == 3:
+                if (prob > 1-trans_prob_3_2):
+                    my_persons[i].alc_use_status -= 1
+                    changes += 1
+                    print("change!")
+
+        print("Number of transitions is " + str(changes))
 
     # add alcohol transition function here
     def transition_alc_use():
