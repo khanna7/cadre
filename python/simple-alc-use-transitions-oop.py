@@ -7,7 +7,7 @@ class Person():
         if alc_use_status == None:
             alc_use_status = random.randint(0, 3)
 
-        #self.name = name    
+        self.name = name    
         self.age = age
         self.alc_use_status = alc_use_status
 
@@ -18,6 +18,9 @@ def main():
     my_persons = {}
     for i in range(11):
         my_persons[i] = Person()
+        my_persons[i].name = i
+
+        print(my_persons[i].name)
         print(my_persons[i].age)
         print(my_persons[i].alc_use_status, "\n")
         print(len(my_persons))
