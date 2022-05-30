@@ -1,0 +1,126 @@
+---
+title: "Incarceration-Alcohol Use interaction"
+output: html_notebook
+bibliography: cadre-appendix-library.bib
+---
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# Libraries ----------
+rm(list=ls())
+library(ergm)
+library(network)
+library(dplyr)
+
+```
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# Libraries ----------
+load("intialized-network.RData")
+```
+
+We start with an initialized population with the following attributes:
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+list.vertex.attributes(net)
+```
+
+Assign alcohol use state distributions to the population:
+
+```{r}
+abstainer <- 8.3/100  #state 1
+occasional_drinker <- 72.9/100 #state 2
+regular_drinker <- 13.2/100 #state 3
+high_risk_or_AUD <- 1-(abstainer+occasional_drinker+regular_drinker) #state 4
+
+alcohol.use.states <- c(1, 2, 3, 4)
+
+alcohol.use.behavior <- sample(alcohol.use.states, n, 
+                               replace=TRUE, 
+                               prob = c(abstainer, occasional_drinker,
+                                        regular_drinker,high_risk_or_AUD)
+                               )
+table(alcohol.use.behavior)
+table(alcohol.use.behavior)/n
+
+net %v% "alcohol.use.behavior" <- alcohol.use.behavior
+table(net %v% "alcohol.use.behavior", exclude = NULL)
+```
+
+To simulate one-step transitions between the states, define transition probabilities to "level up" or down. 
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# level up
+trans.prob.0.1 <- 0/100 
+trans.prob.1.2 <- 10/100
+trans.prob.2.3 <- 10/100
+
+# level down
+trans.prob.1.0 <- 5/100
+trans.prob.2.1 <- 5/100
+trans.prob.3.2 <- 5/100
+
+
+alc.state.transition.matrix <- 
+  matrix(
+    c(
+      1, trans.prob.0.1, 0, 0,
+      trans.prob.1.0, 1-(trans.prob.1.0+trans.prob.1.2), trans.prob.1.2, 0,
+      0, trans.prob.2.1, 1-(trans.prob.2.1+trans.prob.3.2), trans.prob.2.3,
+      0, 0, trans.prob.3.2, 1-trans.prob.3.2),
+      nrow=4, byrow = TRUE
+    )
+  
+
+alc.state.transition.matrix
+```
+
+Write a function to simulate alcohol use transitions. 
+Agent cannot both level up and down at one time step. Half the agents are eligible to step up, 
+and half are eligible to step down. A decision is made to
+either level up (or stay in the same state), or level down (or stay in the same state). 
+
+```{r}
+simulate.alcohol.use.transitions <- function (net, verbose = FALSE){
+n <- network.size(net)
+    for (agent in 1:n){
+    # record agent alcohol use state
+    alcohol.use.behavior.agent <- (net %v% "alcohol.use.behavior")[agent] 
+    
+    if (level.up.or.down[agent] < 0.5 &&  alcohol.use.behavior.agent  != 1){
+      if (verbose) {cat("Transition down??? ")}
+      if (level.up.or.down[agent] <= alc.state.transition.matrix[alcohol.use.behavior.agent,                                                            alcohol.use.behavior.agent-1]){
+        set.vertex.attribute(net, "alcohol.use.behavior", alcohol.use.behavior.agent-1, agent)
+         if (verbose) {cat(" Transitioning down!!!", "\n")}
+      } else {
+         if (verbose) {cat("Not transitioning down!!!", "\n")}
+      }
+    } else if (level.up.or.down[agent] > 0.5 &&  alcohol.use.behavior.agent != 4){
+       if (verbose) {cat("Transition up??? ")}
+      if (level.up.or.down[agent] <= alc.state.transition.matrix[alcohol.use.behavior.agent, alcohol.use.behavior.agent+1]){
+        set.vertex.attribute(net, "alcohol.use.behavior", alcohol.use.behavior.agent+1, agent)
+         if (verbose) {cat(" Transitioning up!!!", "\n")}
+      } else {
+         if (verbose) {cat("Not transitioning up!!!", "\n")}
+      }
+    }
+  }
+return (net)
+  }
+```
+Simulate the above function for many time steps:
+
+```{r}
+max.time <- 10
+n <- network.size(net)
+ 
+for (time in 1:10){
+  cat("Entering time step ", time, "\n")
+  level.up.or.down <- runif(n, 0, 1)
+  net.post.sim <- simulate.alcohol.use.transitions(net)
+}
+
+summary(net %v% "alcohol.use.behavior")
+summary(net.post.sim %v% "alcohol.use.behavior")
+
+summary((net.post.sim %v% "alcohol.use.behavior") - net %v% "alcohol.use.behavior")
+```
