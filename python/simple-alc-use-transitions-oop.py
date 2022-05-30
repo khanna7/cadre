@@ -6,7 +6,7 @@ class Person():
         if age == None:
             age = random.randint(18, 65)
         if alc_use_status == None:
-            alc_use_status = random.randint(0, 4) # (0,3) gives a max of 2 
+            alc_use_status = random.randint(0, 4) # (0,3) gives a max of 2. QT is this expected behavior?
 
         self.name = name    
         self.age = age
