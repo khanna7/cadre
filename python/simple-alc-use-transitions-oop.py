@@ -9,6 +9,13 @@ class Person():
         self.age = age
         self.alc_use_status = alc_use_status
 
-p1=Person()
+def main():
+    p1=Person()
+    p2=Person()
 
+    print(p1.age, p1.alc_use_status)
+    print(p2.age, p2.alc_use_status)
+
+if __name__ == "__main__":
+    main()
         
