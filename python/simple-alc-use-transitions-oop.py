@@ -1,20 +1,31 @@
 from numpy import random
 
 class Person():
-    def __init__(self, age=None, alc_use_status=None):
+    def __init__(self, name=None, age=None, alc_use_status=None):
         if age == None:
             age = random.randint(18, 65)
         if alc_use_status == None:
             alc_use_status = random.randint(0, 3)
+
+        #self.name = name    
         self.age = age
         self.alc_use_status = alc_use_status
 
-def main():
-    p1=Person()
-    p2=Person()
+    def print_person_characteristics(self):
+        print("This object's name is {}.".format(self.name))
 
-    print(p1.age, p1.alc_use_status)
-    print(p2.age, p2.alc_use_status)
+def main():
+    my_persons = {}
+    for i in range(11):
+        my_persons[i] = Person()
+        print(my_persons[i].age)
+        print(my_persons[i].alc_use_status, "\n")
+        print(len(my_persons))
+
+    
+
+
+
 
 if __name__ == "__main__":
     main()
