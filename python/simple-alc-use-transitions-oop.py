@@ -2,7 +2,20 @@ from numpy import random
 import statistics
 
 class Person():
-    def __init__(self, name=None, age=None, race=None, alc_use_status=None):
+    def __init__(self, name=None, age=None, race=None, 
+    smoker=None, alc_use_status=None):
+
+
+        RACE_DISTRIBUTION = [
+            71.4/100, #white alone
+            8.5/100, #black alone
+            16.3/100, #hispanic alone
+            3.7/100 #asian alone
+        ]
+
+        RACE_CATS = ["white", "black", "hispanic", "other"]
+
+        SMOKING_PREV = 0.13
 
         if age == None:
             age = random.randint(18, 65)
@@ -12,20 +25,17 @@ class Person():
 
         if age == None:
             age = random.randint(18, 65)
-        
-   
-        race_distribution = [
-            71.4/100, #white alone
-            8.5/100, #black alone
-            16.3/100, #hispanic alone
-            3.7/100 #asian alone
-        ]
 
-        race_cats = ["white", "black", "hispanic", "other"]
+        if race == None:
+            race = random.choice(RACE_CATS)
         
+        if smoker == None:
+            smoker = random.binomial(1, SMOKING_PREV)
+    
         self.name = name    
         self.age = age
-        self.race = random.choice(race_cats)
+        self.race = race
+        self.smoker = smoker
         self.alc_use_status = alc_use_status
 
     def transition_alc_use(self):
@@ -77,13 +87,15 @@ def initialize_population(n):
     # QT: didn't use self here because then I couldn't override the default param val in main
     my_persons = [] #use array instead
     age_sum = 0
-    alc_use_status = []
+    alc_use_status = [] 
+    smokers = 0 
     alc_use_status_vals = []
     
     # initialize agents and attributes
     for i in range(n):
         my_persons.append(Person(i))
         age_sum = my_persons[i].age + age_sum
+        smokers = my_persons[i].smoker + smokers
         alc_use_status.append(my_persons[i].alc_use_status)  
 
         print(my_persons[i].name)
@@ -98,6 +110,8 @@ def initialize_population(n):
         str(max(alc_use_status)))
     print("Min level of alcohol use is " + 
         str(min(alc_use_status)))
+    print("Number of smokers is " + 
+        str(smokers))
 
     return my_persons
 
