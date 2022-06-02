@@ -41,44 +41,44 @@ class Person():
     def transition_alc_use(self):
 
         # level up
-        trans_prob_0_1 = 0/100 
-        trans_prob_1_2 = 1/100
-        trans_prob_2_3 = 1/100
-        # level down
-        trans_prob_1_0 = 0.5/100
-        trans_prob_2_1 = 0.5/100
-        trans_prob_3_2 = 0.5/100
+        TRANS_PROB_0_1 = 0/100 
+        TRANS_PROB_1_2 = 1/100
+        TRANS_PROB_2_3 = 1/100
+        # LEVEL DOWN
+        TRANS_PROB_1_0 = 0.5/100
+        TRANS_PROB_2_1 = 0.5/100
+        TRANS_PROB_3_2 = 0.5/100
 
         changes = 0
         prob = random.uniform(0, 1)
         if self.alc_use_status == 0:
-            if (prob <= trans_prob_0_1):
+            if (prob <= TRANS_PROB_0_1):
                 self.alc_use_status += 1
                 changes+=1
                 #print("change!")
 
         elif self.alc_use_status == 1:
-            if (prob <= trans_prob_1_2):
+            if (prob <= TRANS_PROB_1_2):
                 self.alc_use_status += 1
                 changes+=1
                 #print("change!")
-            elif (prob > 1-trans_prob_1_0):
+            elif (prob > 1-TRANS_PROB_1_0):
                 self.alc_use_status -= 1
                 changes += 1
                 #print("change!")
         
         elif self.alc_use_status == 2:
-            if (prob <= trans_prob_2_3):
+            if (prob <= TRANS_PROB_2_3):
                 self.alc_use_status += 1
                 changes += 1
                 #print("change!")
-            elif (prob > 1-trans_prob_2_1):
+            elif (prob > 1-TRANS_PROB_2_1):
                 self.alc_use_status -= 1
                 changes += 1
                 #print("change!")
 
         elif self.alc_use_status == 3:
-            if (prob > 1-trans_prob_3_2):
+            if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
                 changes += 1
                 #print("change!")
