@@ -2,14 +2,30 @@ from numpy import random
 import statistics
 
 class Person():
-    def __init__(self, name=None, age=None, alc_use_status=None):
+    def __init__(self, name=None, age=None, race=None, alc_use_status=None):
+
         if age == None:
             age = random.randint(18, 65)
+
         if alc_use_status == None:
             alc_use_status = random.randint(0, 4) # (0,3) gives a max of 2. QT is this expected behavior?
 
+        if age == None:
+            age = random.randint(18, 65)
+        
+   
+        race_distribution = [
+            71.4/100, #white alone
+            8.5/100, #black alone
+            16.3/100, #hispanic alone
+            3.7/100 #asian alone
+        ]
+
+        race_cats = ["white", "black", "hispanic", "other"]
+        
         self.name = name    
         self.age = age
+        self.race = random.choice(race_cats)
         self.alc_use_status = alc_use_status
 
     def transition_alc_use(self):
@@ -89,20 +105,13 @@ def initialize_population(n):
 def main():
     persons = initialize_population(10001) 
 
-    MAXTIME=1000
-
+    MAXTIME=100
     
-
     for time in range(MAXTIME):
         print("Timestep = " + str(time))
         
         for person in persons:
             person.transition_alc_use()
-
-    #QT: See above for overriding default params
-    #Person.transition_alc_use()
-
-    #QT: Where would a time loop go?
   
 if __name__ == "__main__":
     main()
