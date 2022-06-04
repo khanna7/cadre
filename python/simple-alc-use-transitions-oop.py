@@ -1,3 +1,4 @@
+from pickle import FALSE, TRUE
 from numpy import random
 import numpy as np
 import pandas as pd
@@ -84,7 +85,7 @@ class Person():
                 changes += 1
                 #print("change!")
 
-def initialize_population(n):
+def initialize_population(n, verbose=TRUE):
     # QT: didn't use self here because then I couldn't override the default param val in main
     my_persons = [] #use array instead
     age_sum = 0
@@ -100,31 +101,33 @@ def initialize_population(n):
         smokers = my_persons[i].smoker + smokers
         alc_use_status.append(my_persons[i].alc_use_status)
         race.append(my_persons[i].race) 
+        
+        if verbose == TRUE:
+            print(my_persons[i].name)
+            print(my_persons[i].age)
+            print(my_persons[i].alc_use_status, "\n")
 
-        print(my_persons[i].name)
-        print(my_persons[i].age)
-        print(my_persons[i].alc_use_status, "\n")
-
-    print("Number of agents is: " + 
-        str(len(my_persons)))
-    print("Mean agent age is: " + 
-        str(age_sum/len(my_persons)))
-    print("Max level of alcohol use is " + 
-        str(max(alc_use_status)))
-    print("Min level of alcohol use is " + 
-        str(min(alc_use_status)))
-    print("Median level of alcohol use is " + 
-        str(np.median(alc_use_status)))
-    print("Number of smokers is " + 
-        str(smokers))
-    print("Distribution of race categories is ", "\n" + 
-        str(pd.value_counts(np.array(race))/len(race)))
+    if verbose == TRUE:
+        print("Number of agents is: " + 
+            str(len(my_persons)))
+        print("Mean agent age is: " + 
+            str(age_sum/len(my_persons)))
+        print("Max level of alcohol use is " + 
+            str(max(alc_use_status)))
+        print("Min level of alcohol use is " + 
+            str(min(alc_use_status)))
+        print("Median level of alcohol use is " + 
+            str(np.median(alc_use_status)))
+        print("Number of smokers is " + 
+            str(smokers))
+        print("Distribution of race categories is ", "\n" + 
+            str(pd.value_counts(np.array(race))/len(race)))
 
     return my_persons
 
     
 def main():
-    persons = initialize_population(10001) 
+    persons = initialize_population(n=10001, verbose=FALSE) 
 
     MAXTIME=100
     
