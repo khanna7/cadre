@@ -1,5 +1,5 @@
 from numpy import random
-import statistics
+import numpy as np
 
 class Person():
     def __init__(self, name=None, age=None, race=None, 
@@ -110,6 +110,8 @@ def initialize_population(n):
         str(max(alc_use_status)))
     print("Min level of alcohol use is " + 
         str(min(alc_use_status)))
+    print("Median level of alcohol use is " + 
+        str(np.median(alc_use_status)))
     print("Number of smokers is " + 
         str(smokers))
 
@@ -122,7 +124,8 @@ def main():
     MAXTIME=100
     
     for time in range(MAXTIME):
-        print("Timestep = " + str(time))
+        if time % 10 == 0:
+            print("Timestep = " + str(time))
         
         for person in persons:
             person.transition_alc_use()
