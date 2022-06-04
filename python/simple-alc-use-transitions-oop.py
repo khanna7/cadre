@@ -1,5 +1,6 @@
 from numpy import random
 import numpy as np
+import pandas as pd
 
 class Person():
     def __init__(self, name=None, age=None, race=None, 
@@ -89,14 +90,16 @@ def initialize_population(n):
     age_sum = 0
     alc_use_status = [] 
     smokers = 0 
-    alc_use_status_vals = []
+    race = []
+   
     
     # initialize agents and attributes
     for i in range(n):
         my_persons.append(Person(i))
         age_sum = my_persons[i].age + age_sum
         smokers = my_persons[i].smoker + smokers
-        alc_use_status.append(my_persons[i].alc_use_status)  
+        alc_use_status.append(my_persons[i].alc_use_status)
+        race.append(my_persons[i].race) 
 
         print(my_persons[i].name)
         print(my_persons[i].age)
@@ -114,6 +117,8 @@ def initialize_population(n):
         str(np.median(alc_use_status)))
     print("Number of smokers is " + 
         str(smokers))
+    print("Distribution of race categories is ", "\n" + 
+        str(pd.value_counts(np.array(race))/len(race)))
 
     return my_persons
 
@@ -129,6 +134,8 @@ def main():
         
         for person in persons:
             person.transition_alc_use()
+
+
   
 if __name__ == "__main__":
     main()
