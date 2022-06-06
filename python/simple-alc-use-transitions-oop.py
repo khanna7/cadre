@@ -119,16 +119,19 @@ def initialize_population(n, verbose=TRUE):
             print(my_persons[i].alc_use_status, "\n")
 
     if verbose == TRUE:
-        race_dists = pd.value_counts(np.array(race))/len(race)*100
+        race_dist = pd.value_counts(np.array(race))/len(race)*100
+        alc_use_status_dist = pd.value_counts(np.array(alc_use_status))/len(alc_use_status)*100
 
         print("Number of agents is: " + 
             str(len(my_persons)))
         print("Mean agent age is: " + 
             str(('{:.2f}'.format(age_sum/len(my_persons)))))
         print("Distribution of race categories is ", "\n" + 
-            str(race_dists.round(decimals=2)), "%")
+            str(race_dist.round(decimals=2)), "%")
         print("Number of females is: " + 
             str(females))
+        print("Distribution of alcohol use categories is ", "\n" + 
+            str(alc_use_status_dist.round(decimals=2)), "%")
         print("Max level of alcohol use is " + 
             str(max(alc_use_status)))
         print("Min level of alcohol use is " + 
