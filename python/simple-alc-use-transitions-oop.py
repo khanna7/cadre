@@ -4,8 +4,13 @@ import numpy as np
 import pandas as pd
 
 class Person():
-    def __init__(self, name=None, age=None, race=None, 
-    smoker=None, alc_use_status=None):
+    def __init__(self, 
+    name=None, 
+    age=None, 
+    race=None, 
+    female=None,
+    smoker=None, 
+    alc_use_status=None):
 
 
         RACE_DISTRIBUTION = [
@@ -14,22 +19,22 @@ class Person():
             16.3/100, #hispanic alone
             3.8/100 #asian alone (increased by 0.1 to sum to 1)
         ]
-
         RACE_CATS = ["white", "black", "hispanic", "other"]
-
         SMOKING_PREV = 0.13
+        FEMALE_PROP = 51.3/100 # sex (https://www.census.gov/quickfacts/RI)
 
-        if age == None:
-            age = random.randint(18, 65)
-
-        if alc_use_status == None:
-            alc_use_status = random.randint(0, 4) 
 
         if age == None:
             age = random.randint(18, 65)
 
         if race == None:
             race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
+
+        if female == None:
+            female = random.binomial(1, FEMALE_PROP)
+
+        if alc_use_status == None:
+            alc_use_status = random.randint(0, 4) 
         
         if smoker == None:
             smoker = random.binomial(1, SMOKING_PREV)
@@ -37,6 +42,7 @@ class Person():
         self.name = name    
         self.age = age
         self.race = race
+        self.female = female
         self.smoker = smoker
         self.alc_use_status = alc_use_status
 
@@ -88,18 +94,22 @@ class Person():
 def initialize_population(n, verbose=TRUE):
     my_persons = [] 
     age_sum = 0
+    race = []
+    females = 0
     alc_use_status = [] 
     smokers = 0 
-    race = []
+
    
     
     # initialize agents and attributes
     for i in range(n):
         my_persons.append(Person(i))
         age_sum = my_persons[i].age + age_sum
-        smokers = my_persons[i].smoker + smokers
-        alc_use_status.append(my_persons[i].alc_use_status)
         race.append(my_persons[i].race) 
+        females = my_persons[i].female + females 
+        alc_use_status.append(my_persons[i].alc_use_status)
+        smokers = my_persons[i].smoker + smokers
+       
         
         if verbose == TRUE:
             print(my_persons[i].name)
@@ -113,6 +123,10 @@ def initialize_population(n, verbose=TRUE):
             str(len(my_persons)))
         print("Mean agent age is: " + 
             str(('{:.2f}'.format(age_sum/len(my_persons)))))
+        print("Distribution of race categories is ", "\n" + 
+            str(race_dists.round(decimals=2)), "%")
+        print("Number of females is: " + 
+            str(females))
         print("Max level of alcohol use is " + 
             str(max(alc_use_status)))
         print("Min level of alcohol use is " + 
@@ -121,8 +135,7 @@ def initialize_population(n, verbose=TRUE):
             str(np.median(alc_use_status)))
         print("Number of smokers is " + 
             str(smokers))
-        print("Distribution of race categories is ", "\n" + 
-            str(race_dists.round(decimals=2)), "%")
+      
 
     return my_persons
 
