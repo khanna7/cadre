@@ -12,7 +12,7 @@ class Person():
             71.4/100, #white alone
             8.5/100, #black alone
             16.3/100, #hispanic alone
-            3.7/100 #asian alone
+            3.8/100 #asian alone (increased by 0.1 to sum to 1)
         ]
 
         RACE_CATS = ["white", "black", "hispanic", "other"]
@@ -23,13 +23,13 @@ class Person():
             age = random.randint(18, 65)
 
         if alc_use_status == None:
-            alc_use_status = random.randint(0, 4) # (0,3) gives a max of 2. QT is this expected behavior?
+            alc_use_status = random.randint(0, 4) 
 
         if age == None:
             age = random.randint(18, 65)
 
         if race == None:
-            race = random.choice(RACE_CATS)
+            race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         
         if smoker == None:
             smoker = random.binomial(1, SMOKING_PREV)
@@ -86,8 +86,7 @@ class Person():
                 #print("change!")
 
 def initialize_population(n, verbose=TRUE):
-    # QT: didn't use self here because then I couldn't override the default param val in main
-    my_persons = [] #use array instead
+    my_persons = [] 
     age_sum = 0
     alc_use_status = [] 
     smokers = 0 
@@ -111,7 +110,7 @@ def initialize_population(n, verbose=TRUE):
         print("Number of agents is: " + 
             str(len(my_persons)))
         print("Mean agent age is: " + 
-            str(age_sum/len(my_persons)))
+            str(('{:.2f}'.format(age_sum/len(my_persons)))))
         print("Max level of alcohol use is " + 
             str(max(alc_use_status)))
         print("Min level of alcohol use is " + 
@@ -127,7 +126,7 @@ def initialize_population(n, verbose=TRUE):
 
     
 def main():
-    persons = initialize_population(n=10001, verbose=FALSE) 
+    persons = initialize_population(n=10001, verbose=TRUE) 
 
     MAXTIME=100
     
