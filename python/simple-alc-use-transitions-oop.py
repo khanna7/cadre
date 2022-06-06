@@ -107,6 +107,8 @@ def initialize_population(n, verbose=TRUE):
             print(my_persons[i].alc_use_status, "\n")
 
     if verbose == TRUE:
+        race_dists = pd.value_counts(np.array(race))/len(race)*100
+
         print("Number of agents is: " + 
             str(len(my_persons)))
         print("Mean agent age is: " + 
@@ -120,7 +122,7 @@ def initialize_population(n, verbose=TRUE):
         print("Number of smokers is " + 
             str(smokers))
         print("Distribution of race categories is ", "\n" + 
-            str(pd.value_counts(np.array(race))/len(race)))
+            str(race_dists.round(decimals=2)), "%")
 
     return my_persons
 
