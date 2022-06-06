@@ -18,10 +18,11 @@ class Person():
             8.5/100, #black alone
             16.3/100, #hispanic alone
             3.8/100 #asian alone (increased by 0.1 to sum to 1)
+            # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
         ]
         RACE_CATS = ["white", "black", "hispanic", "other"]
-        SMOKING_PREV = 0.13
-        FEMALE_PROP = 51.3/100 # sex (https://www.census.gov/quickfacts/RI)
+        SMOKING_PREV = 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
+        FEMALE_PROP = 51.3/100 # REF: https://www.census.gov/quickfacts/RI
 
 
         if age == None:
