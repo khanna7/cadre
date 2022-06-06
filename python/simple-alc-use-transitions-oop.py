@@ -23,6 +23,7 @@ class Person():
         RACE_CATS = ["white", "black", "hispanic", "other"]
         SMOKING_PREV = 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
         FEMALE_PROP = 51.3/100 # REF: https://www.census.gov/quickfacts/RI
+        ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
 
 
         if age == None:
@@ -35,7 +36,7 @@ class Person():
             female = random.binomial(1, FEMALE_PROP)
 
         if alc_use_status == None:
-            alc_use_status = random.randint(0, 4) 
+            alc_use_status = random.choice(range(0, 4), p=ALC_USE_PROPS) 
         
         if smoker == None:
             smoker = random.binomial(1, SMOKING_PREV)
