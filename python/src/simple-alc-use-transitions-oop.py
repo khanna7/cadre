@@ -20,50 +20,11 @@ class Person():
         self.smoker = smoker
         self.alc_use_status = alc_use_status
 
-    def transition_alc_use(self):
+    def aging(self):
+        TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
+        self.age += 1/TICK_TO_YEAR_RATIO
 
-        # level up
-        TRANS_PROB_0_1 = 0/100 
-        TRANS_PROB_1_2 = 1/100
-        TRANS_PROB_2_3 = 1/100
-        # LEVEL DOWN
-        TRANS_PROB_1_0 = 0.5/100
-        TRANS_PROB_2_1 = 0.5/100
-        TRANS_PROB_3_2 = 0.5/100
-
-        changes = 0
-        prob = random.uniform(0, 1)
-        if self.alc_use_status == 0:
-            if (prob <= TRANS_PROB_0_1):
-                self.alc_use_status += 1
-                changes+=1
-                #print("change!")
-
-        elif self.alc_use_status == 1:
-            if (prob <= TRANS_PROB_1_2):
-                self.alc_use_status += 1
-                changes+=1
-                #print("change!")
-            elif (prob > 1-TRANS_PROB_1_0):
-                self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
-        
-        elif self.alc_use_status == 2:
-            if (prob <= TRANS_PROB_2_3):
-                self.alc_use_status += 1
-                changes += 1
-                #print("change!")
-            elif (prob > 1-TRANS_PROB_2_1):
-                self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
-
-        elif self.alc_use_status == 3:
-            if (prob > 1-TRANS_PROB_3_2):
-                self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
+    
 
 
 class Model:
@@ -127,31 +88,29 @@ class Model:
                 str(race_dist.round(decimals=2)), "%")
             print("Number of females is: " + 
                 str(females))
-            print("Distribution of alcohol use categories is ", "\n" + 
-                str(alc_use_status_dist.round(decimals=2)), "%")
-            print("Max level of alcohol use is " + 
-                str(max(alc_use_status)))
-            print("Min level of alcohol use is " + 
-                str(min(alc_use_status)))
-            print("Median level of alcohol use is " + 
-                str(np.median(alc_use_status)))
-            print("Number of smokers is " + 
-                str(smokers))
     
     def run(self, MAXTIME=10):
         
+        ages = []
+
         for time in range(MAXTIME):
             if time % 10 == 0:
                 print("Timestep = " + str(time))
         
             for person in self.my_persons:
-                person.transition_alc_use()
+                person.aging()
+                ages.append(person.age)
+
+            print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
+
+
+                
 
 
     
 def main():
     model = Model(n=10000, verbose=TRUE)
-    model.run(MAXTIME=100)
+    model.run(MAXTIME=1000)
 
     
 
