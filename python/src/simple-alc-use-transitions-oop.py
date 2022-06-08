@@ -24,6 +24,50 @@ class Person():
         TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
         self.age += 1/TICK_TO_YEAR_RATIO
 
+    def transition_alc_use(self):
+
+        # level up
+        TRANS_PROB_0_1 = 0/100 
+        TRANS_PROB_1_2 = 1/100
+        TRANS_PROB_2_3 = 1/100
+        # LEVEL DOWN
+        TRANS_PROB_1_0 = 0.5/100
+        TRANS_PROB_2_1 = 0.5/100
+        TRANS_PROB_3_2 = 0.5/100
+
+        changes = 0
+        prob = random.uniform(0, 1)
+        if self.alc_use_status == 0:
+            if (prob <= TRANS_PROB_0_1):
+                self.alc_use_status += 1
+                changes+=1
+                #print("change!")
+
+        elif self.alc_use_status == 1:
+            if (prob <= TRANS_PROB_1_2):
+                self.alc_use_status += 1
+                changes+=1
+                #print("change!")
+            elif (prob > 1-TRANS_PROB_1_0):
+                self.alc_use_status -= 1
+                changes += 1
+                #print("change!")
+        
+        elif self.alc_use_status == 2:
+            if (prob <= TRANS_PROB_2_3):
+                self.alc_use_status += 1
+                changes += 1
+                #print("change!")
+            elif (prob > 1-TRANS_PROB_2_1):
+                self.alc_use_status -= 1
+                changes += 1
+                #print("change!")
+
+        elif self.alc_use_status == 3:
+            if (prob > 1-TRANS_PROB_3_2):
+                self.alc_use_status -= 1
+                changes += 1
+                #print("change!")    
     
 
 
@@ -94,14 +138,17 @@ class Model:
         ages = []
 
         for time in range(MAXTIME):
-            if time % 10 == 0:
+            if time % 100 == 0:
                 print("Timestep = " + str(time))
+                print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
         
             for person in self.my_persons:
                 person.aging()
                 ages.append(person.age)
+                person.transition_alc_use()
 
-            print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
+      
+                
 
 
                 
