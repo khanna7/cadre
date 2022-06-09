@@ -24,6 +24,8 @@ class Person():
         TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
         self.age += 1/TICK_TO_YEAR_RATIO
 
+    def simulate_incarceration(self):
+
     def transition_alc_use(self):
 
         # level up
