@@ -11,7 +11,8 @@ class Person():
     race=None, 
     female=None,
     smoker=None, 
-    alc_use_status=None):
+    alc_use_status=None,
+    current_incarceration_status = None):
 
         self.name = name    
         self.age = age
@@ -19,12 +20,12 @@ class Person():
         self.female = female
         self.smoker = smoker
         self.alc_use_status = alc_use_status
+        self.current_incarceration_status = current_incarceration_status
 
     def aging(self):
         TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
         self.age += 1/TICK_TO_YEAR_RATIO
 
-    def simulate_incarceration(self):
 
     def transition_alc_use(self):
 
@@ -69,8 +70,18 @@ class Person():
             if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
                 changes += 1
-                #print("change!")    
+                #print("change!")
+
+
+    def simulate_incarceration(self):
+        PROBABILITY_DAILY_INCARCERATION = 1/100
     
+        prob = random.uniform(0, 1)
+
+        if self.current_incarceration_status == 0:
+            if prob < PROBABILITY_DAILY_INCARCERATION:
+                self.current_incarceration_status = 1    
+
 
 
 class Model:
@@ -99,6 +110,7 @@ class Model:
         females = 0
         alc_use_status = [] 
         smokers = 0 
+        n_current_incarcerated = 0
         
         
         # initialize agents and attributes
@@ -107,7 +119,8 @@ class Model:
                             race=random.choice(Model.RACE_CATS, p=Model.RACE_DISTRIBUTION),
                             female=random.binomial(1, Model.FEMALE_PROP),
                             alc_use_status=random.choice(range(0, 4), p=Model.ALC_USE_PROPS),
-                            smoker=random.binomial(1, Model.SMOKING_PREV)
+                            smoker=random.binomial(1, Model.SMOKING_PREV),
+                            current_incarceration_status=0
                             ) 
 
             self.my_persons.append(person)
@@ -116,6 +129,7 @@ class Model:
             females = person.female + females 
             alc_use_status.append(person.alc_use_status)
             smokers = person.smoker + smokers
+            n_current_incarcerated = person.current_incarceration_status + n_current_incarcerated
 
             if verbose == TRUE:
                 print(person.name)
@@ -138,16 +152,29 @@ class Model:
     def run(self, MAXTIME=10):
         
         ages = []
+        current_incarceration_statuses = []
 
         for time in range(MAXTIME):
-            if time % 100 == 0:
-                print("Timestep = " + str(time))
-                print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
+            
+            #if time % 1 == 0:
+            print("Timestep = " + str(time))
+            print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
+            #print("Ages at time " + str(time) + " is " + str(ages)) 
+            #print("Incarcerated persons at time " + str(time) + " is " + str(current_incarceration_statuses))
+            print("Number of incarcerated persons at time " + str(time) + " is " + 
+                str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
         
+            # ensure that these vectors only hold the agent attributes at the current time 
+            # (as opposed to appending) values from all times 
+            ages = [] 
+            current_incarceration_statuses = []
+            
             for person in self.my_persons:
                 person.aging()
                 ages.append(person.age)
                 person.transition_alc_use()
+                person.simulate_incarceration()
+                current_incarceration_statuses.append(person.current_incarceration_status)
 
       
                 
@@ -158,8 +185,8 @@ class Model:
 
     
 def main():
-    model = Model(n=10000, verbose=TRUE)
-    model.run(MAXTIME=1000)
+    model = Model(n=100, verbose=TRUE)
+    model.run(MAXTIME=50)
 
     
 
