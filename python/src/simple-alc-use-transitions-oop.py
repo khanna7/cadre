@@ -73,14 +73,15 @@ class Person():
                 #print("change!")
 
 
-    def simulate_incarceration(self):
+    def simulate_incarceration(self, time):
+
         PROBABILITY_DAILY_INCARCERATION = 1/100
-    
         prob = random.uniform(0, 1)
 
         if self.current_incarceration_status == 0:
             if prob < PROBABILITY_DAILY_INCARCERATION:
-                self.current_incarceration_status = 1    
+                self.current_incarceration_status = 1 
+                self.last_incarceration_time = time   
 
 
 
@@ -179,7 +180,7 @@ class Model:
                 person.aging()
                 ages.append(person.age)
                 person.transition_alc_use()
-                person.simulate_incarceration()
+                person.simulate_incarceration(time=time)
                 current_incarceration_statuses.append(person.current_incarceration_status)
                 last_incarceration_times.append(person.last_incarceration_time)
     
