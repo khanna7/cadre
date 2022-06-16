@@ -120,6 +120,57 @@ after100Days
 after10000Days
 ```
 
+8.3% of our population is an abstainer, 72.9% of our population is an occasional drinker, 13.2% of our population is a regular drinker, and the rest are those in the high-risk/AUD (AUD is alcohol use disorder) category. 5.6%
+
+### Metropolis Hastings Stationary Distribution
+
+
+```{r}
+library(expm)
+matrix_x <- matrix(c(27/166,1/2,0,28/83,83/1458,1243/1458,132/1458,0,0,1/2,38/132,28/132,1/2,0,1/2,0), nrow = 4)
+
+matrix_x
+matrix_tt <- matrix_x %^% 1000
+
+matrix_tt
+```
+
+```{r}
+
+alcoholStates <- c("Abstainers", "Occasional Drinkers", "Regular Drinkers", "High Risk/ AUD")
+byRow = TRUE
+
+
+
+# need to be discussed
+
+alcoholMatrix <- matrix(data = c(27/166, 1/2, 0, 28/83,
+                                83/1458, 1243/1458, 132/1458, 0,
+                                0, 1/2, 38/132, 28/132,
+                                1/2, 0, 1/2, 0), byrow = byRow, nrow = 4,dimnames = list(alcoholStates, alcoholStates))
+
+
+mcalcohol <- new("markovchain", states = alcoholStates, byrow = byRow,
+transitionMatrix = alcoholMatrix, name = "alcohol")
+mcalcohol
+```
+
+
+```{r}
+initialState <- c(1,0,0,0)
+after2Days <- initialState * (mcalcohol * mcalcohol)
+after7Days <- initialState * (mcalcohol^7)
+after100Days <- initialState * (mcalcohol^100)
+after10000Days <- initialState * (mcalcohol^10000)
+
+after2Days
+after7Days
+after100Days
+after10000Days
+```
+
+
+
 ###	Model a system where any person has a 5% chance at any time of “levelling down” in their alcohol use. 
 
 
