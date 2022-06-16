@@ -1,4 +1,3 @@
-#from tabnanny import verbose
 from numpy import random
 import numpy as np
 import pandas as pd
@@ -11,7 +10,8 @@ class Person():
     female=None,
     smoker=None, 
     alc_use_status=None,
-    current_incarceration_status = None):
+    current_incarceration_status = None,
+    last_incarceration_time = None):
 
         self.name = name    
         self.age = age
@@ -20,6 +20,7 @@ class Person():
         self.smoker = smoker
         self.alc_use_status = alc_use_status
         self.current_incarceration_status = current_incarceration_status
+        self.last_incarceration_time = last_incarceration_time
 
     def aging(self):
         TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
@@ -110,6 +111,7 @@ class Model:
         alc_use_status = [] 
         smokers = 0 
         n_current_incarcerated = 0
+        last_incarceration_time = []
         
         
         # initialize agents and attributes
@@ -119,7 +121,8 @@ class Model:
                             female=random.binomial(1, Model.FEMALE_PROP),
                             alc_use_status=random.choice(range(0, 4), p=Model.ALC_USE_PROPS),
                             smoker=random.binomial(1, Model.SMOKING_PREV),
-                            current_incarceration_status=0
+                            current_incarceration_status=0,
+                            last_incarceration_time = -1
                             ) 
 
             self.my_persons.append(person)
@@ -129,6 +132,7 @@ class Model:
             alc_use_status.append(person.alc_use_status)
             smokers = person.smoker + smokers
             n_current_incarcerated = person.current_incarceration_status + n_current_incarcerated
+            last_incarceration_time.append(last_incarceration_time)
 
             if verbose == True:
                 print(person.name)
@@ -152,6 +156,7 @@ class Model:
         
         ages = []
         current_incarceration_statuses = []
+        last_incarceration_times = []
 
         for time in range(MAXTIME):
             
@@ -162,11 +167,13 @@ class Model:
             #print("Incarcerated persons at time " + str(time) + " is " + str(current_incarceration_statuses))
             print("Number of incarcerated persons at time " + str(time) + " is " + 
                 str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
+            print("Last incarceration times are " + str(last_incarceration_times)) 
         
             # ensure that these vectors only hold the agent attributes at the current time 
             # (as opposed to appending) values from all times 
             ages = [] 
             current_incarceration_statuses = []
+            last_incarceration_times = []
             
             for person in self.my_persons:
                 person.aging()
@@ -174,6 +181,7 @@ class Model:
                 person.transition_alc_use()
                 person.simulate_incarceration()
                 current_incarceration_statuses.append(person.current_incarceration_status)
+                last_incarceration_times.append(person.last_incarceration_time)
     
 def main():
     model = Model(n=100, verbose=True)
