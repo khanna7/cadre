@@ -1,4 +1,3 @@
-from pickle import FALSE, TRUE
 from tabnanny import verbose
 from numpy import random
 import numpy as np
@@ -102,7 +101,7 @@ class Model:
     ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
 
 
-    def __init__(self, n, verbose=TRUE):
+    def __init__(self, n, verbose=True):
         self.my_persons = [] 
         
         age_sum = 0
@@ -131,12 +130,12 @@ class Model:
             smokers = person.smoker + smokers
             n_current_incarcerated = person.current_incarceration_status + n_current_incarcerated
 
-            if verbose == TRUE:
+            if verbose == True:
                 print(person.name)
                 print(person.age)
                 print(person.alc_use_status, "\n")
 
-        if verbose == TRUE:
+        if verbose == True:
             race_dist = pd.value_counts(np.array(race))/len(race)*100
             alc_use_status_dist = pd.value_counts(np.array(alc_use_status))/len(alc_use_status)*100
 
@@ -175,22 +174,10 @@ class Model:
                 person.transition_alc_use()
                 person.simulate_incarceration()
                 current_incarceration_statuses.append(person.current_incarceration_status)
-
-      
-                
-
-
-                
-
-
     
 def main():
-    model = Model(n=100, verbose=TRUE)
+    model = Model(n=100, verbose=True)
     model.run(MAXTIME=50)
-
-    
-
-
   
 if __name__ == "__main__":
     main()
