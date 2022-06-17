@@ -39,7 +39,7 @@ class Model:
         
         # initialize agents and attributes
         for i in range(n):
-            person = Person.Person(age=random.randint(18, 65), 
+            person = cadre_person.Person(age=random.randint(18, 65), 
                             race=random.choice(Model.RACE_CATS, p=Model.RACE_DISTRIBUTION),
                             female=random.binomial(1, Model.FEMALE_PROP),
                             alc_use_status=random.choice(range(0, 4), p=Model.ALC_USE_PROPS),
