@@ -5,7 +5,7 @@ print("This is the Model file")
 from numpy import random
 import numpy as np
 import pandas as pd
-import Person
+import cadre_person
 
 class Model:
     RACE_DISTRIBUTION = [
