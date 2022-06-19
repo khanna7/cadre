@@ -68,8 +68,6 @@ class Model:
 
             print("Number of agents is: " + 
                 str(len(self.my_persons)))
-            print("Mean agent age is: " + 
-                str(('{:.2f}'.format(age_sum/len(self.my_persons)))))
             print("Distribution of race categories is ", "\n" + 
                 str(race_dist.round(decimals=2)), "%")
             print("Number of females is: " + 
@@ -85,9 +83,6 @@ class Model:
             
             #if time % 1 == 0:
             print("Timestep = " + str(time))
-            print("Mean age at time " + str(time) + " is " + str(('{:.4f}'.format(np.mean(ages)))))
-            #print("Ages at time " + str(time) + " is " + str(ages)) 
-            #print("Incarcerated persons at time " + str(time) + " is " + str(current_incarceration_statuses))
             print("Number of incarcerated persons at time " + str(time) + " is " + 
                 str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
             print("Last incarceration times are " + str(last_incarceration_times)) 

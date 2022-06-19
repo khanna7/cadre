@@ -17,8 +17,6 @@ class TestPerson(unittest.TestCase):
                    
         for person in model.my_persons:
                 ages.append(person.age)
-        
-        print("Ages are: " + str(ages))
 
         for age in ages: 
             self.assertTrue(age >= min_age)
