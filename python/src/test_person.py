@@ -11,7 +11,7 @@ class TestPerson(unittest.TestCase):
         max_age = 64
         mean_age_target = (min_age+max_age)/2
 
-        model = cadre_model.Model(n=10000, verbose=True)
+        model = cadre_model.Model(n=10000, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
