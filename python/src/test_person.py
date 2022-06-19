@@ -1,4 +1,3 @@
-from statistics import mean
 import unittest
 import numpy as np
 import cadre_person
