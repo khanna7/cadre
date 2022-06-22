@@ -43,9 +43,9 @@ class TestPerson(unittest.TestCase):
         #print("Races: " + str(race_dist))
 
         self.assertAlmostEqual(race_dist.white, RACE_DISTRIBUTION[0], delta=1)
-        self.assertAlmostEqual(round(race_dist.black), round(RACE_DISTRIBUTION[1]), delta=1)
-        self.assertAlmostEqual(round(race_dist.hispanic), round(RACE_DISTRIBUTION[2]), delta=1)
-        self.assertAlmostEqual(round(race_dist.other, 1), round(RACE_DISTRIBUTION[3], 1), delta=1)
+        self.assertAlmostEqual(race_dist.black, RACE_DISTRIBUTION[1], delta=1)
+        self.assertAlmostEqual(race_dist.hispanic, RACE_DISTRIBUTION[2], delta=1)
+        self.assertAlmostEqual(race_dist.other, RACE_DISTRIBUTION[3], delta=1)
 
 if __name__ == '__main__':  
     unittest.main()
