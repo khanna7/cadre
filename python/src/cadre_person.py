@@ -36,39 +36,31 @@ class Person():
         TRANS_PROB_2_1 = 0.5/100
         TRANS_PROB_3_2 = 0.5/100
 
-        changes = 0
         prob = random.uniform(0, 1)
         if self.alc_use_status == 0:
             if (prob <= TRANS_PROB_0_1):
                 self.alc_use_status += 1
-                changes+=1
-                #print("change!")
+
 
         elif self.alc_use_status == 1:
             if (prob <= TRANS_PROB_1_2):
                 self.alc_use_status += 1
-                changes+=1
-                #print("change!")
+
             elif (prob > 1-TRANS_PROB_1_0):
                 self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
+
         
         elif self.alc_use_status == 2:
             if (prob <= TRANS_PROB_2_3):
                 self.alc_use_status += 1
-                changes += 1
-                #print("change!")
+
             elif (prob > 1-TRANS_PROB_2_1):
                 self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
 
         elif self.alc_use_status == 3:
             if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
-                changes += 1
-                #print("change!")
+
 
 
     def simulate_incarceration(self, time):
