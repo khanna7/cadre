@@ -63,13 +63,7 @@ class Model:
                 print(person.alc_use_status, "\n")
 
         if verbose == True:
-            race_dist = pd.value_counts(np.array(race))/len(race)*100
             alc_use_status_dist = pd.value_counts(np.array(alc_use_status))/len(alc_use_status)*100
-
-            print("Number of agents is: " + 
-                str(len(self.my_persons)))
-            print("Distribution of race categories is ", "\n" + 
-                str(race_dist.round(decimals=2)), "%")
             print("Number of females is: " + 
                 str(females))
     
