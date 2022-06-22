@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+import pandas as pd
 import cadre_person
 import cadre_model 
 
@@ -20,7 +21,31 @@ class TestPerson(unittest.TestCase):
         for age in ages: 
             self.assertTrue(age >= min_age)
             self.assertTrue(age <= max_age)
-            self.assertEqual(round(np.mean(ages)), mean_age_target)
-        
+            self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
+
+    def test_race_assignment(self):
+        RACE_DISTRIBUTION = [
+        71.4, #white alone
+        8.5, #black alone
+        16.3, #hispanic alone
+        3.8 #asian alone (increased by 0.1 to sum to 1)
+        # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
+    ]
+        races = []
+        model = cadre_model.Model(n=10000, verbose=False)
+        model.run(MAXTIME=0)
+                   
+        for person in model.my_persons:
+                races.append(person.race)
+
+        #print("Races: "  + str(races))
+        race_dist = pd.value_counts(np.array(races))/len(races)*100
+        #print("Races: " + str(race_dist))
+
+        self.assertAlmostEqual(race_dist.white, RACE_DISTRIBUTION[0], delta=1)
+        self.assertAlmostEqual(round(race_dist.black), round(RACE_DISTRIBUTION[1]), delta=1)
+        self.assertAlmostEqual(round(race_dist.hispanic), round(RACE_DISTRIBUTION[2]), delta=1)
+        self.assertAlmostEqual(round(race_dist.other, 1), round(RACE_DISTRIBUTION[3], 1), delta=1)
+
 if __name__ == '__main__':  
     unittest.main()
