@@ -12,7 +12,7 @@ class TestPerson(unittest.TestCase):
         max_age = 64
         mean_age_target = (min_age+max_age)/2
 
-        model = cadre_model.Model(n=10000, verbose=False)
+        model = cadre_model.Model(n=1000, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -32,7 +32,7 @@ class TestPerson(unittest.TestCase):
         # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
     ]
         races = []
-        model = cadre_model.Model(n=10000, verbose=False)
+        model = cadre_model.Model(n=1000, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -42,16 +42,15 @@ class TestPerson(unittest.TestCase):
         race_dist = pd.value_counts(np.array(races))/len(races)*100
         #print("Races: " + str(race_dist))
 
-        self.assertAlmostEqual(race_dist.white, RACE_DISTRIBUTION[0], delta=1)
-        self.assertAlmostEqual(race_dist.black, RACE_DISTRIBUTION[1], delta=1)
-        self.assertAlmostEqual(race_dist.hispanic, RACE_DISTRIBUTION[2], delta=1)
-        self.assertAlmostEqual(race_dist.other, RACE_DISTRIBUTION[3], delta=1)
+        self.assertAlmostEqual(race_dist.white, RACE_DISTRIBUTION[0], delta=2)
+        self.assertAlmostEqual(race_dist.black, RACE_DISTRIBUTION[1], delta=2)
+        self.assertAlmostEqual(race_dist.hispanic, RACE_DISTRIBUTION[2], delta=2)
+        self.assertAlmostEqual(race_dist.other, RACE_DISTRIBUTION[3], delta=2)
 
     ## test alcohol use assignment
 
     ## test alcohol status transition
 
-    ## test aging
     def test_aging(self):
         ages_init = []
         ages_final = []
@@ -72,8 +71,20 @@ class TestPerson(unittest.TestCase):
 
         self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*nsteps)
 
-        
+    
+    def test_simulate_incarceration(self):
+        nsteps = 1
+        inc_states = []
 
+        model = cadre_model.Model(n=10, verbose=False) 
+
+        for p in model.my_persons:
+            self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
+            p.simulate_incarceration(time=nsteps, PROBABILITY_DAILY_INCARCERATION=1)
+            inc_states.append(p.current_incarceration_status)
+            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")     
+
+        #print("Incarceration states: " + str(inc_states))            
 
 if __name__ == '__main__':  
     unittest.main()
