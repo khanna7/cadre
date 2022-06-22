@@ -47,5 +47,33 @@ class TestPerson(unittest.TestCase):
         self.assertAlmostEqual(race_dist.hispanic, RACE_DISTRIBUTION[2], delta=1)
         self.assertAlmostEqual(race_dist.other, RACE_DISTRIBUTION[3], delta=1)
 
+    ## test alcohol use assignment
+
+    ## test alcohol status transition
+
+    ## test aging
+    def test_aging(self):
+        ages_init = []
+        ages_final = []
+        TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
+        nsteps = 100
+
+
+        model = cadre_model.Model(n=1000, verbose=False)
+        model.run(MAXTIME=0)                   
+        for person in model.my_persons:
+                ages_init.append(person.age)
+
+        model.run(MAXTIME=nsteps)
+        for person in model.my_persons:
+                ages_final.append(person.age)
+
+        diff_in_ages = np.subtract(np.array(ages_final), np.array(ages_init))
+
+        self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*nsteps)
+
+        
+
+
 if __name__ == '__main__':  
     unittest.main()
