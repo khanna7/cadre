@@ -1,4 +1,5 @@
 from numpy import random
+from pycadre.main import params_list
 
 class Person():
     def __init__(self, 
@@ -21,9 +22,8 @@ class Person():
         self.last_incarceration_time = last_incarceration_time
 
     def aging(self):
-        TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
+        TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']
         self.age += 1/TICK_TO_YEAR_RATIO
-
 
     def transition_alc_use(self):
 
