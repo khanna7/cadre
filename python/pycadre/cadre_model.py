@@ -6,22 +6,22 @@ from numpy import random
 import numpy as np
 import pandas as pd
 from pycadre import cadre_person
+from pycadre.main import params_list
 
 class Model:
-    RACE_DISTRIBUTION = [
-        71.4/100, #white alone
-        8.5/100, #black alone
-        16.3/100, #hispanic alone
-        3.8/100 #asian alone (increased by 0.1 to sum to 1)
-        # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
-    ]
 
-    RACE_CATS = ["white", "black", "hispanic", "other"]
+    RACE_CATS = params_list['RACE_CATS']
+    RD = params_list['RACE_DISTRIBUTION']
+    RACE_DISTRIBUTION = [
+        RD['White'],
+        RD['Black'],
+        RD['Hispanic'], 
+        RD['Asian']
+    ]
     
-    SMOKING_PREV = 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
-    
-    FEMALE_PROP = 51.3/100 # REF: https://www.census.gov/quickfacts/RI
-    
+    SMOKING_PREV = params_list['SMOKING_PREV']
+    FEMALE_PROP = params_list['FEMALE_PROP']
+   
     ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
 
 

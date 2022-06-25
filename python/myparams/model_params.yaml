@@ -1,0 +1,19 @@
+---
+stop_at: 10
+n_agents: 10
+
+TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
+
+RACE_CATS: ["White", "Black", "Hispanic", "Other"]
+SMOKING_PREV: 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
+FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
+
+RACE_DISTRIBUTION: 
+  White: 0.714 #white alone
+  Black: 0.085 #black alone
+  Hispanic: 0.163 #hispanic alone
+  Asian: 0.038 #asian alone (increased by 0.1 to sum to 1)
+  # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
+    
+
+    
