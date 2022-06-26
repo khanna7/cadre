@@ -2,6 +2,9 @@
 stop_at: 10
 n_agents: 10
 
+min_age: 18
+max_age: 64
+
 TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
 
 
@@ -29,6 +32,7 @@ ALC_USE_STATES:
 
 SMOKING_PREV: 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
 
+PROBABILITY_DAILY_INCARCERATION: 0.01
 
 
     

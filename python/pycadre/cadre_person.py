@@ -67,6 +67,7 @@ class Person():
     def simulate_incarceration(self, time, PROBABILITY_DAILY_INCARCERATION = 1/100):
         
         prob = random.uniform(0, 1)
+        PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
             if prob < PROBABILITY_DAILY_INCARCERATION:
