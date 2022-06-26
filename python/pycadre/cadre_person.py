@@ -28,13 +28,14 @@ class Person():
     def transition_alc_use(self):
 
         # level up
-        TRANS_PROB_0_1 = 0/100 
-        TRANS_PROB_1_2 = 1/100
-        TRANS_PROB_2_3 = 1/100
+        ALC_USE_STATES = params_list['ALC_USE_STATES']
+        TRANS_PROB_0_1 = ALC_USE_STATES['TRANS_PROB_0_1']
+        TRANS_PROB_1_2 = ALC_USE_STATES['TRANS_PROB_1_2']
+        TRANS_PROB_2_3 = ALC_USE_STATES['TRANS_PROB_2_3']
         # LEVEL DOWN
-        TRANS_PROB_1_0 = 0.5/100
-        TRANS_PROB_2_1 = 0.5/100
-        TRANS_PROB_3_2 = 0.5/100
+        TRANS_PROB_1_0 = ALC_USE_STATES['TRANS_PROB_1_0']
+        TRANS_PROB_2_1 = ALC_USE_STATES['TRANS_PROB_2_1']
+        TRANS_PROB_3_2 = ALC_USE_STATES['TRANS_PROB_3_2']
 
         prob = random.uniform(0, 1)
         if self.alc_use_status == 0:

@@ -4,16 +4,33 @@ n_agents: 10
 
 TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
 
-RACE_CATS: ["White", "Black", "Hispanic", "Other"]
-SMOKING_PREV: 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
-FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 
+RACE_CATS: ["White", "Black", "Hispanic", "Other"]
 RACE_DISTRIBUTION: 
   White: 0.714 #white alone
   Black: 0.085 #black alone
   Hispanic: 0.163 #hispanic alone
   Asian: 0.038 #asian alone (increased by 0.1 to sum to 1)
   # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
+
+FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
+
+ALC_USE_STATES:
+  # level up
+  TRANS_PROB_0_1: 0.0729
+  TRANS_PROB_1_2: 0.0132
+  TRANS_PROB_2_3: 0.0056
+  # LEVEL DOWN
+  TRANS_PROB_1_0: 0.0083
+  TRANS_PROB_2_1: 0.0729
+  TRANS_PROB_3_2: 0.0132
+  # to be updated with yurui's analysis
+  # https://drive.google.com/open?id=1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc&authuser=aditya_khanna%40brown.edu&usp=drive_fs
+
+SMOKING_PREV: 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
+
+
+
     
 
     
