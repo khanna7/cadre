@@ -46,10 +46,10 @@ class TestPerson(unittest.TestCase):
         race_dist = pd.value_counts(np.array(races))/len(races)*100
         #print("Races: " + str(race_dist))
 
-        self.assertAlmostEqual(race_dist.white, RACE_DISTRIBUTION[0], delta=2)
-        self.assertAlmostEqual(race_dist.black, RACE_DISTRIBUTION[1], delta=2)
-        self.assertAlmostEqual(race_dist.hispanic, RACE_DISTRIBUTION[2], delta=2)
-        self.assertAlmostEqual(race_dist.other, RACE_DISTRIBUTION[3], delta=2)
+        self.assertAlmostEqual(race_dist.White, RACE_DISTRIBUTION[0], delta=2)
+        self.assertAlmostEqual(race_dist.Black, RACE_DISTRIBUTION[1], delta=2)
+        self.assertAlmostEqual(race_dist.Hispanic, RACE_DISTRIBUTION[2], delta=2)
+        self.assertAlmostEqual(race_dist.Other, RACE_DISTRIBUTION[3], delta=2)
 
     ## test alcohol use assignment
 
