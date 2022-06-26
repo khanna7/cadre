@@ -5,7 +5,7 @@ import sys
 import os 
 
 from pycadre import cadre_model
-from pycadre.main import params_list
+from pycadre.load_params import params_list
 
 class TestPerson(unittest.TestCase):
 
@@ -60,7 +60,6 @@ class TestPerson(unittest.TestCase):
         ages_final = []
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
-
 
         model = cadre_model.Model(n=1000, verbose=False)
         model.run(MAXTIME=0)                   
