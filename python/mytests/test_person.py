@@ -5,8 +5,7 @@ import sys
 import os 
 
 from pycadre import cadre_model
-#from pycadre import cadre_person 
-
+from pycadre.main import params_list
 
 class TestPerson(unittest.TestCase):
 
@@ -28,13 +27,14 @@ class TestPerson(unittest.TestCase):
             self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
     def test_race_assignment(self):
+
+        RD = params_list['RACE_DISTRIBUTION']
         RACE_DISTRIBUTION = [
-        71.4, #white alone
-        8.5, #black alone
-        16.3, #hispanic alone
-        3.8 #asian alone (increased by 0.1 to sum to 1)
-        # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
-    ]
+            RD['White'],
+            RD['Black'],
+            RD['Hispanic'], 
+            RD['Asian']
+        ]
         races = []
         model = cadre_model.Model(n=1000, verbose=False)
         model.run(MAXTIME=0)
@@ -43,7 +43,7 @@ class TestPerson(unittest.TestCase):
                 races.append(person.race)
 
         #print("Races: "  + str(races))
-        race_dist = pd.value_counts(np.array(races))/len(races)*100
+        race_dist = pd.value_counts(np.array(races))/len(races)
         #print("Races: " + str(race_dist))
 
         self.assertAlmostEqual(race_dist.White, RACE_DISTRIBUTION[0], delta=2)
