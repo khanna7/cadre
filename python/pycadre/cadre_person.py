@@ -1,5 +1,5 @@
 from numpy import random
-from pycadre.main import params_list
+from pycadre.load_params import params_list
 
 class Person():
     def __init__(self, 

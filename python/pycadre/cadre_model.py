@@ -6,9 +6,11 @@ from numpy import random
 import numpy as np
 import pandas as pd
 from pycadre import cadre_person
-from pycadre.main import params_list
+from pycadre.load_params import params_list
 
 class Model:
+
+    #params_list = load_params.params_list
 
     RACE_CATS = params_list['RACE_CATS']
     RD = params_list['RACE_DISTRIBUTION']
