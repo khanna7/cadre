@@ -58,7 +58,7 @@ class TestPerson(unittest.TestCase):
     def test_aging(self):
         ages_init = []
         ages_final = []
-        TICK_TO_YEAR_RATIO = 365 #xx ticks make a year
+        TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
 
