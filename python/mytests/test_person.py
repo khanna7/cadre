@@ -11,8 +11,8 @@ class TestPerson(unittest.TestCase):
 
     def test_age_assignment(self):
         ages = []
-        min_age = 18
-        max_age = 64
+        min_age = params_list['min_age']
+        max_age = params_list['max_age']
         mean_age_target = (min_age+max_age)/2
 
         model = cadre_model.Model(n=1000, verbose=False)    
