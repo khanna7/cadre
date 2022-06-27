@@ -1,32 +1,35 @@
 from numpy import random
 from pycadre.load_params import params_list
 
-#PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
-#SENTENCE_DURATION = params_list['SENTENCE_DURATION']
+# read parameters
 
 class Person():
-    def __init__(self, 
-    name=None, 
-    age=None, 
-    race=None, 
-    female=None,
-    smoker=None, 
-    alc_use_status=None,
-    current_incarceration_status = None,
-    last_incarceration_time = None,
-    incarceration_duration = None,
-    last_release_time = None):
+    def __init__(self, name=None):
+
+        MIN_AGE = params_list['MIN_AGE']
+        MAX_AGE = params_list['MAX_AGE']+1
+        RACE_CATS = params_list['RACE_CATS']
+        FEMALE_PROP = params_list['FEMALE_PROP']
+        RD = params_list['RACE_DISTRIBUTION']
+        RACE_DISTRIBUTION = [
+            RD['White'],
+            RD['Black'],
+            RD['Hispanic'], 
+            RD['Asian']]
+        AU_PROPS = params_list['ALC_USE_PROPS']
+        ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]
+        SMOKING_PREV = params_list['SMOKING_PREV']
 
         self.name = name    
-        self.age = age
-        self.race = race
-        self.female = female
-        self.smoker = smoker
-        self.alc_use_status = alc_use_status
-        self.current_incarceration_status = current_incarceration_status
-        self.last_incarceration_time = last_incarceration_time
-        self.incarceration_duration = incarceration_duration
-        self.last_release_time = last_release_time
+        self.age = random.randint(MIN_AGE, MAX_AGE)
+        self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
+        self.female = random.binomial(1, FEMALE_PROP)
+        self.smoker = random.binomial(1, SMOKING_PREV)
+        self.alc_use_status = random.choice(range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS)
+        self.current_incarceration_status = 0
+        self.last_incarceration_time = -1
+        self.incarceration_duration = -1
+        self.last_release_time = -1
 
     def aging(self):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']

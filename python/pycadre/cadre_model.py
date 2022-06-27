@@ -28,7 +28,7 @@ class Model:
     #print("daily inc prob: " + str(PROBABILITY_DAILY_INCARCERATION))
     
    
-    ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
+    #ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
 
 
     def __init__(self, n, verbose=True):
@@ -49,17 +49,7 @@ class Model:
         
         # initialize agents and attributes
         for i in range(n):
-            person = cadre_person.Person(name = i,
-                            age=random.randint(18, 65), 
-                            race=random.choice(Model.RACE_CATS, p=Model.RACE_DISTRIBUTION),
-                            female=random.binomial(1, Model.FEMALE_PROP),
-                            alc_use_status=random.choice(range(0, 4), p=Model.ALC_USE_PROPS),
-                            smoker=random.binomial(1, Model.SMOKING_PREV),
-                            current_incarceration_status=0,
-                            last_incarceration_time = -1,
-                            incarceration_duration = -1,
-                            last_release_time = -1
-                            ) 
+            person = cadre_person.Person(name = i) 
 
             self.my_persons.append(person)
             name.append(person.name)

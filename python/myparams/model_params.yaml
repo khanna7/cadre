@@ -1,10 +1,10 @@
 ---
-stop_at: 25
-n_agents: 10
+STOP_AT: 25
+N_AGENTS: 10
 #REF: Model Design
 
-min_age: 18
-max_age: 64
+MIN_AGE: 18
+MAX_AGE: 64
 #REF: Model Design
 
 TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
@@ -20,6 +20,14 @@ RACE_DISTRIBUTION:
   # REF: https://censusreporter.org/profiles/04000US44-rhode-island/
 
 FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
+
+ALC_USE_PROPS: 
+  A: 0.083 #abstainer
+  O: 0.729 #ocassional user
+  R: 0.132 #regular user
+  D: 0.056 #heavydrinker /AU Disorder 
+  #REF see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
+
 
 ALC_USE_STATES:
   # level up
