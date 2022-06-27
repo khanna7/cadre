@@ -11,9 +11,9 @@ class TestPerson(unittest.TestCase):
 
     def test_age_assignment(self):
         ages = []
-        min_age = params_list['min_age']
-        max_age = params_list['max_age']
-        mean_age_target = (min_age+max_age)/2
+        MIN_AGE = params_list['MIN_AGE']
+        MAX_AGE = params_list['MAX_AGE']
+        mean_age_target = (MIN_AGE+MAX_AGE)/2
 
         model = cadre_model.Model(n=1000, verbose=False)    
         model.run(MAXTIME=0)
@@ -22,8 +22,8 @@ class TestPerson(unittest.TestCase):
                 ages.append(person.age)
 
         for age in ages: 
-            self.assertTrue(age >= min_age)
-            self.assertTrue(age <= max_age)
+            self.assertTrue(age >= MIN_AGE)
+            self.assertTrue(age <= MAX_AGE)
             self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
     def test_race_assignment(self):
@@ -83,7 +83,7 @@ class TestPerson(unittest.TestCase):
 
         for p in model.my_persons:
             self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
-            p.simulate_incarceration(time=nsteps, PROBABILITY_DAILY_INCARCERATION=1)
+            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1, sentence_duration=1)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")     
 
