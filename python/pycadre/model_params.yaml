@@ -1,6 +1,0 @@
-stop_at: 100
-n_agents: 1000
-RACE_CATS: ["white", "black", "hispanic", "other"]
-SMOKING_PREV: 0.13 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
-FEMALE_PROP: 51.3/100 # REF: https://www.census.gov/quickfacts/RI
-    
