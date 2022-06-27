@@ -102,9 +102,8 @@ class Model:
                     person.aging()
                     ages.append(person.age)
                     person.transition_alc_use()
-                    person.simulate_incarceration(time=time, 
-                        probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION,
-                        sentence_duration=SENTENCE_DURATION)
+                    person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
+                    person.simulate_release(time=time, sentence_duration=SENTENCE_DURATION)
                     current_incarceration_statuses.append(person.current_incarceration_status)
                     last_incarceration_times.append(person.last_incarceration_time)
                     last_release_times.append(person.last_release_time)

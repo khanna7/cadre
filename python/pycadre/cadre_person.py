@@ -74,7 +74,8 @@ class Person():
 
 
 
-    def simulate_incarceration(self, time, probability_daily_incarceration, sentence_duration):
+    #def simulate_incarceration(self, time, probability_daily_incarceration, sentence_duration):
+    def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
         #PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
@@ -84,13 +85,15 @@ class Person():
                 self.current_incarceration_status = 1 
                 self.last_incarceration_time = time  
                 self.incarceration_duration = 0   
-                
-        elif self.current_incarceration_status == 1:
-            self.incarceration_duration += 1
-        
-        if (self.incarceration_duration > sentence_duration):
+    
+    def simulate_release(self, time, sentence_duration):
+                      
+        if self.incarceration_duration > sentence_duration:
                 self.current_incarceration_status = 0
                 self.last_release_time = time
                 self.incarceration_duration = 0
+
+        if self.current_incarceration_status == 1:
+            self.incarceration_duration += 1
 
 
