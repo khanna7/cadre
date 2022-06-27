@@ -1,6 +1,9 @@
 from numpy import random
 from pycadre.load_params import params_list
 
+#PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
+#SENTENCE_DURATION = params_list['SENTENCE_DURATION']
+
 class Person():
     def __init__(self, 
     name=None, 
@@ -10,7 +13,9 @@ class Person():
     smoker=None, 
     alc_use_status=None,
     current_incarceration_status = None,
-    last_incarceration_time = None):
+    last_incarceration_time = None,
+    incarceration_duration = None,
+    last_release_time = None):
 
         self.name = name    
         self.age = age
@@ -20,8 +25,8 @@ class Person():
         self.alc_use_status = alc_use_status
         self.current_incarceration_status = current_incarceration_status
         self.last_incarceration_time = last_incarceration_time
-        
-        PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
+        self.incarceration_duration = incarceration_duration
+        self.last_release_time = last_release_time
 
     def aging(self):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']
@@ -66,13 +71,23 @@ class Person():
 
 
 
-    def simulate_incarceration(self, time, PROBABILITY_DAILY_INCARCERATION=1):
+    def simulate_incarceration(self, time, probability_daily_incarceration, sentence_duration):
         
         prob = random.uniform(0, 1)
         #PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
-            if prob < PROBABILITY_DAILY_INCARCERATION:
+            if prob < probability_daily_incarceration:
                 self.current_incarceration_status = 1 
-                self.last_incarceration_time = time   
+                self.last_incarceration_time = time  
+                self.incarceration_duration = 0   
+                
+        elif self.current_incarceration_status == 1:
+            self.incarceration_duration += 1
+        
+        if (self.incarceration_duration > sentence_duration):
+                self.current_incarceration_status = 0
+                self.last_release_time = time
+                self.incarceration_duration = 0
+
 
