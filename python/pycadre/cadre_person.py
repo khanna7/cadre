@@ -83,7 +83,7 @@ class Person():
                 self.incarceration_duration = 0   
                 
         elif self.current_incarceration_status == 1:
-            self.incarceration_duration = self.incarceration_duration+1
+            self.incarceration_duration += 1
         
         if (self.incarceration_duration > sentence_duration):
                 self.current_incarceration_status = 0
