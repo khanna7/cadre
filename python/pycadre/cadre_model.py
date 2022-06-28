@@ -6,9 +6,12 @@ import pandas as pd
 from pycadre import cadre_person
 from pycadre.load_params import params_list
 
+SDEMP = params_list['SENTENCE_DURATION_EMP']
+    #print("ALL: " + str(SDEMP))
+    #print("FEMALE: " + str(SDEMP['females']))
+    #print("MALE: " + str(SDEMP['males']))
+
 class Model:
-
-
     def __init__(self, n, verbose=True):
         self.my_persons = [] 
         
@@ -64,7 +67,7 @@ class Model:
             last_release_times = []
         
             for time in range(MAXTIME):
-
+                
             ## model run checks 
                 print("Timestep = " + str(time))
                 print("Number of incarcerated persons at time " + str(time) + " is " + 
@@ -84,16 +87,18 @@ class Model:
                     ages.append(person.age)
                     person.transition_alc_use()
                     person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
-                    person.simulate_release(time=time, sentence_duration=SENTENCE_DURATION)
+                    person.assign_sentence_duration_cat()
+                    person.assign_sentence_duration()
+                    person.simulate_release(time=time)
                     current_incarceration_statuses.append(person.current_incarceration_status)
                     last_incarceration_times.append(person.last_incarceration_time)
                     last_release_times.append(person.last_release_time)
     
-def main():
-    model = Model(n=100, verbose=True)
-    model.run(MAXTIME=50)
+# def main():
+#     model = Model(n=100, verbose=False)
+#     model.run(MAXTIME=50)
   
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
     
         

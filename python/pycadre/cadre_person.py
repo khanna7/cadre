@@ -1,3 +1,5 @@
+from cmath import nan
+from tkinter.messagebox import NO
 from numpy import random
 from pycadre.load_params import params_list
 
@@ -30,6 +32,8 @@ class Person():
         self.last_incarceration_time = -1
         self.incarceration_duration = -1
         self.last_release_time = -1
+        self.dur_cat = -1
+        self.sentence_duration = -1
 
     def aging(self):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']
@@ -82,15 +86,59 @@ class Person():
                 self.current_incarceration_status = 1 
                 self.last_incarceration_time = time  
                 self.incarceration_duration = 0   
-    
-    def simulate_release(self, time, sentence_duration):
+
+   
+    def simulate_release(self, time):
                       
-        if self.incarceration_duration >= sentence_duration:
-                self.current_incarceration_status = 0
-                self.last_release_time = time
-                self.incarceration_duration = 0
+        if self.sentence_duration > 0:
+            if self.incarceration_duration >= self.sentence_duration:
+                    self.current_incarceration_status = 0
+                    self.last_release_time = time
+                    self.incarceration_duration = -1
 
         if self.current_incarceration_status == 1:
             self.incarceration_duration += 1
+
+    def assign_sentence_duration_cat(self):
+            ALL_SDEMP = params_list['SENTENCE_DURATION_EMP']
+            FEMALE_SDEMP =  ALL_SDEMP['females']
+            MALE_SDEMP = ALL_SDEMP['males']
+            FEMALE_SDEMP_DURATIONS = list(FEMALE_SDEMP.keys())
+            FEMALE_SDEMP_PROPS = list(FEMALE_SDEMP.values())
+            MALE_SDEMP_DURATIONS = list(MALE_SDEMP.keys())
+            MALE_SDEMP_PROPS = list(MALE_SDEMP.values())
+
+            if self.female == 1:
+                if self.current_incarceration_status == 1: 
+                    self.dur_cat = random.choice(FEMALE_SDEMP_DURATIONS, p=FEMALE_SDEMP_PROPS)
+
+                print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
+
+
+            elif self.female == 0:
+                if self.current_incarceration_status == 1: 
+                    self.dur_cat = random.choice(MALE_SDEMP_DURATIONS, p=MALE_SDEMP_PROPS)   
+                print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
+                
+               
+
+    def assign_sentence_duration(self):
+            #print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat), "\n") 
+            
+            if self.dur_cat == 0:
+                self.sentence_duration = random.randint(7, 29) #IN DAILY UNITS, CHANGE IF UNITS CHANGE
+            elif self.dur_cat == 1:
+                self.sentence_duration = random.randint(29, 183)
+            elif self.dur_cat == 2:
+                self.sentence_duration = random.randint(183, 366)
+            elif self.dur_cat == 3:
+                self.sentence_duration = random.randint(366, 1096)
+            elif self.dur_cat == 4:
+                self.sentence_duration = random.randint(1096, 2191)
+
+            print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat))
+            print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
+
+        
 
 
