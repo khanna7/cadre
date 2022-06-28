@@ -59,7 +59,7 @@ class Model:
     def run(self, MAXTIME=10):
 
             PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
-            SENTENCE_DURATION = params_list['SENTENCE_DURATION']    
+            #SENTENCE_DURATION = params_list['SENTENCE_DURATION']    
             
             ages = [] 
             current_incarceration_statuses = []
@@ -86,9 +86,11 @@ class Model:
                     person.aging()
                     ages.append(person.age)
                     person.transition_alc_use()
-                    person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
+                   
                     person.assign_sentence_duration_cat()
                     person.assign_sentence_duration()
+
+                    person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
                     person.simulate_release(time=time)
                     current_incarceration_statuses.append(person.current_incarceration_status)
                     last_incarceration_times.append(person.last_incarceration_time)

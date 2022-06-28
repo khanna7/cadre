@@ -87,6 +87,9 @@ class Person():
                 self.last_incarceration_time = time  
                 self.incarceration_duration = 0   
 
+        elif self.current_incarceration_status == 1:
+            self.incarceration_duration += 1
+
    
     def simulate_release(self, time):
                       
@@ -95,9 +98,6 @@ class Person():
                     self.current_incarceration_status = 0
                     self.last_release_time = time
                     self.incarceration_duration = -1
-
-        if self.current_incarceration_status == 1:
-            self.incarceration_duration += 1
 
     def assign_sentence_duration_cat(self):
             ALL_SDEMP = params_list['SENTENCE_DURATION_EMP']

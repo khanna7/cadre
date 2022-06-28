@@ -1,6 +1,6 @@
 ---
-STOP_AT: 10
-N_AGENTS: 100
+STOP_AT: 1000
+N_AGENTS: 10
 #REF: Model Design
 
 MIN_AGE: 18
@@ -51,17 +51,17 @@ SENTENCE_DURATION: 5
 
 SENTENCE_DURATION_EMP: 
   females:
-    "0": 0.40 #2-4 weeks (2, 4]
-    "1": 0.475 # 5-26 weeks (5, 26]
-    "2": 0.065 # 27-52 weeks
-    "3": 0.045 # 53-156 weeks
-    "4": 0.015 # 3-6 years
+    0: 0.40 #2-4 weeks (2, 4]
+    1: 0.475 # 5-26 weeks (5, 26]
+    2: 0.065 # 27-52 weeks
+    3: 0.045 # 53-156 weeks
+    4: 0.015 # 3-6 years
   males:
-    "0": 0.43 # 2-4 weeks (2, 4]
-    "1": 0.50 # 5-26 weeks (5, 26]
-    "2": 0.02 # 27-52 weeks ...
-    "3": 0.02 # 53-156 weeks
-    "4": 0.03 # 3-6 years
+    0: 0.43 # 2-4 weeks (2, 4]
+    1: 0.50 # 5-26 weeks (5, 26]
+    2: 0.02 # 27-52 weeks ...
+    3: 0.02 # 53-156 weeks
+    4: 0.03 # 3-6 years
 # # REF: McMadu 2021 https://doi.org/10.1016/j.drugpo.2020.102841
 
     
