@@ -6,10 +6,8 @@ import pandas as pd
 from pycadre import cadre_person
 from pycadre.load_params import params_list
 
-PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
-SENTENCE_DURATION = params_list['SENTENCE_DURATION']
-
 class Model:
+
 
     def __init__(self, n, verbose=True):
         self.my_persons = [] 
@@ -56,6 +54,9 @@ class Model:
                 str(females))
     
     def run(self, MAXTIME=10):
+
+            PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
+            SENTENCE_DURATION = params_list['SENTENCE_DURATION']    
             
             ages = [] 
             current_incarceration_statuses = []
