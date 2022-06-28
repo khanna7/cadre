@@ -11,26 +11,6 @@ SENTENCE_DURATION = params_list['SENTENCE_DURATION']
 
 class Model:
 
-    #params_list = load_params.params_list
-
-    RACE_CATS = params_list['RACE_CATS']
-    RD = params_list['RACE_DISTRIBUTION']
-    RACE_DISTRIBUTION = [
-        RD['White'],
-        RD['Black'],
-        RD['Hispanic'], 
-        RD['Asian']
-    ]
-    
-    SMOKING_PREV = params_list['SMOKING_PREV']
-    FEMALE_PROP = params_list['FEMALE_PROP']
-   
-    #print("daily inc prob: " + str(PROBABILITY_DAILY_INCARCERATION))
-    
-   
-    #ALC_USE_PROPS = [8.3/100, 72.9/100, 13.2/100, 5.6/100] #see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
-
-
     def __init__(self, n, verbose=True):
         self.my_persons = [] 
         
