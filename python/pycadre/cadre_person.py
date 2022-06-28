@@ -72,9 +72,6 @@ class Person():
             if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
 
-
-
-    #def simulate_incarceration(self, time, probability_daily_incarceration, sentence_duration):
     def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
@@ -88,7 +85,7 @@ class Person():
     
     def simulate_release(self, time, sentence_duration):
                       
-        if self.incarceration_duration > sentence_duration:
+        if self.incarceration_duration >= sentence_duration:
                 self.current_incarceration_status = 0
                 self.last_release_time = time
                 self.incarceration_duration = 0
