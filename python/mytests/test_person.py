@@ -1,3 +1,4 @@
+from statistics import mean as mean
 import unittest
 import numpy as np
 import pandas as pd
@@ -7,15 +8,17 @@ import os
 from pycadre import cadre_model
 from pycadre.load_params import params_list
 
+n=1000 #check if defining variables at the top of the class is bad practice
 class TestPerson(unittest.TestCase):
-
+    
     def test_age_assignment(self):
+        
         ages = []
         MIN_AGE = params_list['MIN_AGE']
         MAX_AGE = params_list['MAX_AGE']
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        model = cadre_model.Model(n=1000, verbose=False)    
+        model = cadre_model.Model(n=n, verbose=False)    
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -24,7 +27,10 @@ class TestPerson(unittest.TestCase):
         for age in ages: 
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
-            self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
+
+            if n >= 1000:
+                # only try this if n is sufficiently large, or test fails
+                self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
     def test_race_assignment(self):
 
@@ -36,7 +42,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=1000, verbose=False)
+        model = cadre_model.Model(n=n, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -61,7 +67,7 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
-        model = cadre_model.Model(n=1000, verbose=False)
+        model = cadre_model.Model(n=n, verbose=False)
         model.run(MAXTIME=0)                   
         for person in model.my_persons:
                 ages_init.append(person.age)
@@ -79,13 +85,40 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=10, verbose=False) 
+        model = cadre_model.Model(n=n, verbose=False) 
 
-        for p in model.my_persons:
+        #test case where 0 < incarceration probability < 1
+        probability_daily_incarceration=0.5 
+        for p in model.my_persons:     
             self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
-            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1, sentence_duration=1)
+            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
-            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")     
+        
+        if n >= 1000:
+            print("Mean incarcerated: " + str(mean(inc_states)))
+            self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
+
+        #test case where incarceration probability = 1   
+        probability_daily_incarceration=1 
+        for p in model.my_persons:
+            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1)
+            inc_states.append(p.current_incarceration_status)
+            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
+
+        #print("Incarceration states: " + str(inc_states), )  
+        return model
+
+    def test_simulate_release(self):
+            model = TestPerson.test_simulate_incarceration(self)
+            nsteps = 2
+            inc_states = []
+            
+            for p in model.my_persons:
+                p.simulate_release(time=nsteps, sentence_duration=0)
+                inc_states.append(p.current_incarceration_status)
+                self.assertTrue(p.current_incarceration_status == 0, "all not incarcerated, even though max sentence duration is 1")
+            
+            #print("Incarceration states: " + str(inc_states), ) 
 
 if __name__ == '__main__':  
     unittest.main()
