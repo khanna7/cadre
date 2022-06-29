@@ -23,10 +23,6 @@ https://python-guide-fil.readthedocs.io/en/latest/writing/structure.html
 ## Software Management and Pull Requests
 https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/managing-a-branch-protection-rule  
 
-## Repast4Py API documentation
-https://repast.github.io/repast4py.site/apidoc/index.html  
-
-
 ## Pygame Tutorials for Python and OOP 
 - [https://www.youtube.com/watch?v=_vr5faCXFo8] 
 - [https://www.youtube.com/watch?v=AY9MnQ4x3zk]
