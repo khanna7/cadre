@@ -1,11 +1,11 @@
-From the `python` directory, exeucte:  
+## From the `python` directory, execute:  
 
-## Run Model
+### To Run Model
 
 ```python -m pycadre.main```
 
 
-## Test Model
+### To Test Model
 
 ```python -m unittest mytests.test_person.TestPerson.test_simulate_incarceration```
 
