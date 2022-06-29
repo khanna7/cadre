@@ -8,7 +8,7 @@ import os
 from pycadre import cadre_model
 from pycadre.load_params import params_list
 
-n=1000 #check if defining variables at the top of the class is bad practice
+n=100 #check if defining variables at the top of the class is bad practice
 class TestPerson(unittest.TestCase):
     
     def test_age_assignment(self):
@@ -110,15 +110,22 @@ class TestPerson(unittest.TestCase):
 
     def test_simulate_release(self):
             model = TestPerson.test_simulate_incarceration(self)
-            nsteps = 2
+            nsteps = 1
             inc_states = []
             
             for p in model.my_persons:
-                p.simulate_release(time=nsteps, sentence_duration=0)
+                #print(p.current_incarceration_status)
                 inc_states.append(p.current_incarceration_status)
-                self.assertTrue(p.current_incarceration_status == 0, "all not incarcerated, even though max sentence duration is 1")
+            print("Initial Incarceration states: " + str(inc_states))
+
+            inc_states = [] #make incarceration status list empty 
+            for p in model.my_persons:
+                p.sentence_duration = 0 #assign 
+                p.simulate_release(time=nsteps)
+                inc_states.append(p.current_incarceration_status)
+                self.assertTrue(p.current_incarceration_status == 0, "all not unincarcerated, even though max sentence duration is 0")
             
-            #print("Incarceration states: " + str(inc_states), ) 
+            print("Final Incarceration states: " + str(inc_states)) 
 
 if __name__ == '__main__':  
     unittest.main()

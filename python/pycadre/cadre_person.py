@@ -93,7 +93,7 @@ class Person():
    
     def simulate_release(self, time):
                       
-        if self.sentence_duration > 0:
+        if self.sentence_duration >= 0:
             if self.incarceration_duration >= self.sentence_duration:
                     self.current_incarceration_status = 0
                     self.last_release_time = time
