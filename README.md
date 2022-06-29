@@ -6,7 +6,4 @@ In [r](https://github.com/khanna7/cadre/tree/master/r):
 
 ## Model Source Code
 In [python](https://github.com/khanna7/cadre/tree/master/python):
-  * src
-  * tests ....
-  * examples (?) (per Beazley Distilled, p 35)
-  * docs (?) (per Beazley Distilled, p 35)
+
