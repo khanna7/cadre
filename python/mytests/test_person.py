@@ -8,9 +8,9 @@ import os
 from pycadre import cadre_model
 from pycadre.load_params import params_list
 
-n=100 #check if defining variables at the top of the class is bad practice
+test_n = 100 #check if defining variables at the top of the class is bad practice
 class TestPerson(unittest.TestCase):
-    
+
     def test_age_assignment(self):
         
         ages = []
@@ -18,7 +18,7 @@ class TestPerson(unittest.TestCase):
         MAX_AGE = params_list['MAX_AGE']
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        model = cadre_model.Model(n=n, verbose=False)    
+        model = cadre_model.Model(n=test_n, verbose=False)    
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -42,7 +42,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=n, verbose=False)
+        model = cadre_model.Model(n=test_n, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -67,7 +67,7 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
-        model = cadre_model.Model(n=n, verbose=False)
+        model = cadre_model.Model(n=test_n, verbose=False)
         model.run(MAXTIME=0)                   
         for person in model.my_persons:
                 ages_init.append(person.age)
@@ -85,7 +85,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=n, verbose=False) 
+        model = cadre_model.Model(n=test_n, verbose=False) 
 
         #test case where 0 < incarceration probability < 1
         probability_daily_incarceration=0.5 
