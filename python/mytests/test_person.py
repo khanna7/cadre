@@ -8,9 +8,10 @@ import os
 from pycadre import cadre_model
 from pycadre.load_params import params_list
 
-n=100 #check if defining variables at the top of the class is bad practice
+ 
 class TestPerson(unittest.TestCase):
-    
+    Test_N = 100
+
     def test_age_assignment(self):
         
         ages = []
@@ -18,7 +19,7 @@ class TestPerson(unittest.TestCase):
         MAX_AGE = params_list['MAX_AGE']
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        model = cadre_model.Model(n=n, verbose=False)    
+        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)    
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -28,7 +29,7 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
 
-            if n >= 1000:
+            if TestPerson.Test_N >= 1000:
                 # only try this if n is sufficiently large, or test fails
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
@@ -42,7 +43,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=n, verbose=False)
+        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -67,7 +68,7 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
-        model = cadre_model.Model(n=n, verbose=False)
+        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)
         model.run(MAXTIME=0)                   
         for person in model.my_persons:
                 ages_init.append(person.age)
@@ -85,7 +86,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=n, verbose=False) 
+        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False) 
 
         #test case where 0 < incarceration probability < 1
         probability_daily_incarceration=0.5 
@@ -94,7 +95,7 @@ class TestPerson(unittest.TestCase):
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
-        if n >= 1000:
+        if TestPerson.Test_N >= 1000:
             print("Mean incarcerated: " + str(mean(inc_states)))
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 

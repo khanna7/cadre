@@ -6,11 +6,6 @@ import pandas as pd
 from pycadre import cadre_person
 from pycadre.load_params import params_list
 
-SDEMP = params_list['SENTENCE_DURATION_EMP']
-    #print("ALL: " + str(SDEMP))
-    #print("FEMALE: " + str(SDEMP['females']))
-    #print("MALE: " + str(SDEMP['males']))
-
 class Model:
     def __init__(self, n, verbose=True):
         self.my_persons = [] 
@@ -58,8 +53,8 @@ class Model:
     
     def run(self, MAXTIME=10):
 
-            PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
-            #SENTENCE_DURATION = params_list['SENTENCE_DURATION']    
+            PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']    
+            SDEMP = params_list['SENTENCE_DURATION_EMP']
             
             ages = [] 
             current_incarceration_statuses = []
