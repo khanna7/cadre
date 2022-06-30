@@ -14,7 +14,10 @@ coverage run -m unittest discover mytests
 coverage report
 ```
 
-Either way, there is an issue. See [Issue #24](https://github.com/khanna7/cadre/issues/24#issue-1283832743)
+(Use 
+```coverage run -m --source=pycadre/ unittest discover mytests```
+to avoid unnecessary report on top matter on personal Macbook.
+)
 
 More on [Coverage](https://coverage.readthedocs.io/en/6.4.1/)  
 

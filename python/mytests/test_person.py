@@ -28,7 +28,7 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
 
-            if n >= 1000:
+            if test_n >= 1000:
                 # only try this if n is sufficiently large, or test fails
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
@@ -94,7 +94,7 @@ class TestPerson(unittest.TestCase):
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
-        if n >= 1000:
+        if test_n >= 1000:
             print("Mean incarcerated: " + str(mean(inc_states)))
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 
