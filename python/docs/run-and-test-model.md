@@ -3,6 +3,7 @@
 ### To Run Model
 
 ```python -m pycadre```
+(Since there is a `__main__.py` file in `pycadre`, this works. If the file in `pycadre` is called `main.py`, then `python -m pycadre.main` has to be run instead)
 
 
 ### To Test Model
