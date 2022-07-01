@@ -85,7 +85,22 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1, sentence_duration=1)
             inc_states.append(p.current_incarceration_status)
-            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")     
+            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
+
+    def test_alco_status(self):
+        nsteps = 250
+        all_alco = []
+
+        model = cadre_model.Model(n=10000, verbose = False)
+        model.run(MAXTIME=nsteps)
+
+        for person in model.my_persons:
+            all_alco.append(person.alc_use_status)
+
+        alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
+        print(alco_dist)
+        self.assertAlmostEqual(alco_dist[0], 0.083, delta=4)
+
 
 if __name__ == '__main__':  
     unittest.main()

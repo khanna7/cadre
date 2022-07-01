@@ -1,6 +1,6 @@
 ---
-STOP_AT: 25
-N_AGENTS: 10
+STOP_AT: 2500
+N_AGENTS: 1000
 #REF: Model Design
 
 MIN_AGE: 18
@@ -31,11 +31,11 @@ ALC_USE_PROPS:
 
 ALC_USE_STATES:
   # level up
-  TRANS_PROB_0_1: 0.0729
+  TRANS_PROB_0_1: 0.018225
   TRANS_PROB_1_2: 0.0132
   TRANS_PROB_2_3: 0.0056
   # LEVEL DOWN
-  TRANS_PROB_1_0: 0.0083
+  TRANS_PROB_1_0: 0.002075
   TRANS_PROB_2_1: 0.0729
   TRANS_PROB_3_2: 0.0132
 # REF: https://drive.google.com/open?id=1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc&authuser=aditya_khanna%40brown.edu&usp=drive_fs

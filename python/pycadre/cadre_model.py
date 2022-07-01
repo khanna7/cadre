@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pycadre import cadre_person
 from pycadre.load_params import params_list
+from collections import Counter
 
 PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
 SENTENCE_DURATION = params_list['SENTENCE_DURATION']
@@ -81,6 +82,7 @@ class Model:
             current_incarceration_statuses = []
             last_incarceration_times = []
             last_release_times = []
+            current_alcohol_stage = []
         
             for time in range(MAXTIME):
 
@@ -90,6 +92,7 @@ class Model:
                     str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
                 print("Last incarceration times are " + str(last_incarceration_times)) 
                 print("Last release times are " + str(last_release_times), "\n") 
+                print("alcohol usage is" + str(Counter(current_alcohol_stage)))
 
             # ensure that these vectors only hold the agent attributes at the current time 
             # (as opposed to appending) values from all times 
@@ -97,6 +100,7 @@ class Model:
                 current_incarceration_statuses = []
                 last_incarceration_times = []
                 last_release_times = []
+                current_alcohol_stage = []
 
                 for person in self.my_persons:
                     person.aging()
@@ -104,6 +108,7 @@ class Model:
                     person.transition_alc_use()
                     person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
                     person.simulate_release(time=time, sentence_duration=SENTENCE_DURATION)
+                    current_alcohol_stage.append(person.alc_use_status)
                     current_incarceration_statuses.append(person.current_incarceration_status)
                     last_incarceration_times.append(person.last_incarceration_time)
                     last_release_times.append(person.last_release_time)
