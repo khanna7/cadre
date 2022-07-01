@@ -88,10 +88,10 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
 
     def test_alco_status(self):
-        nsteps = 250
+        nsteps = 25
         all_alco = []
 
-        model = cadre_model.Model(n=10000, verbose = False)
+        model = cadre_model.Model(n=1000, verbose = False)
         model.run(MAXTIME=nsteps)
 
         for person in model.my_persons:
@@ -100,6 +100,10 @@ class TestPerson(unittest.TestCase):
         alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
         print(alco_dist)
         self.assertAlmostEqual(alco_dist[0], 0.083, delta=4)
+        print(alco_dist[0])
+        print(alco_dist[1])
+        print(alco_dist[2])
+        print(alco_dist[3])
 
 
 if __name__ == '__main__':  

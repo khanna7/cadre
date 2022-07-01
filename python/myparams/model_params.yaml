@@ -1,5 +1,5 @@
 ---
-STOP_AT: 2500
+STOP_AT: 250
 N_AGENTS: 1000
 #REF: Model Design
 

@@ -87,12 +87,12 @@ class Model:
             for time in range(MAXTIME):
 
             ## model run checks 
-                print("Timestep = " + str(time))
-                print("Number of incarcerated persons at time " + str(time) + " is " + 
-                    str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
-                print("Last incarceration times are " + str(last_incarceration_times)) 
-                print("Last release times are " + str(last_release_times), "\n") 
-                print("alcohol usage is" + str(Counter(current_alcohol_stage)))
+                # print("Timestep = " + str(time))
+                # print("Number of incarcerated persons at time " + str(time) + " is " + 
+                #     str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
+                # print("Last incarceration times are " + str(last_incarceration_times)) 
+                # print("Last release times are " + str(last_release_times), "\n") 
+                # print("alcohol usage is" + str(Counter(current_alcohol_stage)))
 
             # ensure that these vectors only hold the agent attributes at the current time 
             # (as opposed to appending) values from all times 
