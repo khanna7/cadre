@@ -43,8 +43,15 @@ ALC_USE_STATES:
 SMOKING_PREV: 0.13 
 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
 
-PROBABILITY_DAILY_INCARCERATION: 0.1
-# REF: Hypothetical
+PROBABILITY_DAILY_INCARCERATION: 0.001223976
+# REF: Derived from Macmadu 2021
+# See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
+
+PROBABILITY_DAILY_RECIDIVISM: 
+  FEMALES: 0.0004074851
+  MALES: 0.0006512489
+# REF: Derived from Macmadu 2021
+# See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
 SENTENCE_DURATION: 5
 # REF: Hypothetical
