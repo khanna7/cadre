@@ -1,6 +1,6 @@
 ---
 STOP_AT: 1000
-N_AGENTS: 10
+N_AGENTS: 25
 #REF: Model Design
 
 MIN_AGE: 18
@@ -43,7 +43,8 @@ ALC_USE_STATES:
 SMOKING_PREV: 0.13 
 #REF: https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm
 
-PROBABILITY_DAILY_INCARCERATION: 0.001223976
+PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical
+#PROBABILITY_DAILY_INCARCERATION: 0.001223976
 # REF: Derived from Macmadu 2021
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
