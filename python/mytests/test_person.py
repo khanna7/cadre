@@ -41,7 +41,7 @@ class TestPerson(unittest.TestCase):
 
     def test_race_assignment(self):
 
-        RD = load_params.params_list['RACE_DISTRIBUTION']
+        RD = TestPerson.params_list['RACE_DISTRIBUTION']
         RACE_DISTRIBUTION = [
             RD['White'],
             RD['Black'],
@@ -71,7 +71,7 @@ class TestPerson(unittest.TestCase):
     def test_aging(self):
         ages_init = []
         ages_final = []
-        TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
+        TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
         model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)
