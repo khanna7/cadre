@@ -5,19 +5,25 @@ import pandas as pd
 import sys
 import os 
 
+
 from pycadre import cadre_model
-from pycadre.load_params import params_list
+import pycadre.load_params
 
  
 class TestPerson(unittest.TestCase):
+    params_list = pycadre.load_params.load_params()
     Test_N = 100
+
 
     def test_age_assignment(self):
         
         ages = []
-        MIN_AGE = params_list['MIN_AGE']
-        MAX_AGE = params_list['MAX_AGE']
+        MIN_AGE = TestPerson.params_list['MIN_AGE']
+        MAX_AGE = TestPerson.params_list['MAX_AGE']
+
         mean_age_target = (MIN_AGE+MAX_AGE)/2
+
+        #print("Min age:", TestPerson.MIN_AGE)
 
         model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)    
         model.run(MAXTIME=0)
@@ -35,7 +41,7 @@ class TestPerson(unittest.TestCase):
 
     def test_race_assignment(self):
 
-        RD = params_list['RACE_DISTRIBUTION']
+        RD = load_params.params_list['RACE_DISTRIBUTION']
         RACE_DISTRIBUTION = [
             RD['White'],
             RD['Black'],
