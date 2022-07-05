@@ -4,7 +4,7 @@ from numpy import random
 import numpy as np
 import pandas as pd
 from pycadre import cadre_person
-from pycadre.load_params import params_list
+import pycadre.load_params as load_params
 
 class Model:
     def __init__(self, n, verbose=True):
@@ -53,9 +53,9 @@ class Model:
     
     def run(self, MAXTIME=10):
 
-            PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']    
-            SDEMP = params_list['SENTENCE_DURATION_EMP']
-            PROBABILITY_DAILY_RECIDIVISM = params_list['PROBABILITY_DAILY_RECIDIVISM'] 
+            PROBABILITY_DAILY_INCARCERATION = load_params.params_list['PROBABILITY_DAILY_INCARCERATION']
+            SDEMP = load_params.params_list['SENTENCE_DURATION_EMP']
+            PROBABILITY_DAILY_RECIDIVISM = load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']
             PROBABILITY_DAILY_RECIDIVISM_FEMALES = PROBABILITY_DAILY_RECIDIVISM['FEMALES']
             PROBABILITY_DAILY_RECIDIVISM_MALES = PROBABILITY_DAILY_RECIDIVISM['MALES']
 
