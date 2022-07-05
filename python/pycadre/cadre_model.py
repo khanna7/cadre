@@ -63,13 +63,16 @@ class Model:
             current_incarceration_statuses = []
             last_incarceration_times = []
             last_release_times = []
+           
+
         
             for time in range(MAXTIME):
+                n_incarcerated_persons = sum(current_incarceration_statuses)
                 
             ## model run checks 
                 print("Timestep = " + str(time))
-                print("Number of incarcerated persons at time " + str(time) + " is " + 
-                    str(sum(current_incarceration_statuses)) + " out of a total " + str(len(ages)))
+                print("Number of incarcerated persons at time ", time, " is ", n_incarcerated_persons,
+                     " out of a total ", load_params.params_list['N_AGENTS'])
                 print("Last incarceration times are " + str(last_incarceration_times)) 
                 print("Last release times are " + str(last_release_times), "\n") 
 
@@ -79,9 +82,15 @@ class Model:
                 current_incarceration_statuses = []
                 last_incarceration_times = []
                 last_release_times = []
+                
 
                 for person in self.my_persons:
                     person.step(time)
+                    
+                    current_incarceration_statuses.append(person.current_incarceration_status)
+                    last_incarceration_times.append(person.last_incarceration_time)
+                    last_release_times.append(person.last_release_time)
+    
   
 # def main():
 #     model = Model(n=100, verbose=False)
