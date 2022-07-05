@@ -55,7 +55,10 @@ class Model:
 
             PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']    
             SDEMP = params_list['SENTENCE_DURATION_EMP']
-            
+            PROBABILITY_DAILY_RECIDIVISM = params_list['PROBABILITY_DAILY_RECIDIVISM'] 
+            PROBABILITY_DAILY_RECIDIVISM_FEMALES = PROBABILITY_DAILY_RECIDIVISM['FEMALES']
+            PROBABILITY_DAILY_RECIDIVISM_MALES = PROBABILITY_DAILY_RECIDIVISM['MALES']
+
             ages = [] 
             current_incarceration_statuses = []
             last_incarceration_times = []
@@ -86,7 +89,9 @@ class Model:
                     person.assign_sentence_duration()
 
                     person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
+                    person.update_attributes_at_incarceration_time(time=time)
                     person.simulate_release(time=time)
+                    person.simulate_recidivism(time=time, probability_daily_recidivism_females=PROBABILITY_DAILY_RECIDIVISM_FEMALES, probability_daily_recidivism_males=PROBABILITY_DAILY_RECIDIVISM_MALES)
                     current_incarceration_statuses.append(person.current_incarceration_status)
                     last_incarceration_times.append(person.last_incarceration_time)
                     last_release_times.append(person.last_release_time)

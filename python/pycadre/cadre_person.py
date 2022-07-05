@@ -34,6 +34,7 @@ class Person():
         self.last_release_time = -1
         self.dur_cat = -1
         self.sentence_duration = -1
+        self.n_incarcerations = 0
 
     def aging(self):
         TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']
@@ -76,21 +77,36 @@ class Person():
             if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
 
+    def update_attributes_at_incarceration_time(self, time):
+        self.current_incarceration_status = 1 
+        self.last_incarceration_time = time  
+        self.incarceration_duration = 0   
+        self.n_incarcerations += 1
+
     def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
         #PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
-            if prob < probability_daily_incarceration:
-                self.current_incarceration_status = 1 
-                self.last_incarceration_time = time  
-                self.incarceration_duration = 0   
+            if self.n_incarcerations == 0:
+                if prob < probability_daily_incarceration:
+                    Person.update_attributes_at_incarceration_time(time)
+                   
+    def simulate_recidivism(self, time, probability_daily_recidivism_females, probability_daily_recidivism_males):
 
-        elif self.current_incarceration_status == 1:
-            self.incarceration_duration += 1
+        prob = random.uniform(0, 1)
+        
+        if self.current_incarceration_status == 0:
+            if self.n_incarcerations > 0:
+                if self.female == 1:
+                    if prob < probability_daily_recidivism_females:
+                            Person.update_attributes_at_incarceration_time(time=time)
+            
+            elif self.female == 0:
+                if prob < probability_daily_recidivism_males:
+                         Person.update_attributes_at_incarceration_time(time=time)
 
-   
     def simulate_release(self, time):
                       
         if self.sentence_duration >= 0:
