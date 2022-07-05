@@ -1,26 +1,29 @@
 from cmath import nan
 from tkinter.messagebox import NO
 from numpy import random
-from pycadre.load_params import params_list
+#import pycadre.load_params.params_list as params_list
+#from . import load_params.params_list as params_list 
+#from pycadre.load_params import pycadre.load_params.params_list as params_list
+import pycadre.load_params as load_params
 
 # read parameters
 
 class Person():
     def __init__(self, name=None):
 
-        MIN_AGE = params_list['MIN_AGE']
-        MAX_AGE = params_list['MAX_AGE']+1
-        RACE_CATS = params_list['RACE_CATS']
-        FEMALE_PROP = params_list['FEMALE_PROP']
-        RD = params_list['RACE_DISTRIBUTION']
+        MIN_AGE = load_params.params_list['MIN_AGE']
+        MAX_AGE = load_params.params_list['MAX_AGE']+1
+        RACE_CATS = load_params.params_list['RACE_CATS']
+        FEMALE_PROP = load_params.params_list['FEMALE_PROP']
+        RD = load_params.params_list['RACE_DISTRIBUTION']
         RACE_DISTRIBUTION = [
             RD['White'],
             RD['Black'],
             RD['Hispanic'], 
             RD['Asian']]
-        AU_PROPS = params_list['ALC_USE_PROPS']
+        AU_PROPS = load_params.params_list['ALC_USE_PROPS']
         ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]
-        SMOKING_PREV = params_list['SMOKING_PREV']
+        SMOKING_PREV = load_params.params_list['SMOKING_PREV']
 
         self.name = name    
         self.age = random.randint(MIN_AGE, MAX_AGE)
@@ -37,13 +40,13 @@ class Person():
         self.n_incarcerations = 0
 
     def aging(self):
-        TICK_TO_YEAR_RATIO = params_list['TICK_TO_YEAR_RATIO']
+        TICK_TO_YEAR_RATIO = load_params.params_list['TICK_TO_YEAR_RATIO']
         self.age += 1/TICK_TO_YEAR_RATIO
 
     def transition_alc_use(self):
 
         # level up
-        ALC_USE_STATES = params_list['ALC_USE_STATES']
+        ALC_USE_STATES = load_params.params_list['ALC_USE_STATES']
         TRANS_PROB_0_1 = ALC_USE_STATES['TRANS_PROB_0_1']
         TRANS_PROB_1_2 = ALC_USE_STATES['TRANS_PROB_1_2']
         TRANS_PROB_2_3 = ALC_USE_STATES['TRANS_PROB_2_3']
@@ -82,16 +85,20 @@ class Person():
         self.last_incarceration_time = time  
         self.incarceration_duration = 0   
         self.n_incarcerations += 1
+        self.assign_sentence_duration_cat()
+        self.assign_sentence_duration()
+        print("Sentence duration ", self.sentence_duration)
 
     def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
-        #PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
+        print("Random draw: ", prob, "Probability of incarceration: ", probability_daily_incarceration)
+        #PROBABILITY_DAILY_INCARCERATION = load_params.params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
                 if prob < probability_daily_incarceration:
-                    Person.update_attributes_at_incarceration_time(time)
+                    self.update_attributes_at_incarceration_time(time=time)
                    
     def simulate_recidivism(self, time, probability_daily_recidivism_females, probability_daily_recidivism_males):
 
@@ -101,11 +108,11 @@ class Person():
             if self.n_incarcerations > 0:
                 if self.female == 1:
                     if prob < probability_daily_recidivism_females:
-                            Person.update_attributes_at_incarceration_time(time=time)
+                            self.update_attributes_at_incarceration_time(time=time)
             
             elif self.female == 0:
                 if prob < probability_daily_recidivism_males:
-                         Person.update_attributes_at_incarceration_time(time=time)
+                         self.update_attributes_at_incarceration_time(time=time)
 
     def simulate_release(self, time):
                       
@@ -116,7 +123,7 @@ class Person():
                     self.incarceration_duration = -1
 
     def assign_sentence_duration_cat(self):
-            ALL_SDEMP = params_list['SENTENCE_DURATION_EMP']
+            ALL_SDEMP = load_params.params_list['SENTENCE_DURATION_EMP']
             FEMALE_SDEMP =  ALL_SDEMP['females']
             MALE_SDEMP = ALL_SDEMP['males']
             FEMALE_SDEMP_DURATIONS = list(FEMALE_SDEMP.keys())
@@ -155,6 +162,22 @@ class Person():
             print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat))
             print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
 
+
+    def step(self, time):
+            self.aging()
+            self.transition_alc_use()
+            
+            #self.assign_sentence_duration_cat()
+            #self.assign_sentence_duration()
+            self.simulate_incarceration(time=time, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
+            
+            if(self.current_incarceration_status == 1):
+                self.incarceration_duration += 1
+
+            self.simulate_release(time=time)
+            self.simulate_recidivism(time=time, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
+
+    
         
 
 
