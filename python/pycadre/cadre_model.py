@@ -81,21 +81,8 @@ class Model:
                 last_release_times = []
 
                 for person in self.my_persons:
-                    person.aging()
-                    ages.append(person.age)
-                    person.transition_alc_use()
-                   
-                    person.assign_sentence_duration_cat()
-                    person.assign_sentence_duration()
-
-                    person.simulate_incarceration(time=time, probability_daily_incarceration=PROBABILITY_DAILY_INCARCERATION)
-                    person.update_attributes_at_incarceration_time(time=time)
-                    person.simulate_release(time=time)
-                    person.simulate_recidivism(time=time, probability_daily_recidivism_females=PROBABILITY_DAILY_RECIDIVISM_FEMALES, probability_daily_recidivism_males=PROBABILITY_DAILY_RECIDIVISM_MALES)
-                    current_incarceration_statuses.append(person.current_incarceration_status)
-                    last_incarceration_times.append(person.last_incarceration_time)
-                    last_release_times.append(person.last_release_time)
-    
+                    person.step(time)
+  
 # def main():
 #     model = Model(n=100, verbose=False)
 #     model.run(MAXTIME=50)

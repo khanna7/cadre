@@ -1,7 +1,11 @@
 from cmath import nan
 from tkinter.messagebox import NO
 from numpy import random
-from pycadre.load_params import params_list
+#import pycadre.load_params.params_list as params_list
+#from . import load_params.params_list as params_list 
+#from pycadre.load_params import pycadre.load_params.params_list as params_list
+import pycadre.load_params as load_params
+import load_params.params_list as params_list
 
 # read parameters
 
@@ -82,16 +86,20 @@ class Person():
         self.last_incarceration_time = time  
         self.incarceration_duration = 0   
         self.n_incarcerations += 1
+        self.assign_sentence_duration_cat()
+        self.assign_sentence_duration()
+        print("Sentence duration ", self.sentence_duration)
 
     def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
+        print("Random draw: ", prob, "Probability of incarceration: ", probability_daily_incarceration)
         #PROBABILITY_DAILY_INCARCERATION = params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
                 if prob < probability_daily_incarceration:
-                    Person.update_attributes_at_incarceration_time(time)
+                    self.update_attributes_at_incarceration_time(time=time)
                    
     def simulate_recidivism(self, time, probability_daily_recidivism_females, probability_daily_recidivism_males):
 
@@ -101,11 +109,11 @@ class Person():
             if self.n_incarcerations > 0:
                 if self.female == 1:
                     if prob < probability_daily_recidivism_females:
-                            Person.update_attributes_at_incarceration_time(time=time)
+                            self.update_attributes_at_incarceration_time(time=time)
             
             elif self.female == 0:
                 if prob < probability_daily_recidivism_males:
-                         Person.update_attributes_at_incarceration_time(time=time)
+                         self.update_attributes_at_incarceration_time(time=time)
 
     def simulate_release(self, time):
                       
@@ -155,6 +163,22 @@ class Person():
             print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat))
             print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
 
+
+    def step(self, time):
+            self.aging()
+            self.transition_alc_use()
+            
+            #self.assign_sentence_duration_cat()
+            #self.assign_sentence_duration()
+            self.simulate_incarceration(time=time, probability_daily_incarceration=params_list.PROBABILITY_DAILY_INCARCERATION)
+            
+            if(self.current_incarceration_status == 1):
+                self.incarceration_duration += 1
+
+            self.simulate_release(time=time)
+            self.simulate_recidivism(time=time, probability_daily_recidivism_females=params_list.PROBABILITY_DAILY_RECIDIVISM_FEMALES, probability_daily_recidivism_males=PROBABILITY_DAILY_RECIDIVISM_MALES)
+
+    
         
 
 
