@@ -1,9 +1,6 @@
 from cmath import nan
 from tkinter.messagebox import NO
 from numpy import random
-#import pycadre.load_params.params_list as params_list
-#from . import load_params.params_list as params_list 
-#from pycadre.load_params import pycadre.load_params.params_list as params_list
 import pycadre.load_params as load_params
 
 # read parameters
@@ -23,13 +20,14 @@ class Person():
             RD['Asian']]
         AU_PROPS = load_params.params_list['ALC_USE_PROPS']
         ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]
-        SMOKING_PREV = load_params.params_list['SMOKING_PREV']
+        #SMOKING_PREV = load_params.params_list['SMOKING_PREV']
 
         self.name = name    
         self.age = random.randint(MIN_AGE, MAX_AGE)
         self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         self.female = random.binomial(1, FEMALE_PROP)
-        self.smoker = random.binomial(1, SMOKING_PREV)
+        self.smoker = self.assign_smoker_status()
+        #self.smoker = -1
         self.alc_use_status = random.choice(range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS)
         self.current_incarceration_status = 0
         self.last_incarceration_time = -1
@@ -87,12 +85,12 @@ class Person():
         self.n_incarcerations += 1
         self.assign_sentence_duration_cat()
         self.assign_sentence_duration()
-        print("Sentence duration ", self.sentence_duration)
+        #print("Sentence duration ", self.sentence_duration)
 
     def simulate_incarceration(self, time, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
-        print("Random draw: ", prob, "Probability of incarceration: ", probability_daily_incarceration)
+        #print("Random draw: ", prob, "Probability of incarceration: ", probability_daily_incarceration)
         #PROBABILITY_DAILY_INCARCERATION = load_params.params_list['PROBABILITY_DAILY_INCARCERATION']
 
         if self.current_incarceration_status == 0:
@@ -135,13 +133,13 @@ class Person():
                 if self.current_incarceration_status == 1: 
                     self.dur_cat = random.choice(FEMALE_SDEMP_DURATIONS, p=FEMALE_SDEMP_PROPS)
 
-                print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
+               #print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
 
 
             elif self.female == 0:
                 if self.current_incarceration_status == 1: 
                     self.dur_cat = random.choice(MALE_SDEMP_DURATIONS, p=MALE_SDEMP_PROPS)   
-                print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
+                #print("First dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat)) 
                 
                
 
@@ -159,16 +157,54 @@ class Person():
             elif self.dur_cat == 4:
                 self.sentence_duration = random.randint(1096, 2191)
 
-            print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat))
-            print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
+            #print("Second dur_cat" + " for agent " + str(self.name) + " is " + str(self.dur_cat))
+            #print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
 
 
+    def assign_smoker_status(self):
+
+        SMOKING_CATS = load_params.params_list['SMOKING_CATS']
+        SMOKING_PREV = load_params.params_list['SMOKING_PREV']
+        
+        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
+        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
+        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
+        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
+        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
+        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
+        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
+        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
+
+        if self.race == 'White':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_MALE)
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_FEMALE)    
+
+        elif self.race == 'Black':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_FEMALE)    
+
+        elif self.race == 'Hispanic':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_FEMALE)  
+
+        elif self.race == 'Asian':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE)  
+
+        #print("Smoking status is ", self.smoker)
+   
     def step(self, time):
             self.aging()
             self.transition_alc_use()
-            
-            #self.assign_sentence_duration_cat()
-            #self.assign_sentence_duration()
+
             self.simulate_incarceration(time=time, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             
             if(self.current_incarceration_status == 1):
