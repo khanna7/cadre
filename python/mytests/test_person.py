@@ -62,7 +62,7 @@ class TestPerson(unittest.TestCase):
         self.assertAlmostEqual(race_dist.White, RACE_DISTRIBUTION[0], delta=2)
         self.assertAlmostEqual(race_dist.Black, RACE_DISTRIBUTION[1], delta=2)
         self.assertAlmostEqual(race_dist.Hispanic, RACE_DISTRIBUTION[2], delta=2)
-        self.assertAlmostEqual(race_dist.Other, RACE_DISTRIBUTION[3], delta=2)
+        self.assertAlmostEqual(race_dist.Asian, RACE_DISTRIBUTION[3], delta=2)
 
     ## test alcohol use assignment
 
