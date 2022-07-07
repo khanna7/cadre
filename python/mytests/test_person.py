@@ -12,7 +12,7 @@ import pycadre.load_params
  
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params()
-    Test_N = 100
+    Test_N = 10000
 
 
     def test_age_assignment(self):
@@ -133,6 +133,43 @@ class TestPerson(unittest.TestCase):
                 self.assertTrue(p.current_incarceration_status == 0, "all not unincarcerated, even though max sentence duration is 0")
             
             print("Final Incarceration states: " + str(inc_states)) 
+
+    def test_assign_smoking_status(init):
+        SMOKING_CATS = TestPerson.params_list['SMOKING_CATS']
+        SMOKING_PREV = TestPerson.params_list['SMOKING_PREV']
+        
+        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
+        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
+        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
+        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
+        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
+        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
+        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
+        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
+
+        nsteps = 1
+        smokers = []
+        races = []
+        sex = []
+
+        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)    
+        model.run(MAXTIME=1000)
+        
+        for person in model.my_persons:
+            smokers.append(person.smoker)
+
+        smoker_dist = pd.value_counts(np.array(smokers))/len(smokers)
+
+        count_current_smoker = smokers.count("Current")
+        count_former_smoker = smokers.count("Former")
+        count_never_smoker = smokers.count("Never")
+
+        print("% of current smokers is ", count_current_smoker/TestPerson.Test_N*100)
+        print("% of fomer smokers is ", count_former_smoker/TestPerson.Test_N*100)
+        print("% of never smokers is ", count_never_smoker/TestPerson.Test_N*100)
+
+
+
 
 if __name__ == '__main__':  
     unittest.main()
