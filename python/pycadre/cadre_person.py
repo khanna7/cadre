@@ -21,13 +21,23 @@ class Person():
         AU_PROPS = load_params.params_list['ALC_USE_PROPS']
         ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]
         #SMOKING_PREV = load_params.params_list['SMOKING_PREV']
+        
+        SMOKING_CATS = load_params.params_list['SMOKING_CATS']
+        SMOKING_PREV = load_params.params_list['SMOKING_PREV']
+        
+        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
+        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
+        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
+        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
+        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
+        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
+        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
+        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
 
         self.name = name    
         self.age = random.randint(MIN_AGE, MAX_AGE)
         self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         self.female = random.binomial(1, FEMALE_PROP)
-        self.smoker = self.assign_smoker_status()
-        #self.smoker = -1
         self.alc_use_status = random.choice(range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS)
         self.current_incarceration_status = 0
         self.last_incarceration_time = -1
@@ -36,6 +46,31 @@ class Person():
         self.dur_cat = -1
         self.sentence_duration = -1
         self.n_incarcerations = 0
+
+        self.smoker = 'Unassigned'
+        if self.race == 'White':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_MALE)
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_FEMALE)    
+
+        elif self.race == 'Black':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_FEMALE)    
+
+        elif self.race == 'Hispanic':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_FEMALE)  
+
+        elif self.race == 'Asian':
+            if self.female == 0:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_MALE)            
+            elif self.female == 1:
+                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
 
     def aging(self):
         TICK_TO_YEAR_RATIO = load_params.params_list['TICK_TO_YEAR_RATIO']
@@ -161,43 +196,43 @@ class Person():
             #print("Sentence duration" + " for agent " + str(self.name) + " is " + str(self.sentence_duration), "\n")
 
 
-    def assign_smoker_status(self):
+    # def assign_smoker_status(self):
 
-        SMOKING_CATS = load_params.params_list['SMOKING_CATS']
-        SMOKING_PREV = load_params.params_list['SMOKING_PREV']
+    #     SMOKING_CATS = load_params.params_list['SMOKING_CATS']
+    #     SMOKING_PREV = load_params.params_list['SMOKING_PREV']
         
-        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
-        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
-        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
-        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
-        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
-        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
-        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
-        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
+    #     SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
+    #     SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
+    #     SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
+    #     SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
+    #     SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
+    #     SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
+    #     SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
+    #     SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
 
-        if self.race == 'White':
-            if self.female == 0:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_MALE)
-            elif self.female == 1:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_FEMALE)    
+    #     if self.race == 'White':
+    #         if self.female == 0:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_MALE)
+    #         elif self.female == 1:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_WHITE_FEMALE)    
 
-        elif self.race == 'Black':
-            if self.female == 0:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_MALE)            
-            elif self.female == 1:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_FEMALE)    
+    #     elif self.race == 'Black':
+    #         if self.female == 0:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_MALE)            
+    #         elif self.female == 1:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_BLACK_FEMALE)    
 
-        elif self.race == 'Hispanic':
-            if self.female == 0:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_MALE)            
-            elif self.female == 1:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_FEMALE)  
+    #     elif self.race == 'Hispanic':
+    #         if self.female == 0:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_MALE)            
+    #         elif self.female == 1:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_HISPANIC_FEMALE)  
 
-        elif self.race == 'Asian':
-            if self.female == 0:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_MALE)            
-            elif self.female == 1:
-                self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE)  
+    #     elif self.race == 'Asian':
+    #         if self.female == 0:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_MALE)            
+    #         elif self.female == 1:
+    #             self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE)  
 
         #print("Smoking status is ", self.smoker)
    

@@ -1,6 +1,6 @@
 ---
-STOP_AT: 5 
-N_AGENTS: 25
+STOP_AT: 1000
+N_AGENTS: 100
 #REF: Model Design
 
 MIN_AGE: 18
