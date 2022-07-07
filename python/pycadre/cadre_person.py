@@ -19,9 +19,7 @@ class Person():
             RD['Hispanic'], 
             RD['Asian']]
         AU_PROPS = load_params.params_list['ALC_USE_PROPS']
-        ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]
-        #SMOKING_PREV = load_params.params_list['SMOKING_PREV']
-        
+        ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]       
         SMOKING_CATS = load_params.params_list['SMOKING_CATS']
         SMOKING_PREV = load_params.params_list['SMOKING_PREV']
         
