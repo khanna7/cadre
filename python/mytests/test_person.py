@@ -105,6 +105,30 @@ class TestPerson(unittest.TestCase):
         print(alco_dist[2])
         print(alco_dist[3])
 
+    def test_sentence_duration_emp(self):
+        DU_dis =  params_list['SENTENCE_DURATION_EMP']
+
+        f_du_dis = [DU_dis['females'][0], DU_dis['females'][1], DU_dis['females'][2], DU_dis['females'][3], DU_dis['females'][4]]
+        m_du_dis = [DU_dis['males'][0], DU_dis['males'][1], DU_dis['males'][2], DU_dis['males'][3], DU_dis['males'][4]]
+
+        nsteps = 25
+        f_du_collect = []
+        m_du_collect = []
+
+        model = cadre_model.Model(n=1000, verbose = False)
+        model.run(MAXTIME=nsteps)
+
+        for person in model.my_persons:
+            if person.female == 1:
+                f_du_collect.append(person.incarceration_duration)
+            else:
+                m_du_collect.append(person.incarceration_duration)
+
+        f_du_collect_dist = pd.value_counts(np.array(f_du_collect))/len(f_du_collect)
+        m_du_collect_dist = pd.value_counts(np.array(m_du_collect))/len(m_du_collect)
+
+        print(f_du_collect_dist)
+        print(m_du_collect_dist) 
 
 if __name__ == '__main__':  
     unittest.main()
