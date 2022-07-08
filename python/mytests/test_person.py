@@ -12,7 +12,8 @@ import pycadre.load_params
  
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params()
-    Test_N = 10000
+    TEST_N = 100
+    TEST_NSTEPS = 250
 
 
     def test_age_assignment(self):
@@ -25,7 +26,7 @@ class TestPerson(unittest.TestCase):
 
         #print("Min age:", TestPerson.MIN_AGE)
 
-        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)    
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)    
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -35,7 +36,7 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
 
-            if TestPerson.Test_N >= 1000:
+            if TestPerson.TEST_N >= 1000:
                 # only try this if n is sufficiently large, or test fails
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
@@ -49,7 +50,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -74,25 +75,25 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
-        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)
         model.run(MAXTIME=0)                   
         for person in model.my_persons:
                 ages_init.append(person.age)
 
-        model.run(MAXTIME=nsteps)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
         for person in model.my_persons:
                 ages_final.append(person.age)
 
         diff_in_ages = np.subtract(np.array(ages_final), np.array(ages_init))
 
-        self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*nsteps)
+        self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*TestPerson.TEST_NSTEPS)
 
     
     def test_simulate_incarceration(self):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False) 
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False) 
 
         #test case where 0 < incarceration probability < 1
         probability_daily_incarceration=0.5 
@@ -101,7 +102,7 @@ class TestPerson(unittest.TestCase):
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
-        if TestPerson.Test_N >= 1000:
+        if TestPerson.TEST_N >= 1000:
             print("Mean incarcerated: " + str(mean(inc_states)))
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 
@@ -111,8 +112,7 @@ class TestPerson(unittest.TestCase):
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
-
-        #print("Incarceration states: " + str(inc_states), )  
+ 
         return model
 
     def test_simulate_release(self):
@@ -152,8 +152,8 @@ class TestPerson(unittest.TestCase):
         races = []
         sex = []
 
-        model = cadre_model.Model(n=TestPerson.Test_N, verbose=False)    
-        model.run(MAXTIME=1000)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)    
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
         
         for person in model.my_persons:
             smokers.append(person.smoker)
@@ -164,12 +164,52 @@ class TestPerson(unittest.TestCase):
         count_former_smoker = smokers.count("Former")
         count_never_smoker = smokers.count("Never")
 
-        print("% of current smokers is ", count_current_smoker/TestPerson.Test_N*100)
-        print("% of fomer smokers is ", count_former_smoker/TestPerson.Test_N*100)
-        print("% of never smokers is ", count_never_smoker/TestPerson.Test_N*100)
+        print("% of current smokers is ", count_current_smoker/TestPerson.TEST_N*100)
+        print("% of fomer smokers is ", count_former_smoker/TestPerson.TEST_N*100)
+        print("% of never smokers is ", count_never_smoker/TestPerson.TEST_N*100)
 
+    def test_alco_status(self):
+        nsteps = 25
+        all_alco = []
 
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose = False)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
 
+        for person in model.my_persons:
+            all_alco.append(person.alc_use_status)
+
+        alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
+        print(alco_dist)
+        self.assertAlmostEqual(alco_dist[0], 0.083, delta=4)
+        print(alco_dist[0])
+        print(alco_dist[1])
+        print(alco_dist[2])
+        print(alco_dist[3])
+
+    def test_sentence_duration_emp(self):
+        DU_dis =  TestPerson.params_list['SENTENCE_DURATION_EMP']
+
+        f_du_dis = [DU_dis['females'][0], DU_dis['females'][1], DU_dis['females'][2], DU_dis['females'][3], DU_dis['females'][4]]
+        m_du_dis = [DU_dis['males'][0], DU_dis['males'][1], DU_dis['males'][2], DU_dis['males'][3], DU_dis['males'][4]]
+
+        nsteps = 25
+        f_du_collect = []
+        m_du_collect = []
+
+        model = cadre_model.Model(n=1000, verbose = False)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
+
+        for person in model.my_persons:
+            if person.female == 1:
+                f_du_collect.append(person.incarceration_duration)
+            else:
+                m_du_collect.append(person.incarceration_duration)
+
+        f_du_collect_dist = pd.value_counts(np.array(f_du_collect))/len(f_du_collect)
+        m_du_collect_dist = pd.value_counts(np.array(m_du_collect))/len(m_du_collect)
+
+        print(f_du_collect_dist)
+        print(m_du_collect_dist) 
 
 if __name__ == '__main__':  
     unittest.main()

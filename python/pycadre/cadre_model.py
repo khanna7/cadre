@@ -29,6 +29,7 @@ class Model:
                         print("Person alcohol use status: " + str(person.alc_use_status))
                         print("Person smoking status: " + str(person.smoker))
                         print("Person last incarceration time: " + str(person.last_incarceration_time))
-                        print("Person last release time: " + str(person.last_release_time), "\n")
+                        print("Person last release time: " + str(person.last_release_time))
+                        print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
             
   
