@@ -20,23 +20,24 @@ class Model:
             
             for time in range(MAXTIME):
 
-                for person in self.my_persons:
-                    person.step(time) 
-
-                    if verbose == True:
-                            print("Person name: " + str(person.name))
-                            print("Person age: ", round(person.age))
-                            print("Person race: " + str(person.race))
-                            print("Person Female: " + str(person.female))
-                            print("Person alcohol use status: " + str(person.alc_use_status))
-                            print("Person smoking status: " + str(person.smoker))
-                            print("Person last incarceration time: " + str(person.last_incarceration_time))
-                            print("Person last release time: " + str(person.last_release_time))
-                            print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
-
                 with open('output.csv', 'w', newline='') as file:
-                    writer = csv.writer(file)
-                    writer.writerow([person.name, round(person.age), person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
+                    for person in self.my_persons:
+                        person.step(time) 
+
+                        if verbose == True:
+                                print("Person name: " + str(person.name))
+                                print("Person age: ", round(person.age))
+                                print("Person race: " + str(person.race))
+                                print("Person Female: " + str(person.female))
+                                print("Person alcohol use status: " + str(person.alc_use_status))
+                                print("Person smoking status: " + str(person.smoker))
+                                print("Person last incarceration time: " + str(person.last_incarceration_time))
+                                print("Person last release time: " + str(person.last_release_time))
+                                print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
+
+                    
+                        writer = csv.writer(file)
+                        writer.writerow([person.name, round(person.age), person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
 
 
                         
