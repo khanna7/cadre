@@ -2,6 +2,7 @@ from cmath import nan
 from tkinter.messagebox import NO
 from numpy import random
 import pycadre.load_params as load_params
+import csv
 
 # read parameters
 
@@ -246,7 +247,8 @@ class Person():
             self.simulate_release(time=time)
             self.simulate_recidivism(time=time, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
-    
+
         
+            
 
 
