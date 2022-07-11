@@ -12,7 +12,7 @@ import pycadre.load_params
  
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params()
-    TEST_N = 100
+    TEST_N = 1000
     TEST_NSTEPS = 250
 
 
@@ -134,39 +134,68 @@ class TestPerson(unittest.TestCase):
             
             print("Final Incarceration states: " + str(inc_states)) 
 
-    def test_assign_smoking_status(init):
+    def test_assign_smoking_status(self):
         SMOKING_CATS = TestPerson.params_list['SMOKING_CATS']
         SMOKING_PREV = TestPerson.params_list['SMOKING_PREV']
         
-        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_NEVER'], SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER']]
-        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_NEVER'], SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER']]
-        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_NEVER'], SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER']]
-        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_NEVER'], SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER']]
-        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_NEVER'], SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER']]
-        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_NEVER'], SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER']]
-        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_NEVER'], SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER']]
-        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_NEVER'], SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER']]
-
+        SMOKING_PREV_WHITE_MALE = [SMOKING_PREV['WHITE_MALE_CURRENT'], SMOKING_PREV['WHITE_MALE_FORMER'], SMOKING_PREV['WHITE_MALE_NEVER']]
+        SMOKING_PREV_WHITE_FEMALE = [SMOKING_PREV['WHITE_FEMALE_CURRENT'], SMOKING_PREV['WHITE_FEMALE_FORMER'], SMOKING_PREV['WHITE_FEMALE_NEVER']]
+        SMOKING_PREV_BLACK_MALE = [SMOKING_PREV['BLACK_MALE_CURRENT'], SMOKING_PREV['BLACK_MALE_FORMER'], SMOKING_PREV['BLACK_MALE_NEVER']]
+        SMOKING_PREV_BLACK_FEMALE = [SMOKING_PREV['BLACK_FEMALE_CURRENT'], SMOKING_PREV['BLACK_FEMALE_FORMER'], SMOKING_PREV['BLACK_FEMALE_NEVER']]
+        SMOKING_PREV_HISPANIC_MALE = [SMOKING_PREV['HISPANIC_MALE_CURRENT'], SMOKING_PREV['HISPANIC_MALE_FORMER'], SMOKING_PREV['HISPANIC_MALE_NEVER']]
+        SMOKING_PREV_HISPANIC_FEMALE = [SMOKING_PREV['HISPANIC_FEMALE_CURRENT'], SMOKING_PREV['HISPANIC_FEMALE_FORMER'], SMOKING_PREV['HISPANIC_FEMALE_NEVER']]
+        SMOKING_PREV_ASIAN_MALE = [SMOKING_PREV['ASIAN_MALE_CURRENT'], SMOKING_PREV['ASIAN_MALE_FORMER'], SMOKING_PREV['ASIAN_MALE_NEVER']]
+        SMOKING_PREV_ASIAN_FEMALE = [SMOKING_PREV['ASIAN_FEMALE_CURRENT'], SMOKING_PREV['ASIAN_FEMALE_FORMER'], SMOKING_PREV['ASIAN_FEMALE_NEVER']]
+        
         nsteps = 1
         smokers = []
         races = []
-        sex = []
+        sexes = []
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)    
         model.run(MAXTIME=TestPerson.TEST_NSTEPS)
         
         for person in model.my_persons:
             smokers.append(person.smoker)
+            races.append(person.race)
+            sexes.append(person.female)
 
-        smoker_dist = pd.value_counts(np.array(smokers))/len(smokers)
+        white_indices = [i for i, x in enumerate(races) if x == "White"]
+        black_indices = [i for i, x in enumerate(races) if x == "Black"]
+        hispanic_indices = [i for i, x in enumerate(races) if x == "Hispanic"]
+        asian_indices = [i for i, x in enumerate(races) if x == "Asian"]
 
-        count_current_smoker = smokers.count("Current")
-        count_former_smoker = smokers.count("Former")
-        count_never_smoker = smokers.count("Never")
+        male_indices = [i for i, x in enumerate(sexes) if x == 0]
+        female_indices = [i for i, x in enumerate(sexes) if x == 1]
+        
+        current_smoker_indices = [i for i, x in enumerate(smokers) if x == "Current"]
+        former_smoker_indices = [i for i, x in enumerate(smokers) if x == "Former"]
+        never_smoker_indices = [i for i, x in enumerate(smokers) if x == "Never"]
+        
+        white_male_ids_collate = [white_indices, male_indices]
+        white_male_ids_intersect = set.intersection(*map(set, white_male_ids_collate))
 
-        print("% of current smokers is ", count_current_smoker/TestPerson.TEST_N*100)
-        print("% of fomer smokers is ", count_former_smoker/TestPerson.TEST_N*100)
-        print("% of never smokers is ", count_never_smoker/TestPerson.TEST_N*100)
+        white_male_current_smoker_ids_collate = [white_indices, male_indices, current_smoker_indices]
+        white_male_current_smoker_ids_intersect = set.intersection(*map(set, white_male_current_smoker_ids_collate))
+
+        white_male_former_smoker_ids_collate = [white_indices, male_indices, former_smoker_indices]
+        white_male_former_smoker_ids_intersect = set.intersection(*map(set, white_male_former_smoker_ids_collate))
+
+        white_male_never_smoker_ids_collate = [white_indices, male_indices, never_smoker_indices]
+        white_male_never_smoker_ids_intersect = set.intersection(*map(set, white_male_never_smoker_ids_collate))
+        
+        print("White male current smoker IDs", white_male_former_smoker_ids_intersect)
+        print("Number of white male former smoker IDs ", len(white_male_former_smoker_ids_intersect))
+        print("Number of white male IDs ", len(white_male_ids_intersect))
+       
+        print("Per cent of white male current smokers ", len(white_male_current_smoker_ids_intersect)/len(white_male_ids_intersect))
+        print("Per cent of white male former smokers ", len(white_male_former_smoker_ids_intersect)/len(white_male_ids_intersect))
+        print("Per cent of white male never smokers ", len(white_male_never_smoker_ids_intersect)/len(white_male_ids_intersect))
+
+        print("Target Smoking White males (Current, Former, NEVER)", SMOKING_PREV_WHITE_MALE)
+
+        self.assertAlmostEqual(len(white_male_current_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[0], delta=0.02)
+
 
     def test_alco_status(self):
         nsteps = 25
