@@ -195,6 +195,8 @@ class TestPerson(unittest.TestCase):
         print("Target Smoking White males (Current, Former, NEVER)", SMOKING_PREV_WHITE_MALE)
 
         self.assertAlmostEqual(len(white_male_current_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[0], delta=0.02)
+        self.assertAlmostEqual(len(white_male_former_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[1], delta=0.05)
+        self.assertAlmostEqual(len(white_male_never_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[2], delta=0.05)
 
 
     def test_alco_status(self):
