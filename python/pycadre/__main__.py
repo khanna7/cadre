@@ -1,7 +1,7 @@
 from pycadre import cadre_model 
 #from pycadre.load_params import params_list
 import pycadre.load_params
-
+import cProfile
 
 
 def main():
