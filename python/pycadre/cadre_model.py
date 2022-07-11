@@ -16,13 +16,21 @@ class Model:
     
     def run(self, MAXTIME=10, verbose=True):
 
-   
+        with open('counts_data.csv', 'w', newline='') as cd_file:
             
             for time in range(MAXTIME):
 
-                with open('output.csv', 'w', newline='') as file:
+                incaceration_states = []
+                smokers = []
+                alc_use_status = []
+
+                with open('person_data.csv', 'w', newline='') as pd_file:
+
                     for person in self.my_persons:
                         person.step(time) 
+                        incaceration_states.append(person.current_incarceration_status)
+                        smokers.append(person.smoker)
+                        alc_use_status.append(person.alc_use_status)
 
                         if verbose == True:
                                 print("Person name: " + str(person.name))
@@ -36,8 +44,17 @@ class Model:
                                 print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
 
                     
-                        writer = csv.writer(file)
-                        writer.writerow([person.name, round(person.age), person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
+                        writer = csv.writer(pd_file)
+                        writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
+
+                n = len(self.my_persons)
+                current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
+                AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
+                alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
+
+                writer = csv.writer(cd_file)
+                writer.writerow([time, n, sum(incaceration_states), len(current_smokers), len(alc_abstainers), len(AUD_persons)])
+
 
 
                         
