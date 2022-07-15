@@ -12,6 +12,9 @@ https://medium.com/mlearning-ai/building-an-agent-based-model-with-python-stream
 ## MESA Code and Examples
 https://link.springer.com/chapter/10.1007/978-3-030-61255-9_30
 
+## MESA Virus Transmission Example with `networkx`
+https://dmnfarrell.github.io/bioinformatics/abm-mesa-network
+
 ## Testing
 - https://realpython.com/python-testing/
 - See [P2M4Py](https://github.com/UChicago-CCHE-Modeling/p2m4py/tree/main/tests) example.
