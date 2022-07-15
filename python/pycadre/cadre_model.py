@@ -18,7 +18,7 @@ class Model:
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
 
-    def run(self, MAXTIME=10, verbose=True):
+    def run(self, MAXTIME=10, verbose=True, params=None):
 
         
         with open('counts_data.csv', 'w', newline='') as cd_file:

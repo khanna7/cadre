@@ -1,9 +1,11 @@
-import yaml
-
+from repast4py import parameters
 params_list = None
 
 def load_params ():
-  global params_list
-  with open("myparams/model_params.yaml", mode="rt", encoding="utf-8") as file:
-      params_list = yaml.safe_load(file)
-  return params_list
+    parser = parameters.create_args_parser()    
+    args = parser.parse_args() 
+
+    global params_list        
+    params_list = parameters.init_params(args.parameters_file, args.parameters) 
+    
+    return params_list
