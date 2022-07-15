@@ -17,16 +17,17 @@ class Model:
         for i in range(n):
             person = cadre_person.Person(name = i)    
             self.my_persons.append(person)
-            self.mypersons_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
+            # self.mypersons_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
         #self.mypersons_logger = logging.TabularLogger(comm, params['agent_log_file'], ['tick', 'agent_id', 'agent_uid_rank', 'meet_count'])
         #writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
 
+
     def log_agents(self, time):
         tick = time
-        for person in self.my_persons():
+        for person in self.my_persons:
             # self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
             #                             person.smoker, person.last_incarceration_time, person.last_release_time, 
             #                             person.current_incarceration_status)
@@ -35,11 +36,11 @@ class Model:
 
     def run(self, MAXTIME=10, verbose=True, params=None):
 
-        
         with open('counts_data.csv', 'w', newline='') as cd_file:
             
             for time in range(MAXTIME):
-
+                self.log_agents(time)
+                self.agent_logger.write()
                 incaceration_states = []
                 smokers = []
                 alc_use_status = []
