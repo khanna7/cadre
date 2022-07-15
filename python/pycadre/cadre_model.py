@@ -22,15 +22,15 @@ class Model:
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
         #self.mypersons_logger = logging.TabularLogger(comm, params['agent_log_file'], ['tick', 'agent_id', 'agent_uid_rank', 'meet_count'])
         #writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
-        self.log_agents()
+        self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
 
-    def log_agents(self):
-        tick = Model.run.time 
+    def log_agents(self, time):
+        tick = time
         for person in self.my_persons():
             # self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
             #                             person.smoker, person.last_incarceration_time, person.last_release_time, 
             #                             person.current_incarceration_status)
-            self.agent_logger.log_row(tick, person.name)
+            self.agent_logger.log_row(time, person.name)
 
 
     def run(self, MAXTIME=10, verbose=True, params=None):
