@@ -4,10 +4,12 @@ import pandas as pd
 import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
+from repast4py import logging
 import csv
 
 class Model:
-    def __init__(self, n, verbose=True):
+    def __init__(self, n, comm, verbose=True):
+        self.comm=comm
         self.my_persons = [] 
         self.graph = []
         
@@ -15,8 +17,21 @@ class Model:
         for i in range(n):
             person = cadre_person.Person(name = i)    
             self.my_persons.append(person)
+            self.mypersons_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
+        #self.mypersons_logger = logging.TabularLogger(comm, params['agent_log_file'], ['tick', 'agent_id', 'agent_uid_rank', 'meet_count'])
+        #writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
+        self.log_agents()
+
+    def log_agents(self):
+        tick = Model.run.time 
+        for person in self.my_persons():
+            # self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
+            #                             person.smoker, person.last_incarceration_time, person.last_release_time, 
+            #                             person.current_incarceration_status)
+            self.agent_logger.log_row(tick, person.name)
+
 
     def run(self, MAXTIME=10, verbose=True, params=None):
 
@@ -63,6 +78,7 @@ class Model:
                 print("Number of agents is: ", len(self.my_persons))
                 print("Network size is", len(list(self.graph.nodes())), "nodes")
                 print("Network edgecound is", len(list(self.graph.edges())), "edges")
+
                 for line in nx.generate_edgelist(self.graph):
                     print(line)
 

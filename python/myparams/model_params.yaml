@@ -103,6 +103,8 @@ SMOKING_PREV:
 # Calculations/conceptualization explained at https://docs.google.com/document/d/13sHUYZz7SCZ2T35BcfnmOJSGCJ8KGptzE-0DGxJNhcI/edit?usp=sharing
 # RATES FOR "OTHER" CATEGORY ARE AVERAGED ACROSS ALL THE OTHER RACE/ETHNICITIES
 
+agent_log_file: 'output/agent_log.csv'
+
 
 
     
