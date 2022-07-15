@@ -1,6 +1,7 @@
 from numpy import random
 import numpy as np
 import pandas as pd
+import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
 import csv
@@ -8,14 +9,18 @@ import csv
 class Model:
     def __init__(self, n, verbose=True):
         self.my_persons = [] 
+        self.graph = []
         
         # initialize agents and attributes
         for i in range(n):
             person = cadre_person.Person(name = i)    
             self.my_persons.append(person)
     
+        self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
+
     def run(self, MAXTIME=10, verbose=True):
 
+        
         with open('counts_data.csv', 'w', newline='') as cd_file:
             
             for time in range(MAXTIME):
@@ -54,6 +59,12 @@ class Model:
 
                 writer = csv.writer(cd_file)
                 writer.writerow([time, n, sum(incaceration_states), len(current_smokers), len(alc_abstainers), len(AUD_persons)])
+
+                print("Number of agents is: ", len(self.my_persons))
+                print("Network size is", len(list(self.graph.nodes())), "nodes")
+                print("Network edgecound is", len(list(self.graph.edges())), "edges")
+                for line in nx.generate_edgelist(self.graph):
+                    print(line)
 
 
 
