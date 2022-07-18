@@ -7,13 +7,12 @@ import os
 from repast4py import parameters
 from pycadre import cadre_model
 import pycadre.load_params
+from mpi4py import MPI
 
  
 class TestPerson(unittest.TestCase):
-    
-    params_list = parameters.init_params('./testdata/test_params.yaml', '')
-    #params_list = pycadre.load_params.load_params()
-    #params_list = pycadre.load_params.load_params()
+    params_list = pycadre.load_params.load_params('../../cadre/python/testdata/test_params.yaml', '')
+
     TEST_N = 1000
     TEST_NSTEPS = 250  
 
@@ -21,20 +20,20 @@ class TestPerson(unittest.TestCase):
     def test_age_assignment(self):
         
         ages = []
-        MIN_AGE = TestPerson.params_list['MIN_AGE']
+        MIN_AGE = pycadre.load_params.params_list['MIN_AGE']
         MAX_AGE = TestPerson.params_list['MAX_AGE']
 
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        #print("Min age:", TestPerson.MIN_AGE)
+        #print("Min age:", MIN_AGE)
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=None)    
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
                 ages.append(person.age)
 
-        for age in ages: 
+        for age in ages:
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
 
