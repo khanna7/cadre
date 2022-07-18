@@ -45,29 +45,24 @@ class Model:
                 smokers = []
                 alc_use_status = []
 
-                with open('person_data.csv', 'w', newline='') as pd_file:
+                for person in self.my_persons:
+                    person.step(time) 
+                    incaceration_states.append(person.current_incarceration_status)
+                    smokers.append(person.smoker)
+                    alc_use_status.append(person.alc_use_status)
 
-                    for person in self.my_persons:
-                        person.step(time) 
-                        incaceration_states.append(person.current_incarceration_status)
-                        smokers.append(person.smoker)
-                        alc_use_status.append(person.alc_use_status)
-
-                        if verbose == True:
-                                print("Person name: " + str(person.name))
-                                print("Person age: ", round(person.age))
-                                print("Person race: " + str(person.race))
-                                print("Person Female: " + str(person.female))
-                                print("Person alcohol use status: " + str(person.alc_use_status))
-                                print("Person smoking status: " + str(person.smoker))
-                                print("Person last incarceration time: " + str(person.last_incarceration_time))
-                                print("Person last release time: " + str(person.last_release_time))
-                                print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
+                    if verbose == True:
+                            print("Person name: " + str(person.name))
+                            print("Person age: ", round(person.age))
+                            print("Person race: " + str(person.race))
+                            print("Person Female: " + str(person.female))
+                            print("Person alcohol use status: " + str(person.alc_use_status))
+                            print("Person smoking status: " + str(person.smoker))
+                            print("Person last incarceration time: " + str(person.last_incarceration_time))
+                            print("Person last release time: " + str(person.last_release_time))
+                            print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
 
                     
-                        writer = csv.writer(pd_file)
-                        writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
-
                 n = len(self.my_persons)
                 current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
                 AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
