@@ -10,10 +10,12 @@ import pycadre.load_params
 
  
 class TestPerson(unittest.TestCase):
-    params_list = parameters.init_params('/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/testdata/test_params.yaml', '')
+    
+    params_list = parameters.init_params('./testdata/test_params.yaml', '')
+    #params_list = pycadre.load_params.load_params()
     #params_list = pycadre.load_params.load_params()
     TEST_N = 1000
-    TEST_NSTEPS = 250
+    TEST_NSTEPS = 250  
 
 
     def test_age_assignment(self):
