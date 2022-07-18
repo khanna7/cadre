@@ -4,14 +4,14 @@ import numpy as np
 import pandas as pd
 import sys
 import os 
-
-
+from repast4py import parameters
 from pycadre import cadre_model
 import pycadre.load_params
 
  
 class TestPerson(unittest.TestCase):
-    params_list = pycadre.load_params.load_params()
+    params_list = parameters.init_params('/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/testdata/test_params.yaml', '')
+    #params_list = pycadre.load_params.load_params()
     TEST_N = 1000
     TEST_NSTEPS = 250
 
@@ -26,7 +26,7 @@ class TestPerson(unittest.TestCase):
 
         #print("Min age:", TestPerson.MIN_AGE)
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)    
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=None)    
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
