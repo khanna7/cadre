@@ -12,27 +12,25 @@ class Model:
         self.comm=comm
         self.my_persons = [] 
         self.graph = []
+        tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
+                                'agent_smoking_status', 'agent_last_incarceration_time', 'agent_last_release_time', 
+                                'agent_current_incarceration_status']
         
         # initialize agents and attributes
         for i in range(n):
             person = cadre_person.Person(name = i)    
             self.my_persons.append(person)
-            # self.mypersons_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
-        #self.mypersons_logger = logging.TabularLogger(comm, params['agent_log_file'], ['tick', 'agent_id', 'agent_uid_rank', 'meet_count'])
-        #writer.writerow([person.name, round(person.age), person.race, person.female, person.alc_use_status, person.smoker, person.last_incarceration_time, person.last_release_time, person.current_incarceration_status])
-        self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], ['tick', 'agent_id'])
+        self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
 
     def log_agents(self, time):
-        tick = time
+        
         for person in self.my_persons:
-            # self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
-            #                             person.smoker, person.last_incarceration_time, person.last_release_time, 
-            #                             person.current_incarceration_status)
-            self.agent_logger.log_row(time, person.name)
-
+            self.agent_logger.log_row(time, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
+                                        person.smoker, person.last_incarceration_time, person.last_release_time, 
+                                        person.current_incarceration_status)
 
     def run(self, MAXTIME=10, verbose=True, params=None):
 
