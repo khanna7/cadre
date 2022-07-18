@@ -14,7 +14,7 @@ class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/testdata/test_params.yaml', '')
 
     TEST_N = 1000
-    TEST_NSTEPS = 250  
+    TEST_NSTEPS = 10  
 
 
     def test_age_assignment(self):
@@ -51,7 +51,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=0)
                    
         for person in model.my_persons:
@@ -76,7 +76,7 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
         nsteps = 100
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=0)                   
         for person in model.my_persons:
                 ages_init.append(person.age)
@@ -94,7 +94,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False) 
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD) 
 
         #test case where 0 < incarceration probability < 1
         probability_daily_incarceration=0.5 
@@ -153,7 +153,7 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False)    
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)    
         model.run(MAXTIME=TestPerson.TEST_NSTEPS)
         
         for person in model.my_persons:
@@ -204,7 +204,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 25
         all_alco = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose = False)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose = False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=TestPerson.TEST_NSTEPS)
 
         for person in model.my_persons:
@@ -228,7 +228,7 @@ class TestPerson(unittest.TestCase):
         f_du_collect = []
         m_du_collect = []
 
-        model = cadre_model.Model(n=1000, verbose = False)
+        model = cadre_model.Model(n=1000, verbose = False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=TestPerson.TEST_NSTEPS)
 
         for person in model.my_persons:
