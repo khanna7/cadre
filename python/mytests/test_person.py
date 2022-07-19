@@ -11,7 +11,7 @@ from mpi4py import MPI
 
  
 class TestPerson(unittest.TestCase):
-    params_list = pycadre.load_params.load_params('../../cadre/python/testdata/test_params.yaml', '')
+    params_list = pycadre.load_params.load_params('../../cadre/python/myparams/model_params.yaml', '')
 
     TEST_N = 1000
     TEST_NSTEPS = 10  
@@ -24,8 +24,6 @@ class TestPerson(unittest.TestCase):
         MAX_AGE = TestPerson.params_list['MAX_AGE']
 
         mean_age_target = (MIN_AGE+MAX_AGE)/2
-
-        #print("Min age:", MIN_AGE)
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
         model.run(MAXTIME=0)
