@@ -1,7 +1,7 @@
 To visualize import structure, 
 
 ```
-shell> pydeps [flags] module-directory
+pydeps pycadre
 ```
 
 Further [reading](https://pydeps.readthedocs.io/en/latest/#basic-usage)
