@@ -6,3 +6,8 @@
 
 ### Lynn and Bassett, PNAS 2020
 - Human networks learning and representation: https://www.pnas.org/doi/abs/10.1073/pnas.1912328117 
+
+### Girvan and Newman, PNAS 2002:
+- Structrure of biological and social networks: https://www.pnas.org/doi/abs/10.1073/pnas.1912328117
+
+
