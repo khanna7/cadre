@@ -104,6 +104,7 @@ SMOKING_PREV:
 # RATES FOR "OTHER" CATEGORY ARE AVERAGED ACROSS ALL THE OTHER RACE/ETHNICITIES
 
 agent_log_file: 'output/agent_log.csv'
+counts_log_file: 'output/counts_log.csv'
 
 
 
