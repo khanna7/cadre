@@ -1,13 +1,10 @@
-from numpy import random
-import numpy as np
-import pandas as pd
 import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
 from repast4py import logging
 from mpi4py import MPI
 import csv
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 
 
 @dataclass
