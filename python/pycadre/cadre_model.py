@@ -12,6 +12,7 @@ from dataclasses import dataclass, fields
 @dataclass
 class CountsLog:
     pop_size: int=0
+    n_incarcerated: int=0
 
 class Model:
     def __init__(self, n, comm, verbose=True):
@@ -33,14 +34,6 @@ class Model:
         # initialize the logging
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
         
-        #self.counts_log = CountsLog()
-        #loggers = logging.create_loggers(self.counts_log, op=MPI.SUM, names={'pop_size': 'n_agents'}, rank=rank)
-        #self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, load_params.params_list['counts_log_file'])
-
-        # count the initial agents at time 0 and log
-        #self.data_set.log(0)
-        #self.counts_log.pop_size = 0
-        # self.log_agents(time)
         agent_count = len(self.my_persons)
         self.counts = CountsLog(agent_count)
         loggers = logging.create_loggers(self.counts, op=MPI.SUM, rank=rank)
