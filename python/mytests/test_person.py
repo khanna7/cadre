@@ -13,7 +13,7 @@ from mpi4py import MPI
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/myparams/model_params.yaml', '')
 
-    TEST_N = 1000
+    TEST_N = 10000
     TEST_NSTEPS = 10  
 
 
