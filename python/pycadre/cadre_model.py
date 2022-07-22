@@ -98,7 +98,7 @@ class Model:
 
                 self.counts.pop_size = len(self.my_persons)
                 self.counts.n_incarcerated = sum(incaceration_states)
-                self.n_current_smokers = len(current_smokers)
+                self.counts.n_current_smokers = len(current_smokers)
                 
                 self.data_set.close()
 
