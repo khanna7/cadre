@@ -12,7 +12,8 @@ class CountsLog:
     pop_size: int = 0
     n_incarcerated: int = 0
     n_current_smokers: int = 0
-
+    n_AUD: int = 0
+    n_alcohol_abstainers: int = 0
 
 class Model:
     def __init__(self, n, comm, verbose=True):
@@ -37,8 +38,10 @@ class Model:
         agent_count = len(self.my_persons)
         n_incarcerated = []
         current_smokers = []
+        AUD = []
+        abstainers = []
 
-        self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers))
+        self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers), len(AUD), len(abstainers))
         loggers = logging.create_loggers(self.counts, op=MPI.SUM, rank=rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
                         load_params.params_list['counts_log_file'])
@@ -88,7 +91,7 @@ class Model:
                 alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
                 print("Current smokers:", current_smokers, "\n")
-                print("Number of current smokders:", len(current_smokers), "\n")
+                print("Number of current smokers:", len(current_smokers), "\n")
 
                 writer = csv.writer(cd_file)
                 writer.writerow([time, n, sum(incaceration_states), len(current_smokers), len(alc_abstainers), len(AUD_persons)])
@@ -96,6 +99,8 @@ class Model:
                 self.counts.pop_size = len(self.my_persons)
                 self.counts.n_incarcerated = sum(incaceration_states)
                 self.counts.n_current_smokers = len(current_smokers)
+                self.counts.n_AUD = len(AUD_persons)
+                self.counts.n_alcohol_abstainers = len(alc_abstainers)
                 
                 self.data_set.close()
 
