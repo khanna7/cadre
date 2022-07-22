@@ -25,7 +25,7 @@ class Model:
 
         # initialize agents and attributes
         for i in range(n):
-            person = cadre_person.Person(name = i)    
+            person = cadre_person.Person(name = i)  
             self.my_persons.append(person)
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
@@ -33,17 +33,23 @@ class Model:
         # initialize the logging
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
         
-        self.counts_log = CountsLog()
-        loggers = logging.create_loggers(self.counts_log, op=MPI.SUM, names={'total_persons': 'total'}, rank=rank)
-        self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, load_params.params_list['counts_log_file'])
+        #self.counts_log = CountsLog()
+        #loggers = logging.create_loggers(self.counts_log, op=MPI.SUM, names={'pop_size': 'n_agents'}, rank=rank)
+        #self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, load_params.params_list['counts_log_file'])
 
         # count the initial agents at time 0 and log
         #self.data_set.log(0)
-        self.counts_log.pop_size = 0
-        #self.log_agents(time)
+        #self.counts_log.pop_size = 0
+        # self.log_agents(time)
+        agent_count = len(self.my_persons)
+        self.counts = CountsLog(agent_count)
+        loggers = logging.create_loggers(self.counts, op=MPI.SUM, rank=rank)
+        self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, load_params.params_list['counts_log_file'])
+        self.data_set.log(0)
+
 
     def log_agents(self, time):
-        
+      
         for person in self.my_persons:
             self.agent_logger.log_row(time, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_time, person.last_release_time, 
@@ -57,6 +63,8 @@ class Model:
             for time in range(MAXTIME):
                 self.log_agents(time)
                 self.agent_logger.write()
+                self.data_set.log(tick=time)
+
                 incaceration_states = []
                 smokers = []
                 alc_use_status = []
@@ -86,6 +94,8 @@ class Model:
 
                 writer = csv.writer(cd_file)
                 writer.writerow([time, n, sum(incaceration_states), len(current_smokers), len(alc_abstainers), len(AUD_persons)])
+
+                self.data_set.close()
 
                 print("Number of agents is: ", len(self.my_persons))
                 print("Network size is", len(list(self.graph.nodes())), "nodes")
