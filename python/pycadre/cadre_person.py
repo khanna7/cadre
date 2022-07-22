@@ -1,5 +1,3 @@
-from cmath import nan
-from tkinter.messagebox import NO
 from numpy import random
 import pycadre.load_params as load_params
 import csv
