@@ -2,23 +2,18 @@ from statistics import mean as mean
 import unittest
 import numpy as np
 import pandas as pd
-import sys
-import os 
-from repast4py import parameters
 from pycadre import cadre_model
 import pycadre.load_params
 from mpi4py import MPI
 
- 
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/myparams/model_params.yaml', '')
 
     TEST_N = 10000
-    TEST_NSTEPS = 10  
-
+    TEST_NSTEPS = 10
 
     def test_age_assignment(self):
-        
+
         ages = []
         MIN_AGE = pycadre.load_params.params_list['MIN_AGE']
         MAX_AGE = TestPerson.params_list['MAX_AGE']
@@ -26,10 +21,10 @@ class TestPerson(unittest.TestCase):
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0)
-                   
+        model.run(MAXTIME=0, verbose=False)
+
         for person in model.my_persons:
-                ages.append(person.age)
+            ages.append(person.age)
 
         for age in ages:
             self.assertTrue(age >= MIN_AGE)
@@ -45,19 +40,19 @@ class TestPerson(unittest.TestCase):
         RACE_DISTRIBUTION = [
             RD['White'],
             RD['Black'],
-            RD['Hispanic'], 
+            RD['Hispanic'],
             RD['Asian']
         ]
         races = []
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0)
-                   
-        for person in model.my_persons:
-                races.append(person.race)
+        model.run(MAXTIME=0, verbose=False)
 
-        #print("Races: "  + str(races))
+        for person in model.my_persons:
+            races.append(person.race)
+
+        # print("Races: "  + str(races))
         race_dist = pd.value_counts(np.array(races))/len(races)
-        #print("Races: " + str(race_dist))
+        # print("Races: " + str(race_dist))
 
         self.assertAlmostEqual(race_dist.White, RACE_DISTRIBUTION[0], delta=2)
         self.assertAlmostEqual(race_dist.Black, RACE_DISTRIBUTION[1], delta=2)
@@ -71,41 +66,38 @@ class TestPerson(unittest.TestCase):
     def test_aging(self):
         ages_init = []
         ages_final = []
-        TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO'] #xx ticks make a year
-        nsteps = 100
+        TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO']  # xx ticks make a year
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0)                   
+        model.run(MAXTIME=0, verbose=False)
         for person in model.my_persons:
-                ages_init.append(person.age)
+            ages_init.append(person.age)
 
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
         for person in model.my_persons:
-                ages_final.append(person.age)
+            ages_final.append(person.age)
 
         diff_in_ages = np.subtract(np.array(ages_final), np.array(ages_init))
 
         self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*TestPerson.TEST_NSTEPS)
 
-    
     def test_simulate_incarceration(self):
         nsteps = 1
         inc_states = []
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD) 
 
-        #test case where 0 < incarceration probability < 1
-        probability_daily_incarceration=0.5 
-        for p in model.my_persons:     
+        # test case where 0 < incarceration probability < 1
+        probability_daily_incarceration = 0.5
+        for p in model.my_persons:
             self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
         if TestPerson.TEST_N >= 1000:
-            print("Mean incarcerated: " + str(mean(inc_states)))
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 
-        #test case where incarceration probability = 1   
+        # test case where incarceration probability = 1
         probability_daily_incarceration=1 
         for p in model.my_persons:
             p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1)
@@ -115,23 +107,21 @@ class TestPerson(unittest.TestCase):
         return model
 
     def test_simulate_release(self):
-            model = TestPerson.test_simulate_incarceration(self)
-            nsteps = 1
-            inc_states = []
+        model = TestPerson.test_simulate_incarceration(self)
+        nsteps = 1
+        inc_states = []
             
-            for p in model.my_persons:
-                #print(p.current_incarceration_status)
-                inc_states.append(p.current_incarceration_status)
-            print("Initial Incarceration states: " + str(inc_states))
+        for p in model.my_persons:
+            # print(p.current_incarceration_status)
+            inc_states.append(p.current_incarceration_status)
 
-            inc_states = [] #make incarceration status list empty 
-            for p in model.my_persons:
-                p.sentence_duration = 0 #assign 
-                p.simulate_release(time=nsteps)
-                inc_states.append(p.current_incarceration_status)
-                self.assertTrue(p.current_incarceration_status == 0, "all not unincarcerated, even though max sentence duration is 0")
+        inc_states = [] #make incarceration status list empty
+        for p in model.my_persons:
+            p.sentence_duration = 0  # assign
+            p.simulate_release(time=nsteps)
+            inc_states.append(p.current_incarceration_status)
+            self.assertTrue(p.current_incarceration_status == 0, "all not unincarcerated, even though max sentence duration is 0")
             
-            print("Final Incarceration states: " + str(inc_states)) 
 
     def test_assign_smoking_status(self):
         SMOKING_CATS = TestPerson.params_list['SMOKING_CATS']
@@ -152,7 +142,7 @@ class TestPerson(unittest.TestCase):
         sexes = []
 
         model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)    
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
         
         for person in model.my_persons:
             smokers.append(person.smoker)
@@ -183,16 +173,6 @@ class TestPerson(unittest.TestCase):
         white_male_never_smoker_ids_collate = [white_indices, male_indices, never_smoker_indices]
         white_male_never_smoker_ids_intersect = set.intersection(*map(set, white_male_never_smoker_ids_collate))
         
-        print("White male current smoker IDs", white_male_former_smoker_ids_intersect)
-        print("Number of white male former smoker IDs ", len(white_male_former_smoker_ids_intersect))
-        print("Number of white male IDs ", len(white_male_ids_intersect))
-       
-        print("Per cent of white male current smokers ", len(white_male_current_smoker_ids_intersect)/len(white_male_ids_intersect))
-        print("Per cent of white male former smokers ", len(white_male_former_smoker_ids_intersect)/len(white_male_ids_intersect))
-        print("Per cent of white male never smokers ", len(white_male_never_smoker_ids_intersect)/len(white_male_ids_intersect))
-
-        print("Target Smoking White males (Current, Former, NEVER)", SMOKING_PREV_WHITE_MALE)
-
         self.assertAlmostEqual(len(white_male_current_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[0], delta=0.02)
         self.assertAlmostEqual(len(white_male_former_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[1], delta=0.05)
         self.assertAlmostEqual(len(white_male_never_smoker_ids_intersect)/len(white_male_ids_intersect), SMOKING_PREV_WHITE_MALE[2], delta=0.05)
@@ -202,19 +182,14 @@ class TestPerson(unittest.TestCase):
         nsteps = 25
         all_alco = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose = False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
+        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
 
         for person in model.my_persons:
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
-        print(alco_dist)
         self.assertAlmostEqual(alco_dist[0], 0.083, delta=4)
-        print(alco_dist[0])
-        print(alco_dist[1])
-        print(alco_dist[2])
-        print(alco_dist[3])
 
     def test_sentence_duration_emp(self):
         DU_dis =  TestPerson.params_list['SENTENCE_DURATION_EMP']
@@ -226,8 +201,8 @@ class TestPerson(unittest.TestCase):
         f_du_collect = []
         m_du_collect = []
 
-        model = cadre_model.Model(n=1000, verbose = False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS)
+        model = cadre_model.Model(n=1000, verbose=False, comm=MPI.COMM_WORLD)
+        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
 
         for person in model.my_persons:
             if person.female == 1:
@@ -238,8 +213,6 @@ class TestPerson(unittest.TestCase):
         f_du_collect_dist = pd.value_counts(np.array(f_du_collect))/len(f_du_collect)
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect))/len(m_du_collect)
 
-        print(f_du_collect_dist)
-        print(m_du_collect_dist) 
 
 if __name__ == '__main__':  
     unittest.main()
