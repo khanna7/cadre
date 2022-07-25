@@ -89,9 +89,9 @@ class Model:
                 current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
                 AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
                 alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
-
-                print("Current smokers:", current_smokers, "\n")
-                print("Number of current smokers:", len(current_smokers), "\n")
+                if verbose == True:
+                    print("Current smokers:", current_smokers, "\n")
+                    print("Number of current smokers:", len(current_smokers), "\n")
 
                 writer = csv.writer(cd_file)
                 writer.writerow([time, n, sum(incaceration_states), len(current_smokers), len(alc_abstainers), len(AUD_persons)])
@@ -103,10 +103,10 @@ class Model:
                 self.counts.n_alcohol_abstainers = len(alc_abstainers)
                 
                 self.data_set.close()
-
-                print("Number of agents is: ", len(self.my_persons))
-                print("Network size is", len(list(self.graph.nodes())), "nodes")
-                print("Network edgecount is", len(list(self.graph.edges())), "edges")
+                if verbose == True:
+                    print("Number of agents is: ", len(self.my_persons))
+                    print("Network size is", len(list(self.graph.nodes())), "nodes")
+                    print("Network edgecount is", len(list(self.graph.edges())), "edges")
 
                 for line in nx.generate_edgelist(self.graph):
                     #print(line)
