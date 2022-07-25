@@ -50,8 +50,8 @@ jobs:
         coverage run -m unittest discover mytests
         coverage xml
     - name: Upload Coverage to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./python/coverage.json
+        files: ./python/coverage.xml
         
