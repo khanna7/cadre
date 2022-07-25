@@ -54,7 +54,7 @@ jobs:
         cd python
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
-        ./codecov -t ${CODECOV_TOKEN}
+        ./codecov -t ${{ secrets.CODECOV_TOKEN }}
       #uses: codecov/codecov-action@v1
       #with:
       #  token: ${{ secrets.CODECOV_TOKEN }}
