@@ -35,7 +35,6 @@ jobs:
         cd python
         python -m pip install --upgrade pip
         pip install flake8 
-        pip install coverage
         if [ -f requirements.txt ]; then CC=mpicc pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -47,6 +46,7 @@ jobs:
       run: |
         cd python
         coverage run -m unittest discover mytests
+        coverage json
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
