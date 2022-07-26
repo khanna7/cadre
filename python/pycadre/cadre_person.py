@@ -14,7 +14,7 @@ class Person(core.Agent):
         rank: the starting MPI rank of this Person.
     """
     TYPE = 0 
-    
+
     def __init__(self, name:int, rank:int):
 
         
@@ -115,7 +115,7 @@ class Person(core.Agent):
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
                 if prob < probability_daily_incarceration:
-                    self.update_attributes_at_incarceration_time(time=time)
+                    self.update_attributes_at_incarceration_time(time)
                    
     def simulate_recidivism(self, time, probability_daily_recidivism_females, probability_daily_recidivism_males):
 
@@ -212,17 +212,17 @@ class Person(core.Agent):
                 self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
   
    
-    def step(self, time):
-            self.aging()
-            self.transition_alc_use()
+    # def step(self, time):
+    #         self.aging()
+    #         self.transition_alc_use()
 
-            self.simulate_incarceration(time=time, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
+    #         self.simulate_incarceration(time=time, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             
-            if(self.current_incarceration_status == 1):
-                self.incarceration_duration += 1
+    #         if(self.current_incarceration_status == 1):
+    #             self.incarceration_duration += 1
 
-            self.simulate_release(time=time)
-            self.simulate_recidivism(time=time, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
+    #         self.simulate_release(time=time)
+    #         self.simulate_recidivism(time=time, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
 
         
