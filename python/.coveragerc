@@ -1,0 +1,4 @@
+[run]
+omit =
+  mytests/*
+  */repast4py/*
