@@ -20,8 +20,8 @@ class TestPerson(unittest.TestCase):
 
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
 
         for person in model.my_persons:
             ages.append(person.age)
@@ -44,8 +44,8 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
 
         for person in model.my_persons:
             races.append(person.race)
@@ -68,12 +68,13 @@ class TestPerson(unittest.TestCase):
         ages_final = []
         TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO']  # xx ticks make a year
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=0, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
+
         for person in model.my_persons:
             ages_init.append(person.age)
 
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
+        model.run(params=TestPerson.params_list) #THIS TEST NEEDS TO BE SIMULATING THE MODEL FORWARD USING THE SCHEDULER 
         for person in model.my_persons:
             ages_final.append(person.age)
 
@@ -85,13 +86,13 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD) 
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
         # test case where 0 < incarceration probability < 1
         probability_daily_incarceration = 0.5
         for p in model.my_persons:
             self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
-            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=probability_daily_incarceration)
+            p.simulate_incarceration(tick=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
         if TestPerson.TEST_N >= 1000:
@@ -100,7 +101,7 @@ class TestPerson(unittest.TestCase):
         # test case where incarceration probability = 1
         probability_daily_incarceration=1 
         for p in model.my_persons:
-            p.simulate_incarceration(time=nsteps, probability_daily_incarceration=1)
+            p.simulate_incarceration(tick=nsteps, probability_daily_incarceration=1)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
  
@@ -118,7 +119,7 @@ class TestPerson(unittest.TestCase):
         inc_states = [] #make incarceration status list empty
         for p in model.my_persons:
             p.sentence_duration = 0  # assign
-            p.simulate_release(time=nsteps)
+            p.simulate_release(tick=nsteps)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(p.current_incarceration_status == 0, "all not unincarcerated, even though max sentence duration is 0")
             
@@ -141,8 +142,8 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)    
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
         
         for person in model.my_persons:
             smokers.append(person.smoker)
@@ -182,8 +183,8 @@ class TestPerson(unittest.TestCase):
         nsteps = 25
         all_alco = []
 
-        model = cadre_model.Model(n=TestPerson.TEST_N, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
 
         for person in model.my_persons:
             all_alco.append(person.alc_use_status)
@@ -201,8 +202,8 @@ class TestPerson(unittest.TestCase):
         f_du_collect = []
         m_du_collect = []
 
-        model = cadre_model.Model(n=1000, verbose=False, comm=MPI.COMM_WORLD)
-        model.run(MAXTIME=TestPerson.TEST_NSTEPS, verbose=False)
+        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model.run(params=TestPerson.params_list)
 
         for person in model.my_persons:
             if person.female == 1:
