@@ -1,11 +1,24 @@
+from repast4py import core
 from numpy import random
 import pycadre.load_params as load_params
 import csv
 
 # read parameters
 
-class Person():
-    def __init__(self, name=None):
+class Person(core.Agent):
+    """The Person Agent
+
+    Args:
+        name: a integer that uniquely identifies this Person on its
+              starting rank
+        rank: the starting MPI rank of this Person.
+    """
+    TYPE = 0 
+    
+    def __init__(self, name:int, rank:int):
+
+        
+        super().__init__(id=name, type=Person.TYPE, rank=rank)
 
         MIN_AGE = load_params.params_list['MIN_AGE']
         MAX_AGE = load_params.params_list['MAX_AGE']+1
@@ -20,7 +33,7 @@ class Person():
         AU_PROPS = load_params.params_list['ALC_USE_PROPS']
         ALC_USE_PROPS = [AU_PROPS['A'], AU_PROPS['O'], AU_PROPS['R'], AU_PROPS['D']]   
 
-        self.name = name    
+        self.name = name  
         self.age = random.randint(MIN_AGE, MAX_AGE)
         self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         self.female = random.binomial(1, FEMALE_PROP)
@@ -34,6 +47,17 @@ class Person():
         self.n_incarcerations = 0
         self.assign_smoker_status() #note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
 
+    def save(self):
+        """Saves the state of this agent as tuple.
+
+        A non-ghost agent will save its state using this
+        method, and any ghost agents of this agent will
+        be updated with that data (self.current_incarceration_status).
+
+        Returns:
+            The agent's state
+        """
+        return (self.uid, self.current_incarceration_status)
 
     def aging(self):
         TICK_TO_YEAR_RATIO = load_params.params_list['TICK_TO_YEAR_RATIO']

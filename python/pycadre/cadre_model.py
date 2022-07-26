@@ -27,7 +27,7 @@ class Model:
 
         # initialize agents and attributes
         for i in range(n):
-            person = cadre_person.Person(name=i)  
+            person = cadre_person.Person(name=i, rank=rank)  
             self.my_persons.append(person)
     
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
@@ -75,7 +75,7 @@ class Model:
                     alc_use_status.append(person.alc_use_status)
 
                     if verbose == True:
-                            print("Person name: " + str(person.name))
+                            print("Person ID: " + str(person.name))
                             print("Person age: ", round(person.age))
                             print("Person race: " + str(person.race))
                             print("Person Female: " + str(person.female))
