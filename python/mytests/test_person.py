@@ -69,18 +69,18 @@ class TestPerson(unittest.TestCase):
         TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO']  # xx ticks make a year
 
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
+        
 
         for person in model.my_persons:
             ages_init.append(person.age)
 
-        model.run(params=TestPerson.params_list) #THIS TEST NEEDS TO BE SIMULATING THE MODEL FORWARD USING THE SCHEDULER 
+        model.step()
         for person in model.my_persons:
             ages_final.append(person.age)
 
         diff_in_ages = np.subtract(np.array(ages_final), np.array(ages_init))
 
-        self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO*TestPerson.TEST_NSTEPS)
+        self.assertAlmostEqual(np.mean(diff_in_ages), 1/TICK_TO_YEAR_RATIO)
 
     def test_simulate_incarceration(self):
         nsteps = 1
