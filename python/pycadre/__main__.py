@@ -14,8 +14,8 @@ def main():
     
     STOP_AT = params_list['STOP_AT']
     N = params_list['N_AGENTS']
-    model = cadre_model.Model(n=N, verbose=True, comm=MPI.COMM_WORLD)
-    model.run(MAXTIME=STOP_AT, params=params_list)
+    model = cadre_model.Model(params=params_list, verbose=True, comm=MPI.COMM_WORLD)
+    model.run(params=params_list)
   
 if __name__ == "__main__":
     main()
