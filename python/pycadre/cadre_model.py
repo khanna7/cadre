@@ -42,7 +42,7 @@ class Model:
         abstainers = []
 
         self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers), len(AUD), len(abstainers))
-        loggers = logging.create_loggers(self.counts, op=MPI.SUM, rank=rank)
+        loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers'}, rank=rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
                         load_params.params_list['counts_log_file'])
         #self.data_set.log(0)
