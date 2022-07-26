@@ -45,7 +45,7 @@ class Model:
         self.my_persons = [] 
         self.graph = []
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
-                                'agent_smoking_status', 'agent_last_incarceration_time', 'agent_last_release_time', 
+                                'agent_smoking_status', 'agent_last_incarceration_tick', 'agent_last_release_tick', 
                                 'agent_current_incarceration_status']
         rank = comm.Get_rank()
 
@@ -74,7 +74,7 @@ class Model:
     def log_agents(self):
         for person in self.my_persons:
             self.agent_logger.log_row(person.name, round(person.age), person.race, person.female, person.alc_use_status, 
-                                        person.smoker, person.last_incarceration_time, person.last_release_time, 
+                                        person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
         self.agent_logger.write()
 
@@ -95,11 +95,11 @@ class Model:
         for person in self.my_persons:
             person.aging() 
             person.transition_alc_use()
-            person.simulate_incarceration(time=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
+            person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
                 person.incarceration_duration += 1
-            person.simulate_release(time=tick)
-            person.simulate_recidivism(time=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
+            person.simulate_release(tick=tick)
+            person.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
             incaceration_states.append(person.current_incarceration_status)
             smokers.append(person.smoker)
@@ -112,9 +112,9 @@ class Model:
                     print("Person Female: " + str(person.female))
                     print("Person alcohol use status: " + str(person.alc_use_status))
                     print("Person smoking status: " + str(person.smoker))
-                    print("Person last incarceration time: " + str(person.last_incarceration_time))
-                    print("Person last release time: " + str(person.last_release_time))
-                    print("Person incarceration duration: ", (person.last_release_time - person.last_incarceration_time), "\n")
+                    print("Person last incarceration tick: " + str(person.last_incarceration_tick))
+                    print("Person last release tick: " + str(person.last_release_tick))
+                    print("Person incarceration duration: ", (person.last_release_tick - person.last_incarceration_tick), "\n")
 
         n = len(self.my_persons)
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
