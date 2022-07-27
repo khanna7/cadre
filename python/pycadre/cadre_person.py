@@ -213,21 +213,4 @@ class Person(core.Agent):
             elif self.female == 1:
                 self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
   
-   
-    # def step(self, tick):
-    #         self.aging()
-    #         self.transition_alc_use()
-
-    #         self.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
-            
-    #         if(self.current_incarceration_status == 1):
-    #             self.incarceration_duration += 1
-
-    #         self.simulate_release(tick=tick)
-    #         self.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
-
-
-        
-            
-
 
