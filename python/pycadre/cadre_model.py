@@ -116,7 +116,7 @@ class Model:
                     print("Person smoking status: " + str(person.smoker))
                     print("Person last incarceration tick: " + str(person.last_incarceration_tick))
                     print("Person last release tick: " + str(person.last_release_tick))
-                    print("Person incarceration duration: ", (person.last_release_tick - person.last_incarceration_tick), "\n")
+                    print("Person incarceration duration: ", (person.incarceration_duration), "\n")
 
         n = len(self.my_persons)
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
