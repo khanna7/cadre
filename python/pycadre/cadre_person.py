@@ -1,3 +1,4 @@
+from functools import partial
 from repast4py import core, schedule
 from numpy import random
 import pycadre.load_params as load_params
@@ -110,7 +111,7 @@ class Person(core.Agent):
                 if prob < probability_daily_incarceration:
                     self.update_attributes_at_incarceration_tick(tick)
                     runner = schedule.runner()
-                    runner.schedule_event(self.when_to_release, self.simulate_release(tick=self.when_to_release))
+                    runner.schedule_event(self.when_to_release, partial(self.simulate_release, tick=self.when_to_release))
 
 
     def update_attributes_at_incarceration_tick(self, tick):
