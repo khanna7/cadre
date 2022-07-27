@@ -98,7 +98,7 @@ class Model:
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
                 person.incarceration_duration += 1
-            person.simulate_release(tick=tick)
+            #person.simulate_release(tick=tick)
             person.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
             incaceration_states.append(person.current_incarceration_status)
@@ -141,8 +141,8 @@ class Model:
         model = Model(MPI.COMM_WORLD, params)
         model.start()
         for line in nx.generate_edgelist(self.graph):
-            print(line)
-            #pass
+            #print(line)
+            pass
 
 
             
