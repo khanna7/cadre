@@ -44,6 +44,7 @@ class Model:
         self.comm = comm
         self.my_persons = [] 
         self.graph = []
+        
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
                                 'agent_smoking_status', 'agent_last_incarceration_tick', 'agent_last_release_tick', 
                                 'agent_current_incarceration_status']
@@ -72,8 +73,9 @@ class Model:
         #self.data_set.log(0)
 
     def log_agents(self):
+        tick = self.runner.schedule.tick   
         for person in self.my_persons:
-            self.agent_logger.log_row(person.name, round(person.age), person.race, person.female, person.alc_use_status, 
+            self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
         self.agent_logger.write()
