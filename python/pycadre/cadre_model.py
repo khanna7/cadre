@@ -44,6 +44,7 @@ class Model:
         self.comm = comm
         self.my_persons = [] 
         self.graph = []
+        
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
                                 'agent_smoking_status', 'agent_last_incarceration_tick', 'agent_last_release_tick', 
                                 'agent_current_incarceration_status']
@@ -72,8 +73,9 @@ class Model:
         #self.data_set.log(0)
 
     def log_agents(self):
+        tick = self.runner.schedule.tick   
         for person in self.my_persons:
-            self.agent_logger.log_row(person.name, round(person.age), person.race, person.female, person.alc_use_status, 
+            self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
         self.agent_logger.write()
@@ -98,7 +100,7 @@ class Model:
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
                 person.incarceration_duration += 1
-            person.simulate_release(tick=tick)
+            #person.simulate_release(tick=tick)
             person.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
             incaceration_states.append(person.current_incarceration_status)
@@ -114,7 +116,7 @@ class Model:
                     print("Person smoking status: " + str(person.smoker))
                     print("Person last incarceration tick: " + str(person.last_incarceration_tick))
                     print("Person last release tick: " + str(person.last_release_tick))
-                    print("Person incarceration duration: ", (person.last_release_tick - person.last_incarceration_tick), "\n")
+                    print("Person incarceration duration: ", (person.incarceration_duration), "\n")
 
         n = len(self.my_persons)
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
@@ -141,8 +143,8 @@ class Model:
         model = Model(MPI.COMM_WORLD, params)
         model.start()
         for line in nx.generate_edgelist(self.graph):
-            print(line)
-            #pass
+            #print(line)
+            pass
 
 
             

@@ -1,4 +1,5 @@
-from repast4py import core
+from functools import partial
+from repast4py import core, schedule
 from numpy import random
 import pycadre.load_params as load_params
 import csv
@@ -44,6 +45,7 @@ class Person(core.Agent):
         self.last_release_tick = -1
         self.dur_cat = -1
         self.sentence_duration = -1
+        self.when_to_release = -1
         self.n_incarcerations = 0
         self.assign_smoker_status() #note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
 
@@ -100,14 +102,6 @@ class Person(core.Agent):
             if (prob > 1-TRANS_PROB_3_2):
                 self.alc_use_status -= 1
 
-    def update_attributes_at_incarceration_tick(self, tick):
-        self.current_incarceration_status = 1 
-        self.last_incarceration_tick = tick  
-        self.incarceration_duration = 0   
-        self.n_incarcerations += 1
-        self.assign_sentence_duration_cat()
-        self.assign_sentence_duration()
-
     def simulate_incarceration(self, tick, probability_daily_incarceration):
         
         prob = random.uniform(0, 1)
@@ -116,28 +110,18 @@ class Person(core.Agent):
             if self.n_incarcerations == 0:
                 if prob < probability_daily_incarceration:
                     self.update_attributes_at_incarceration_tick(tick)
-                   
-    def simulate_recidivism(self, tick, probability_daily_recidivism_females, probability_daily_recidivism_males):
+                    runner = schedule.runner()
+                    runner.schedule_event(self.when_to_release, partial(self.simulate_release, tick=self.when_to_release))
 
-        prob = random.uniform(0, 1)
-        
-        if self.current_incarceration_status == 0:
-            if self.n_incarcerations > 0:
-                if self.female == 1:
-                    if prob < probability_daily_recidivism_females:
-                            self.update_attributes_at_incarceration_tick(tick=tick)
-            
-            elif self.female == 0:
-                if prob < probability_daily_recidivism_males:
-                         self.update_attributes_at_incarceration_tick(tick=tick)
 
-    def simulate_release(self, tick):
-                      
-        if self.sentence_duration >= 0:
-            if self.incarceration_duration >= self.sentence_duration:
-                    self.current_incarceration_status = 0
-                    self.last_release_tick = tick
-                    self.incarceration_duration = -1
+    def update_attributes_at_incarceration_tick(self, tick):
+        self.current_incarceration_status = 1 
+        self.last_incarceration_tick = tick  
+        self.incarceration_duration = 0   
+        self.n_incarcerations += 1
+        self.assign_sentence_duration_cat()
+        self.assign_sentence_duration()
+        self.when_to_release = tick+self.sentence_duration
 
     def assign_sentence_duration_cat(self):
             ALL_SDEMP = load_params.params_list['SENTENCE_DURATION_EMP']
@@ -157,8 +141,6 @@ class Person(core.Agent):
                 if self.current_incarceration_status == 1: 
                     self.dur_cat = random.choice(MALE_SDEMP_DURATIONS, p=MALE_SDEMP_PROPS)    
                 
-               
-
     def assign_sentence_duration(self):
             
             if self.dur_cat == 0:
@@ -171,6 +153,26 @@ class Person(core.Agent):
                 self.sentence_duration = random.randint(366, 1096)
             elif self.dur_cat == 4:
                 self.sentence_duration = random.randint(1096, 2191)
+
+    def simulate_release(self, tick):
+                      
+            self.current_incarceration_status = 0
+            self.last_release_tick = tick
+            self.incarceration_duration = -1
+                   
+    def simulate_recidivism(self, tick, probability_daily_recidivism_females, probability_daily_recidivism_males):
+
+        prob = random.uniform(0, 1)
+        
+        if self.current_incarceration_status == 0:
+            if self.n_incarcerations > 0:
+                if self.female == 1:
+                    if prob < probability_daily_recidivism_females:
+                            self.update_attributes_at_incarceration_tick(tick=tick)
+            
+            elif self.female == 0:
+                if prob < probability_daily_recidivism_males:
+                         self.update_attributes_at_incarceration_tick(tick=tick)
 
     def assign_smoker_status(self):
 
@@ -211,21 +213,4 @@ class Person(core.Agent):
             elif self.female == 1:
                 self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
   
-   
-    # def step(self, tick):
-    #         self.aging()
-    #         self.transition_alc_use()
-
-    #         self.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
-            
-    #         if(self.current_incarceration_status == 1):
-    #             self.incarceration_duration += 1
-
-    #         self.simulate_release(tick=tick)
-    #         self.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
-
-
-        
-            
-
 

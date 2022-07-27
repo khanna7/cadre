@@ -10,7 +10,7 @@ class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/myparams/model_params.yaml', '')
 
     TEST_N = 10000
-    TEST_NSTEPS = 10
+    TEST_NSTEPS = 1
 
     def test_age_assignment(self):
 
