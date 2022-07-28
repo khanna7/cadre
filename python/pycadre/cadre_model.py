@@ -138,13 +138,13 @@ class Model:
         self.runner.execute()
                 
 
-    def run(self, params: Dict):
-        global model
-        model = Model(MPI.COMM_WORLD, params, verbose=False)
-        model.start()
-        for line in nx.generate_edgelist(self.graph):
-            #print(line)
-            pass
+# def run(self, params: Dict):
+#     global model
+#     model = Model(MPI.COMM_WORLD, params, verbose=False)
+#     model.start()
+#     for line in nx.generate_edgelist(self.graph):
+#         #print(line)
+#         pass
 
 
             
