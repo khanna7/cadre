@@ -110,8 +110,7 @@ class Person(core.Agent):
             if self.n_incarcerations == 0:
                 if prob < probability_daily_incarceration:
                     self.update_attributes_at_incarceration_tick(tick)
-                    runner = schedule.runner()
-                    runner.schedule_event(self.when_to_release, partial(self.simulate_release, tick=self.when_to_release))
+
 
 
     def update_attributes_at_incarceration_tick(self, tick):
@@ -122,6 +121,8 @@ class Person(core.Agent):
         self.assign_sentence_duration_cat()
         self.assign_sentence_duration()
         self.when_to_release = tick+self.sentence_duration
+        runner = schedule.runner()
+        runner.schedule_event(self.when_to_release, partial(self.simulate_release, tick=self.when_to_release))
 
     def assign_sentence_duration_cat(self):
             ALL_SDEMP = load_params.params_list['SENTENCE_DURATION_EMP']

@@ -83,7 +83,7 @@ class Model:
     def at_end(self):
         self.data_set.close()
 
-    def step(self, verbose=True):
+    def step(self, verbose=False):
         tick = self.runner.schedule.tick   
 
         incaceration_states = []
@@ -107,7 +107,7 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-            if verbose == True:
+            if verbose:
                     print("Person ID: " + str(person.name))
                     print("Person age: ", round(person.age))
                     print("Person race: " + str(person.race))
@@ -129,18 +129,18 @@ class Model:
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
         
-        if verbose == True:
+        if verbose:
             print("Number of agents is: ", len(self.my_persons))
             print("Network size is", len(list(self.graph.nodes())), "nodes")
             print("Network edgecount is", len(list(self.graph.edges())), "edges")
 
-    def start(self, verbose=True):
+    def start(self, verbose=False):
         self.runner.execute()
                 
 
     def run(self, params: Dict):
         global model
-        model = Model(MPI.COMM_WORLD, params)
+        model = Model(MPI.COMM_WORLD, params, verbose=False)
         model.start()
         for line in nx.generate_edgelist(self.graph):
             #print(line)
