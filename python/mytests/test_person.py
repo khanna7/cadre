@@ -21,7 +21,6 @@ class TestPerson(unittest.TestCase):
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
 
         for person in model.my_persons:
             ages.append(person.age)
@@ -45,7 +44,7 @@ class TestPerson(unittest.TestCase):
         ]
         races = []
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
+        model.start()
 
         for person in model.my_persons:
             races.append(person.race)
@@ -143,7 +142,7 @@ class TestPerson(unittest.TestCase):
         sexes = []
 
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
+        model.start()
         
         for person in model.my_persons:
             smokers.append(person.smoker)
@@ -184,7 +183,7 @@ class TestPerson(unittest.TestCase):
         all_alco = []
 
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
+        model.start()
 
         for person in model.my_persons:
             all_alco.append(person.alc_use_status)
@@ -203,7 +202,7 @@ class TestPerson(unittest.TestCase):
         m_du_collect = []
 
         model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
-        model.run(params=TestPerson.params_list)
+        model.start()
 
         for person in model.my_persons:
             if person.female == 1:
