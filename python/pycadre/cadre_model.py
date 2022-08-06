@@ -77,7 +77,6 @@ class Model:
         loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers'}, rank=rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
                         load_params.params_list['counts_log_file'])
-        #self.data_set.log(0)
 
     def log_agents(self):
         tick = self.runner.schedule.tick   
@@ -113,23 +112,11 @@ class Model:
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
                 person.incarceration_duration += 1
-            #person.simulate_release(tick=tick)
             person.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
 
             incaceration_states.append(person.current_incarceration_status)
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
-
-            
-            # print("Person ID: " + str(person.name))
-            # print("Person age: ", round(person.age))
-            # print("Person race: " + str(person.race))
-            # print("Person Female: " + str(person.female))
-            # print("Person alcohol use status: " + str(person.alc_use_status))
-            # print("Person smoking status: " + str(person.smoker))
-            # print("Person last incarceration tick: " + str(person.last_incarceration_tick))
-            # print("Person last release tick: " + str(person.last_release_tick))
-            # print("Person incarceration duration: ", (person.incarceration_duration), "\n")
 
         n = len(self.my_persons)
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
@@ -141,10 +128,6 @@ class Model:
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
-       
-        # print("Number of agents is: ", len(self.my_persons))
-        # print("Network size is", len(list(self.graph.nodes())), "nodes")
-        # print("Network edgecount is", len(list(self.graph.edges())), "edges")
 
     def start(self):
         self.runner.execute()
