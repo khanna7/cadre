@@ -2,10 +2,14 @@ from pycadre import cadre_model
 import pycadre.load_params
 from mpi4py import MPI
 from repast4py import parameters
+import time
+
 import cProfile
 
 
 def main():
+
+   
 
     parser = parameters.create_args_parser()    
     args = parser.parse_args() 
@@ -19,5 +23,8 @@ def main():
     model.start()
   
 if __name__ == "__main__":
+    tic = time.perf_counter()
     main()
+    toc = time.perf_counter()    
+    print(f"Model ran in  {toc-tic:0.2f} seconds")
     
