@@ -106,8 +106,6 @@ class Model:
         incaceration_states = []
         smokers = []
         alc_use_status = []
-        self.log_agents()
-        self.agent_logger.write()
         
         self.data_set.log(tick)
 

@@ -8,9 +8,6 @@ import cProfile
 
 
 def main():
-
-   
-
     parser = parameters.create_args_parser()    
     args = parser.parse_args() 
 
