@@ -34,6 +34,7 @@ class Model:
         self.runner = schedule.init_schedule_runner(comm)
         self.runner.schedule_repeating_event(1, 1, self.step)
         self.runner.schedule_repeating_event(1.1, 10, self.log_agents)
+        self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
         self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_end_event(self.at_end)
@@ -94,6 +95,10 @@ class Model:
 
     def at_end(self):
         self.data_set.close()
+
+    def print_progress(self):
+        tick = self.runner.schedule.tick   
+        print("---------- Completing tick", tick, "----------")
 
     def step(self):
         tick = self.runner.schedule.tick   
