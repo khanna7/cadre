@@ -29,7 +29,7 @@ class Model:
 
     """   
     
-    def __init__(self, comm: MPI.Intracomm, params: Dict, verbose=True):
+    def __init__(self, comm: MPI.Intracomm, params: Dict):
         # create the schedule
         self.runner = schedule.init_schedule_runner(comm)
         self.runner.schedule_repeating_event(1, 1, self.step)
@@ -55,6 +55,7 @@ class Model:
             person = cadre_person.Person(name=i, rank=rank)  
             self.my_persons.append(person)
     
+        # initialize network
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
 
         # initialize the logging
@@ -83,7 +84,7 @@ class Model:
     def at_end(self):
         self.data_set.close()
 
-    def step(self, verbose=False):
+    def step(self, verbose=True):
         tick = self.runner.schedule.tick   
 
         incaceration_states = []
