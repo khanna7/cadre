@@ -35,6 +35,7 @@ class Model:
         self.runner.schedule_repeating_event(1, 1, self.step)
         self.runner.schedule_repeating_event(1.1, 10, self.log_agents)
         self.runner.schedule_stop(params['STOP_AT'])
+        self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -45,9 +46,6 @@ class Model:
         self.my_persons = [] 
         self.graph = []
         
-        tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
-                                'agent_smoking_status', 'agent_last_incarceration_tick', 'agent_last_release_tick', 
-                                'agent_current_incarceration_status']
         rank = comm.Get_rank()
 
         # initialize agents and attributes
@@ -58,7 +56,10 @@ class Model:
         # initialize network
         self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
 
-        # initialize the logging
+        # initialize the agent logging
+        tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
+                        'agent_smoking_status', 'agent_last_incarceration_tick', 'agent_last_release_tick', 
+                        'agent_current_incarceration_status']
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
         agent_count = len(self.my_persons)
@@ -66,7 +67,12 @@ class Model:
         current_smokers = []
         AUD = []
         abstainers = []
+        
+        # initialize the network logging
+        network_tabular_logging_cols = ['tick', 'p1', 'p2']
+        self.network_logger = logging.TabularLogger(comm, load_params.params_list['network_log_file'], network_tabular_logging_cols)
 
+        # initialize the counts logging
         self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers), len(AUD), len(abstainers))
         loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers'}, rank=rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
@@ -80,6 +86,12 @@ class Model:
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
         self.agent_logger.write()
+
+    def log_network(self):
+        tick = self.runner.schedule.tick   
+        for line in nx.generate_edgelist(self.graph):
+                self.network_logger.log_row(tick, line)
+        self.network_logger.write()
 
     def at_end(self):
         self.data_set.close()
@@ -138,14 +150,6 @@ class Model:
     def start(self, verbose=False):
         self.runner.execute()
                 
-
-# def run(self, params: Dict):
-#     global model
-#     model = Model(MPI.COMM_WORLD, params, verbose=False)
-#     model.start()
-#     for line in nx.generate_edgelist(self.graph):
-#         #print(line)
-#         pass
 
 
             

@@ -105,6 +105,7 @@ SMOKING_PREV:
 
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
+network_log_file: 'output/network_log.csv'
 
 
 
