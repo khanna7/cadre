@@ -7,20 +7,17 @@ import pycadre.load_params
 from mpi4py import MPI
 
 class TestPerson(unittest.TestCase):
-    params_list = pycadre.load_params.load_params('../../cadre/python/myparams/model_params.yaml', '')
-
-    TEST_N = 10000
-    TEST_NSTEPS = 1
+    params_list = pycadre.load_params.load_params('../../cadre/python/test_data/test_params.yaml', '')
 
     def test_age_assignment(self):
 
         ages = []
-        MIN_AGE = pycadre.load_params.params_list['MIN_AGE']
+        MIN_AGE = TestPerson.params_list['MIN_AGE']
         MAX_AGE = TestPerson.params_list['MAX_AGE']
 
         mean_age_target = (MIN_AGE+MAX_AGE)/2
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
         for person in model.my_persons:
             ages.append(person.age)
@@ -29,7 +26,7 @@ class TestPerson(unittest.TestCase):
             self.assertTrue(age >= MIN_AGE)
             self.assertTrue(age <= MAX_AGE)
 
-            if TestPerson.TEST_N >= 1000:
+            if TestPerson.params_list['N_AGENTS'] >= 1000:
                 # only try this if n is sufficiently large, or test fails
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
@@ -43,7 +40,7 @@ class TestPerson(unittest.TestCase):
             RD['Asian']
         ]
         races = []
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
         for person in model.my_persons:
@@ -67,7 +64,7 @@ class TestPerson(unittest.TestCase):
         ages_final = []
         TICK_TO_YEAR_RATIO = TestPerson.params_list['TICK_TO_YEAR_RATIO']  # xx ticks make a year
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         
 
         for person in model.my_persons:
@@ -85,7 +82,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
         # test case where 0 < incarceration probability < 1
         probability_daily_incarceration = 0.5
@@ -94,7 +91,7 @@ class TestPerson(unittest.TestCase):
             p.simulate_incarceration(tick=nsteps, probability_daily_incarceration=probability_daily_incarceration)
             inc_states.append(p.current_incarceration_status)
         
-        if TestPerson.TEST_N >= 1000:
+        if TestPerson.params_list['N_AGENTS'] >= 1000:
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 
         # test case where incarceration probability = 1
@@ -141,7 +138,7 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
         
         for person in model.my_persons:
@@ -182,7 +179,7 @@ class TestPerson(unittest.TestCase):
         nsteps = 25
         all_alco = []
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
         for person in model.my_persons:
@@ -201,7 +198,7 @@ class TestPerson(unittest.TestCase):
         f_du_collect = []
         m_du_collect = []
 
-        model = cadre_model.Model(verbose=False, comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
         for person in model.my_persons:

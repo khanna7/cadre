@@ -14,7 +14,7 @@ def main():
     
     STOP_AT = params_list['STOP_AT']
     N = params_list['N_AGENTS']
-    model = cadre_model.Model(params=params_list, verbose=True, comm=MPI.COMM_WORLD)
+    model = cadre_model.Model(params=params_list, comm=MPI.COMM_WORLD)
     #model.run(params=params_list)
     model.start()
   
