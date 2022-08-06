@@ -96,7 +96,7 @@ class Model:
     def at_end(self):
         self.data_set.close()
 
-    def step(self, verbose=True):
+    def step(self):
         tick = self.runner.schedule.tick   
 
         incaceration_states = []
@@ -120,16 +120,16 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-            if verbose:
-                    print("Person ID: " + str(person.name))
-                    print("Person age: ", round(person.age))
-                    print("Person race: " + str(person.race))
-                    print("Person Female: " + str(person.female))
-                    print("Person alcohol use status: " + str(person.alc_use_status))
-                    print("Person smoking status: " + str(person.smoker))
-                    print("Person last incarceration tick: " + str(person.last_incarceration_tick))
-                    print("Person last release tick: " + str(person.last_release_tick))
-                    print("Person incarceration duration: ", (person.incarceration_duration), "\n")
+            
+            # print("Person ID: " + str(person.name))
+            # print("Person age: ", round(person.age))
+            # print("Person race: " + str(person.race))
+            # print("Person Female: " + str(person.female))
+            # print("Person alcohol use status: " + str(person.alc_use_status))
+            # print("Person smoking status: " + str(person.smoker))
+            # print("Person last incarceration tick: " + str(person.last_incarceration_tick))
+            # print("Person last release tick: " + str(person.last_release_tick))
+            # print("Person incarceration duration: ", (person.incarceration_duration), "\n")
 
         n = len(self.my_persons)
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
@@ -141,13 +141,12 @@ class Model:
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
-        
-        if verbose:
-            print("Number of agents is: ", len(self.my_persons))
-            print("Network size is", len(list(self.graph.nodes())), "nodes")
-            print("Network edgecount is", len(list(self.graph.edges())), "edges")
+       
+        # print("Number of agents is: ", len(self.my_persons))
+        # print("Network size is", len(list(self.graph.nodes())), "nodes")
+        # print("Network edgecount is", len(list(self.graph.edges())), "edges")
 
-    def start(self, verbose=False):
+    def start(self):
         self.runner.execute()
                 
 
