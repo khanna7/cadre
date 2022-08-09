@@ -42,20 +42,44 @@ class Model:
         # create the context to hold the agents and manage cross process
         # synchronization
         self.context = ctx.SharedContext(comm)
-
         self.comm = comm
+        rank = comm.Get_rank()
+        #self.rank = self.comm.Get_rank()
+
         self.my_persons = [] 
         self.graph = []
+        n_agents = load_params.params_list['N_AGENTS']
         
-        rank = comm.Get_rank()
-
         # initialize agents and attributes
-        for i in range(load_params.params_list['N_AGENTS']):
+        for i in range(n_agents):
             person = cadre_person.Person(name=i, rank=rank)  
             self.my_persons.append(person)
-    
-        # initialize network
-        self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
+            self.context.add(person)
+
+        #print("Context type: ", type(self.context))
+        #print("Context: ", (self.context))
+        #ctx_agents = self.context.agents()
+        #iterator = iter(ctx_agents)
+        #print("Iterator:", iterator)
+        #ctx_projection = self.context.projections()
+        #print("Type of self.context.agents is", type(ctx_agents))
+        #print("self.context.agents: ", odict.items())
+
+        ##for agent in self.context.agents():
+        #    print(agent)
+
+        #print(self.context.size().values())
+        #print("Agent context methods:", dir(self.context.agents.values()))
+        #print("Number of agents:", list(self.context.size().values())[0])
+
+        #for person in self.my_persons:
+        #    print(person)
+
+        # initialize network and add projection to context
+        self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
+        #network = nx.erdos_renyi_graph(n_agents, 0.001)
+        #self.context.get_projection(network)
+        #self.context.add_projection(nx.erdos_renyi_graph(n_agents, 0.001))
 
         # initialize the agent logging
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
@@ -64,6 +88,7 @@ class Model:
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
         agent_count = len(self.my_persons)
+        #agent_count = self.context.agents()
         n_incarcerated = []
         current_smokers = []
         AUD = []
@@ -81,7 +106,8 @@ class Model:
 
     def log_agents(self):
         tick = self.runner.schedule.tick   
-        for person in self.my_persons:
+        #for person in self.my_persons:
+        for person in self.context.agents():
             self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
@@ -109,7 +135,8 @@ class Model:
         
         self.data_set.log(tick)
 
-        for person in self.my_persons:
+        #for person in self.my_persons:
+        for person in self.context.agents():
             person.aging() 
             person.transition_alc_use()
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
@@ -121,12 +148,15 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-        n = len(self.my_persons)
+        #n = len(self.my_persons)
+        #n = len(self.context.agents())
+        n = list(self.context.size().values())[0]
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
         self.counts.pop_size = len(self.my_persons)
+        #self.counts.pop_size = len(self.context.agents())
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
