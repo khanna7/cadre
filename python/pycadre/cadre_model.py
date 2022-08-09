@@ -62,7 +62,7 @@ class Model:
         self.network = network.UndirectedSharedNetwork(network_init, comm)
         self.context.add_projection(self.network)
 
-        print("Network type", type(self.network))
+        #print("Network type", type(self.network))
    
 
         # initialize the agent logging
@@ -150,7 +150,6 @@ class Model:
                 exits.append(exit)
 
         for p in exits: 
-            print(p)
             self.remove_agent(p)
   
     def remove_agent(self, agent):
