@@ -134,8 +134,6 @@ class Model:
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        #self.counts.pop_size = len(self.my_persons)
-        #self.counts.pop_size = len(self.context.agents())
         self.counts.pop_size = list(self.context.size().values())[0]
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
