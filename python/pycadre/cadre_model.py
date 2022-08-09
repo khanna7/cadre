@@ -2,7 +2,7 @@ from typing import Dict
 import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
-from repast4py import logging, schedule
+from repast4py import logging, schedule, network
 from repast4py import context as ctx
 from mpi4py import MPI
 import csv
@@ -42,20 +42,28 @@ class Model:
         # create the context to hold the agents and manage cross process
         # synchronization
         self.context = ctx.SharedContext(comm)
-
         self.comm = comm
+        rank = comm.Get_rank()
+        #self.rank = self.comm.Get_rank()
+
         self.my_persons = [] 
         self.graph = []
+        n_agents = load_params.params_list['N_AGENTS']
         
-        rank = comm.Get_rank()
-
         # initialize agents and attributes
-        for i in range(load_params.params_list['N_AGENTS']):
+        for i in range(n_agents):
             person = cadre_person.Person(name=i, rank=rank)  
             self.my_persons.append(person)
-    
-        # initialize network
-        self.graph = nx.erdos_renyi_graph(len(self.my_persons), 0.001)
+            self.context.add(person)
+
+        # initialize network and add projection to context
+        #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
+        network_init = nx.erdos_renyi_graph(n_agents, 0.001)
+        self.network = network.UndirectedSharedNetwork(network_init, comm)
+        self.context.add_projection(self.network)
+
+        #print("Network type", type(self.network))
+   
 
         # initialize the agent logging
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
@@ -81,7 +89,7 @@ class Model:
 
     def log_agents(self):
         tick = self.runner.schedule.tick   
-        for person in self.my_persons:
+        for person in self.context.agents():
             self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
                                         person.current_incarceration_status)
@@ -89,9 +97,10 @@ class Model:
 
     def log_network(self):
         tick = self.runner.schedule.tick   
-        for line in nx.generate_edgelist(self.graph):
-                self.network_logger.log_row(tick, line)
-        self.network_logger.write()
+        # for line in nx.generate_edgelist(self.network):
+        #          self.network_logger.log_row(tick, line)
+        # self.network_logger.write()
+        pass
 
     def at_end(self):
         self.data_set.close()
@@ -109,8 +118,9 @@ class Model:
         
         self.data_set.log(tick)
 
-        for person in self.my_persons:
+        for person in self.context.agents():
             person.aging() 
+            
             person.transition_alc_use()
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
@@ -121,16 +131,29 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-        n = len(self.my_persons)
+        n = list(self.context.size().values())[0]
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        self.counts.pop_size = len(self.my_persons)
+        self.counts.pop_size = list(self.context.size().values())[0]
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
+
+        exits = []
+    
+        for p in self.context.agents():
+            exit = p.exit_of_age()
+            if exit:
+                exits.append(exit)
+
+        for p in exits: 
+            self.remove_agent(p)
+  
+    def remove_agent(self, agent):
+        self.context.remove(agent)
 
     def start(self):
         self.runner.execute()
