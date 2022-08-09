@@ -56,25 +56,6 @@ class Model:
             self.my_persons.append(person)
             self.context.add(person)
 
-        #print("Context type: ", type(self.context))
-        #print("Context: ", (self.context))
-        #ctx_agents = self.context.agents()
-        #iterator = iter(ctx_agents)
-        #print("Iterator:", iterator)
-        #ctx_projection = self.context.projections()
-        #print("Type of self.context.agents is", type(ctx_agents))
-        #print("self.context.agents: ", odict.items())
-
-        ##for agent in self.context.agents():
-        #    print(agent)
-
-        #print(self.context.size().values())
-        #print("Agent context methods:", dir(self.context.agents.values()))
-        #print("Number of agents:", list(self.context.size().values())[0])
-
-        #for person in self.my_persons:
-        #    print(person)
-
         # initialize network and add projection to context
         self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
         #network = nx.erdos_renyi_graph(n_agents, 0.001)
@@ -148,15 +129,14 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-        #n = len(self.my_persons)
-        #n = len(self.context.agents())
         n = list(self.context.size().values())[0]
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        self.counts.pop_size = len(self.my_persons)
+        #self.counts.pop_size = len(self.my_persons)
         #self.counts.pop_size = len(self.context.agents())
+        self.counts.pop_size = list(self.context.size().values())[0]
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
