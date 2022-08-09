@@ -150,13 +150,11 @@ class Model:
                 exits.append(exit)
 
         for p in exits: 
+            print(p)
             self.remove_agent(p)
   
     def remove_agent(self, agent):
         self.context.remove(agent)
-        
-
-
 
     def start(self):
         self.runner.execute()

@@ -68,10 +68,7 @@ class Person(core.Agent):
     def exit_of_age(self):
             MAX_AGE = load_params.params_list['MAX_AGE']
             if self.age > MAX_AGE:
-                #self.exit = 1
-                #print("Person ID:", self.name, "Person age: ", self.age, "Max age: ", MAX_AGE)
-                return self.age > MAX_AGE 
-            #return self.exit
+                return self 
 
     def transition_alc_use(self):
 
