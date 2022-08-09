@@ -87,7 +87,6 @@ class Model:
 
     def log_agents(self):
         tick = self.runner.schedule.tick   
-        #for person in self.my_persons:
         for person in self.context.agents():
             self.agent_logger.log_row(tick, person.name, round(person.age), person.race, person.female, person.alc_use_status, 
                                         person.smoker, person.last_incarceration_tick, person.last_release_tick, 
