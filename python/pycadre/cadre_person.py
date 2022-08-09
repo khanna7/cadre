@@ -65,6 +65,14 @@ class Person(core.Agent):
         TICK_TO_YEAR_RATIO = load_params.params_list['TICK_TO_YEAR_RATIO']
         self.age += 1/TICK_TO_YEAR_RATIO
 
+    def exit_of_age(self):
+            MAX_AGE = load_params.params_list['MAX_AGE']
+            if self.age > MAX_AGE:
+                #self.exit = 1
+                #print("Person ID:", self.name, "Person age: ", self.age, "Max age: ", MAX_AGE)
+                return self.age > MAX_AGE 
+            #return self.exit
+
     def transition_alc_use(self):
 
         # level up

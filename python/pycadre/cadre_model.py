@@ -2,7 +2,7 @@ from typing import Dict
 import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
-from repast4py import logging, schedule
+from repast4py import logging, schedule, network
 from repast4py import context as ctx
 from mpi4py import MPI
 import csv
@@ -57,10 +57,13 @@ class Model:
             self.context.add(person)
 
         # initialize network and add projection to context
-        self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
-        #network = nx.erdos_renyi_graph(n_agents, 0.001)
-        #self.context.get_projection(network)
-        #self.context.add_projection(nx.erdos_renyi_graph(n_agents, 0.001))
+        #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
+        network_init = nx.erdos_renyi_graph(n_agents, 0.001)
+        self.network = network.UndirectedSharedNetwork(network_init, comm)
+        self.context.add_projection(self.network)
+
+        print("Network type", type(self.network))
+   
 
         # initialize the agent logging
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
@@ -69,7 +72,6 @@ class Model:
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
         agent_count = len(self.my_persons)
-        #agent_count = self.context.agents()
         n_incarcerated = []
         current_smokers = []
         AUD = []
@@ -95,9 +97,10 @@ class Model:
 
     def log_network(self):
         tick = self.runner.schedule.tick   
-        for line in nx.generate_edgelist(self.graph):
-                self.network_logger.log_row(tick, line)
-        self.network_logger.write()
+        # for line in nx.generate_edgelist(self.network):
+        #          self.network_logger.log_row(tick, line)
+        # self.network_logger.write()
+        pass
 
     def at_end(self):
         self.data_set.close()
@@ -117,6 +120,7 @@ class Model:
 
         for person in self.context.agents():
             person.aging() 
+            
             person.transition_alc_use()
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
@@ -137,6 +141,22 @@ class Model:
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
+
+        exits = []
+    
+        for p in self.context.agents():
+            exit = p.exit_of_age()
+            if exit:
+                exits.append(exit)
+
+        for p in exits: 
+            self.remove_agent(p)
+  
+    def remove_agent(self, agent):
+        self.context.remove(agent)
+        
+
+
 
     def start(self):
         self.runner.execute()
