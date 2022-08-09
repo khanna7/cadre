@@ -116,7 +116,6 @@ class Model:
         
         self.data_set.log(tick)
 
-        #for person in self.my_persons:
         for person in self.context.agents():
             person.aging() 
             person.transition_alc_use()
