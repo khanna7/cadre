@@ -13,10 +13,24 @@
  mpirun -n 4 python3 -m pycadre myparams/model_params.yaml
 ```
 
-### To Test Model
+### Specify parameters through command line 
+```
+python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}'
+```
 
+### Testing: Specific Method
 ```python -m unittest mytests.test_person.TestPerson.test_simulate_incarceration```
 
-to test `test_simulate_incarceration` method in `TestPerson` class in `test_person` module in `mytests`.
+to test `test_simulate_incarceration` method in `TestPerson` class in `test_person` module in `mytests`
 
+
+### Test Coverage
+```
+coverage run -m unittest discover mytests
+coverage report
+```
+
+(Use `coverage run -m --source=pycadre/ unittest discover mytests` to avoid unnecessary report on top matter on personal Macbook. )
+
+More on [Coverage](https://coverage.readthedocs.io/en/6.4.1/)
 
