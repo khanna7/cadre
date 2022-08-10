@@ -17,6 +17,7 @@ class CountsLog:
     n_AUD: int = 0
     n_alcohol_abstainers: int = 0
     n_exits: int=0
+    n_entries: int=0
 
 class Model:
     """
@@ -44,18 +45,18 @@ class Model:
         # synchronization
         self.context = ctx.SharedContext(comm)
         self.comm = comm
-        rank = comm.Get_rank()
+        self.rank = comm.Get_rank()
         #self.rank = self.comm.Get_rank()
 
-        self.my_persons = [] 
         self.graph = []
         n_agents = load_params.params_list['N_AGENTS']
         
         # initialize agents and attributes
         for i in range(n_agents):
-            person = cadre_person.Person(name=i, rank=rank)  
-            self.my_persons.append(person)
+            person = cadre_person.Person(name=i, rank=self.rank)  
             self.context.add(person)
+
+        self.name = n_agents
 
         # initialize network and add projection to context
         #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
@@ -72,7 +73,7 @@ class Model:
                         'agent_current_incarceration_status']
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
-        agent_count = len(self.my_persons)
+        agent_count = list(self.context.size().values())[0]
         n_incarcerated = []
         current_smokers = []
         AUD = []
@@ -86,8 +87,8 @@ class Model:
         self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers), len(AUD), len(abstainers))
         loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 
                                         'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers', 
-                                        'n_exits':'n_exits'},
-                                        rank=rank)
+                                        'n_exits':'n_exits', 'n_entries':'n_entries'},
+                                        rank=self.rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
                         load_params.params_list['counts_log_file'])
 
@@ -147,10 +148,14 @@ class Model:
             if exit:
                 exits.append(exit)
 
-        print("Number of exits is", len(exits))
-
         for p in exits: 
             self.remove_agent(p)
+
+        n_entries = len(exits)
+        if n_entries > 0:
+            for i in range(n_entries):
+                person = cadre_person.Person(name=i, rank=self.rank)  
+                self.add_agent(person)
 
         self.counts.pop_size = list(self.context.size().values())[0]
         self.counts.n_incarcerated = sum(incaceration_states)
@@ -158,9 +163,15 @@ class Model:
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
         self.counts.n_exits = len(exits)
-  
+        self.counts.n_entries = n_entries
+
     def remove_agent(self, agent):
         self.context.remove(agent)
+
+    def add_agent(self, agent):
+        p = cadre_person.Person(self.name, self.rank)
+        self.name += 1
+        self.context.add(p)
 
     def start(self):
         self.runner.execute()
