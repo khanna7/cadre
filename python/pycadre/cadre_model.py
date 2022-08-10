@@ -16,6 +16,7 @@ class CountsLog:
     n_current_smokers: int = 0
     n_AUD: int = 0
     n_alcohol_abstainers: int = 0
+    n_exits: int=0
 
 class Model:
     """
@@ -33,7 +34,7 @@ class Model:
         # create the schedule
         self.runner = schedule.init_schedule_runner(comm)
         self.runner.schedule_repeating_event(1, 1, self.step)
-        self.runner.schedule_repeating_event(1.1, 10, self.log_agents)
+        self.runner.schedule_repeating_event(1, 10, self.log_agents)
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
         self.runner.schedule_end_event(self.log_network)
@@ -83,7 +84,10 @@ class Model:
 
         # initialize the counts logging
         self.counts = CountsLog(agent_count, len(n_incarcerated), len(current_smokers), len(AUD), len(abstainers))
-        loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers'}, rank=rank)
+        loggers = logging.create_loggers(self.counts, op=MPI.SUM, names={'pop_size':'pop_size', 'n_incarcerated':'n_incarcerated', 'n_current_smokers':'n_current_smokers', 
+                                        'n_AUD':'n_AUD', 'n_alcohol_abstainers':'n_alcohol_abstainers', 
+                                        'n_exits':'n_exits'},
+                                        rank=rank)
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD, 
                         load_params.params_list['counts_log_file'])
 
@@ -136,12 +140,6 @@ class Model:
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        self.counts.pop_size = list(self.context.size().values())[0]
-        self.counts.n_incarcerated = sum(incaceration_states)
-        self.counts.n_current_smokers = len(current_smokers)
-        self.counts.n_AUD = len(AUD_persons)
-        self.counts.n_alcohol_abstainers = len(alc_abstainers)
-
         exits = []
     
         for p in self.context.agents():
@@ -149,8 +147,17 @@ class Model:
             if exit:
                 exits.append(exit)
 
+        print("Number of exits is", len(exits))
+
         for p in exits: 
             self.remove_agent(p)
+
+        self.counts.pop_size = list(self.context.size().values())[0]
+        self.counts.n_incarcerated = sum(incaceration_states)
+        self.counts.n_current_smokers = len(current_smokers)
+        self.counts.n_AUD = len(AUD_persons)
+        self.counts.n_alcohol_abstainers = len(alc_abstainers)
+        self.counts.n_exits = len(exits)
   
     def remove_agent(self, agent):
         self.context.remove(agent)
