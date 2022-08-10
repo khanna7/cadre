@@ -5,6 +5,7 @@ import pandas as pd
 from pycadre import cadre_model
 import pycadre.load_params
 from mpi4py import MPI
+from repast4py import context as ctx
 
 class TestPerson(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/test_data/test_params.yaml', '')
@@ -19,7 +20,7 @@ class TestPerson(unittest.TestCase):
 
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
-        for person in model.my_persons:
+        for person in model.context.agents():
             ages.append(person.age)
 
         for age in ages:
@@ -43,7 +44,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
-        for person in model.my_persons:
+        for person in model.context.agents():
             races.append(person.race)
 
         # print("Races: "  + str(races))
@@ -67,11 +68,9 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         
 
-        for person in model.my_persons:
+        for person in model.context.agents():
             ages_init.append(person.age)
-
-        model.step()
-        for person in model.my_persons:
+            person.aging()
             ages_final.append(person.age)
 
         diff_in_ages = np.subtract(np.array(ages_final), np.array(ages_init))
@@ -86,20 +85,21 @@ class TestPerson(unittest.TestCase):
 
         # test case where 0 < incarceration probability < 1
         probability_daily_incarceration = 0.5
-        for p in model.my_persons:
-            self.assertTrue(p.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
-            p.simulate_incarceration(tick=nsteps, probability_daily_incarceration=probability_daily_incarceration)
-            inc_states.append(p.current_incarceration_status)
+
+        for person in model.context.agents():
+            self.assertTrue(person.current_incarceration_status == 0, "all persons are not initially un-incarcerated")   
+            person.simulate_incarceration(tick=nsteps, probability_daily_incarceration=probability_daily_incarceration)
+            inc_states.append(person.current_incarceration_status)
         
         if TestPerson.params_list['N_AGENTS'] >= 1000:
             self.assertAlmostEqual(mean(inc_states), probability_daily_incarceration, delta=0.1)
 
         # test case where incarceration probability = 1
         probability_daily_incarceration=1 
-        for p in model.my_persons:
-            p.simulate_incarceration(tick=nsteps, probability_daily_incarceration=1)
-            inc_states.append(p.current_incarceration_status)
-            self.assertTrue(p.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
+        for person in model.context.agents():
+            person.simulate_incarceration(tick=nsteps, probability_daily_incarceration=1)
+            inc_states.append(person.current_incarceration_status)
+            self.assertTrue(person.current_incarceration_status == 1, "not incarcerated, even though probability of incarceration is 1")
  
         return model
 
@@ -108,12 +108,13 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
             
-        for p in model.my_persons:
+        for p in model.context.agents():
             # print(p.current_incarceration_status)
             inc_states.append(p.current_incarceration_status)
 
         inc_states = [] #make incarceration status list empty
-        for p in model.my_persons:
+
+        for p in model.context.agents():
             p.sentence_duration = 0  # assign
             p.simulate_release(tick=nsteps)
             inc_states.append(p.current_incarceration_status)
@@ -141,7 +142,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
         
-        for person in model.my_persons:
+        for person in model.context.agents():
             smokers.append(person.smoker)
             races.append(person.race)
             sexes.append(person.female)
@@ -182,7 +183,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
-        for person in model.my_persons:
+        for person in model.context.agents():
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
@@ -201,7 +202,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
-        for person in model.my_persons:
+        for person in model.context.agents():
             if person.female == 1:
                 f_du_collect.append(person.incarceration_duration)
             else:
