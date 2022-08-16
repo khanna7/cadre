@@ -73,7 +73,8 @@ class Model:
                         'agent_current_incarceration_status']
         self.agent_logger = logging.TabularLogger(comm, load_params.params_list['agent_log_file'], tabular_logging_cols)
 
-        agent_count = list(self.context.size().values())[0]
+        #agent_count = list(self.context.size().values())[0]
+        agent_count = self.context.size()[-1]
         n_incarcerated = []
         current_smokers = []
         AUD = []
@@ -136,7 +137,7 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-        n = list(self.context.size().values())[0]
+        n = self.context.size()[-1]
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
@@ -156,8 +157,9 @@ class Model:
             for i in range(n_entries):
                 person = cadre_person.Person(name=i, rank=self.rank)  
                 self.add_agent(person)
+            pass
 
-        self.counts.pop_size = list(self.context.size().values())[0]
+        self.counts.pop_size = self.context.size()[-1]
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
