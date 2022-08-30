@@ -220,3 +220,10 @@ class Person(core.Agent):
                 self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
   
 
+    def create_person(nid, agent_type, rank, **kwargs):
+        return Person(nid, agent_type, rank)
+
+
+    def restore_person(agent_data):
+        uid = agent_data[0]
+        return Person(uid[0], uid[1], uid[2], agent_data[1])

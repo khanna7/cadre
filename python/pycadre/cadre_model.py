@@ -2,7 +2,9 @@ from typing import Dict
 import networkx as nx
 from pycadre import cadre_person
 import pycadre.load_params as load_params
-from repast4py import logging, schedule, network
+from repast4py import logging, schedule
+from repast4py import network
+from repast4py.network import write_network, read_network
 from repast4py import context as ctx
 from mpi4py import MPI
 import csv
@@ -46,6 +48,7 @@ class Model:
         self.context = ctx.SharedContext(comm)
         self.comm = comm
         self.rank = comm.Get_rank()
+        
         #self.rank = self.comm.Get_rank()
 
         self.graph = []
@@ -60,8 +63,13 @@ class Model:
 
         # initialize network and add projection to context
         #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
+        fpath = params['network_file']
         network_init = nx.erdos_renyi_graph(n_agents, 0.001)
-        self.network = network.UndirectedSharedNetwork(network_init, comm)
+        write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
+        read_network(fpath, self.context, cadre_person.Person.create_person, cadre_person.Person.restore_person)
+        #read_network(fpath, self.context)
+        #self.network = network.UndirectedSharedNetwork(network_init, comm)
+        self.network = self.context.get_projection('network_init')
         self.context.add_projection(self.network)
 
         #print("Network type", type(self.network))
