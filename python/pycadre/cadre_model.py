@@ -56,7 +56,7 @@ class Model:
         
         # initialize agents and attributes
         for i in range(n_agents):
-            person = cadre_person.Person(name=i, rank=self.rank)  
+            person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
             self.context.add(person)
 
         self.name = n_agents
@@ -66,11 +66,11 @@ class Model:
         fpath = params['network_file']
         network_init = nx.erdos_renyi_graph(n_agents, 0.001)
         write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
-        read_network(fpath, self.context, cadre_person.Person.create_person, cadre_person.Person.restore_person)
+        read_network(fpath, self.context, cadre_person.create_person, cadre_person.restore_person)
         #read_network(fpath, self.context)
         #self.network = network.UndirectedSharedNetwork(network_init, comm)
         self.network = self.context.get_projection('network_init')
-        self.context.add_projection(self.network)
+        #self.context.add_projection(self.network)
 
         #print("Network type", type(self.network))
    
@@ -111,10 +111,10 @@ class Model:
 
     def log_network(self):
         tick = self.runner.schedule.tick   
-        # for line in nx.generate_edgelist(self.network):
-        #          self.network_logger.log_row(tick, line)
-        # self.network_logger.write()
-        pass
+        for line in network.generate_edgelist(self.network["EDGES"]):
+                 self.network_logger.log_row(tick, line)
+        self.network_logger.write()
+        #pass
 
     def at_end(self):
         self.data_set.close()
@@ -163,7 +163,7 @@ class Model:
         n_entries = len(exits)
         if n_entries > 0:
             for i in range(n_entries):
-                person = cadre_person.Person(name=i, rank=self.rank)  
+                person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
                 self.add_agent(person)
             pass
 
@@ -179,7 +179,7 @@ class Model:
         self.context.remove(agent)
 
     def add_agent(self, agent):
-        p = cadre_person.Person(self.name, self.rank)
+        p = cadre_person.Person(self.name, cadre_person.Person.TYPE, self.rank)
         self.name += 1
         self.context.add(p)
 

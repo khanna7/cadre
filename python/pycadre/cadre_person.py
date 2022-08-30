@@ -16,7 +16,7 @@ class Person(core.Agent):
     """
     TYPE = 0 
 
-    def __init__(self, name:int, rank:int):
+    def __init__(self, name:int, type:int, rank:int):
 
         
         super().__init__(id=name, type=Person.TYPE, rank=rank)
@@ -220,10 +220,13 @@ class Person(core.Agent):
                 self.smoker = random.choice(SMOKING_CATS, p=SMOKING_PREV_ASIAN_FEMALE) 
   
 
-    def create_person(nid, agent_type, rank, **kwargs):
-        return Person(nid, agent_type, rank)
+def create_person(nid, agent_type, rank, **kwargs):
+    print("nid: ", id)
+    print("agent_type ", Person.TYPE)
+    print("agent_rank ", rank)
+    return Person(nid, agent_type, rank)
 
 
-    def restore_person(agent_data):
-        uid = agent_data[0]
-        return Person(uid[0], uid[1], uid[2], agent_data[1])
+def restore_person(agent_data):
+    uid = agent_data[0]
+    return Person(uid[0], uid[1], uid[2], agent_data[1])
