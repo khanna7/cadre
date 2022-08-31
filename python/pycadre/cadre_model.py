@@ -58,7 +58,7 @@ class Model:
         # initialize agents and attributes
         for i in range(n_agents):
             person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
-            self.context.add(person)
+            #self.context.add(person)
 
         self.name = n_agents
 
@@ -68,6 +68,7 @@ class Model:
         network_init = nx.erdos_renyi_graph(n_agents, 0.001)
         write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
         read_network(fpath, self.context, cadre_person.create_person, cadre_person.restore_person)
+        #read_network(fpath, self.context, self.context.agents(), cadre_person.restore_person)
         #read_network(fpath, self.context)
         #self.network = network.UndirectedSharedNetwork(network_init, comm)
         self.network = self.context.get_projection('network_init')
