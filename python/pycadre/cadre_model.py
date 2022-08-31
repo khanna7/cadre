@@ -41,6 +41,7 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
         self.runner.schedule_end_event(self.log_network)
+        #self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -110,11 +111,15 @@ class Model:
         self.agent_logger.write()
 
     def log_network(self):
-        tick = self.runner.schedule.tick   
-        for line in network.generate_edgelist(self.network["EDGES"]):
-                 self.network_logger.log_row(tick, line)
-        self.network_logger.write()
-        #pass
+        g = self.network.graph
+        print("Network: ", g)
+        print("Network Type: ", type(g))
+        print("Nodes: ", g.nodes)
+        print("Edges: ", g.edges)
+        #print("Network: ", self.net)
+        
+        #write_network(graph=self.network, network_name='network_list', fpath=fpath, n_ranks=1)
+        pass
 
     def at_end(self):
         self.data_set.close()

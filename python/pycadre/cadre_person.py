@@ -1,4 +1,5 @@
 from functools import partial
+from unicodedata import name
 from repast4py import core, schedule
 from numpy import random
 import pycadre.load_params as load_params
@@ -221,7 +222,7 @@ class Person(core.Agent):
   
 
 def create_person(nid, agent_type, rank, **kwargs):
-    print("nid: ", id)
+    print("nid: ", name)
     print("agent_type ", Person.TYPE)
     print("agent_rank ", rank)
     return Person(nid, agent_type, rank)
