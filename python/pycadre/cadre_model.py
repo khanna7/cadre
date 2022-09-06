@@ -194,9 +194,9 @@ class Model:
         self.context.remove(agent)
 
     def add_agent(self, agent):
-        p = cadre_person.Person(self.name, cadre_person.Person.TYPE, self.rank)
+        #p = cadre_person.Person(self.name, cadre_person.Person.TYPE, self.rank)
         self.name += 1
-        self.context.add(p)
+        self.context.add(agent)
 
     def start(self):
         self.runner.execute()
