@@ -55,10 +55,10 @@ class Model:
         self.graph = []
         n_agents = load_params.params_list['N_AGENTS']
         
-        # initialize agents and attributes
-        for i in range(n_agents):
-            person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
-            #self.context.add(person)
+        # # initialize agents and attributes
+        # for i in range(n_agents):
+        #     person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
+        #     #self.context.add(person)
 
         self.name = n_agents
 
