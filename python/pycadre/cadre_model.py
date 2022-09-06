@@ -65,8 +65,8 @@ class Model:
         # initialize network and add projection to context
         #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
         fpath = params['network_file']
-        network_init = nx.erdos_renyi_graph(n_agents, 0.001)
-        write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
+        #network_init = nx.erdos_renyi_graph(n_agents, 0.001)
+        #write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
         read_network(fpath, self.context, cadre_person.create_person, cadre_person.restore_person)
         #read_network(fpath, self.context, self.context.agents(), cadre_person.restore_person)
         #read_network(fpath, self.context)
