@@ -55,27 +55,13 @@ class Model:
         self.graph = []
         n_agents = load_params.params_list['N_AGENTS']
         
-        # # initialize agents and attributes
-        # for i in range(n_agents):
-        #     person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
-        #     #self.context.add(person)
 
         self.name = n_agents
 
         # initialize network and add projection to context
-        #self.graph = nx.erdos_renyi_graph(n_agents, 0.001)
         fpath = params['network_file']
-        #network_init = nx.erdos_renyi_graph(n_agents, 0.001)
-        #write_network(graph=network_init, network_name='network_init', fpath=fpath, n_ranks=1)
         read_network(fpath, self.context, cadre_person.create_person, cadre_person.restore_person)
-        #read_network(fpath, self.context, self.context.agents(), cadre_person.restore_person)
-        #read_network(fpath, self.context)
-        #self.network = network.UndirectedSharedNetwork(network_init, comm)
         self.network = self.context.get_projection('network_init')
-        #self.context.add_projection(self.network)
-
-        #print("Network type", type(self.network))
-   
 
         # initialize the agent logging
         tabular_logging_cols = ['tick', 'agent_id', 'agent_age', 'agent_race', 'agent_female', 'agent_alc_use_status', 
@@ -128,9 +114,6 @@ class Model:
         self.network_logger.write() 
         #print("Network: ", self.net)
         
-        #write_network(graph=self.network, network_name='network_list', fpath=fpath, n_ranks=1)
-        pass
-
     def at_end(self):
         self.data_set.close()
 
