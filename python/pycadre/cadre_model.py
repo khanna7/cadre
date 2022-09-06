@@ -112,11 +112,20 @@ class Model:
         self.agent_logger.write()
 
     def log_network(self):
+        tick = self.runner.schedule.tick 
         g = self.network.graph
         print("Network: ", g)
         print("Network Type: ", type(g))
         print("Nodes: ", g.nodes)
         print("Edges: ", g.edges)
+
+        for edge in g.edges: 
+              #self.network_logger.log_row(tick, line)
+              #print(tick, edge) 
+              a1 = edge[0]
+              a2 = edge[1]
+              print (a1.id, a2.id)
+        self.network_logger.write() 
         #print("Network: ", self.net)
         
         #write_network(graph=self.network, network_name='network_list', fpath=fpath, n_ranks=1)
