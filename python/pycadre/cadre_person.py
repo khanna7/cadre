@@ -222,9 +222,9 @@ class Person(core.Agent):
   
 
 def create_person(nid, agent_type, rank, **kwargs):
-    print("nid: ", nid)
-    print("agent_type ", Person.TYPE)
-    print("agent_rank ", rank)
+    #print("nid: ", nid)
+    #print("agent_type ", Person.TYPE)
+    #print("agent_rank ", rank)
     return Person(nid, agent_type, rank)
 
 
