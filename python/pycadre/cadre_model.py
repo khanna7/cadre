@@ -168,15 +168,21 @@ class Model:
                 person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
                 #self.add_agent(person)
                 self.context.add(person)
-                print("New person added:", person)
+                print("New person added:", person, "has", self.network.num_edges(person), "edges")
+                #print(self.network.num_edges(p))
 
             ## update the network structure
             g = self.network.graph
             print("Type of g is", type(g))
             print("Total number of edges is", len(g.edges))
             print("Is g directed?", g.is_directed())
-            #print("Degree of node 7 is", g.nodes(8))
-            print("Degree sequence of all nodes is", self.network.num_edges(g.nodes))
+            n_edges = 0
+            for p in self.context.agents():
+                #print(p)
+                #print(self.network.num_edges(p)) #PRINTTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
+                n_edges += (self.network.num_edges(p))
+                pass
+            print("Num edges", n_edges/2)
 
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
