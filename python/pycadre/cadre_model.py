@@ -40,8 +40,8 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.log_agents)
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
-        self.runner.schedule_end_event(self.log_network)
-        #self.runner.schedule_repeating_event(1, 10, self.log_network)
+        #self.runner.schedule_end_event(self.log_network)
+        self.runner.schedule_repeating_event(1, 100, self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -182,7 +182,7 @@ class Model:
                 print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
                 n_edges += (self.network.num_edges(p))
                 pass
-            print("Num edges", n_edges/2)
+            print("Num edges over iterator", n_edges/2)
 
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
