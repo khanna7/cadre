@@ -106,13 +106,11 @@ class Model:
         print("Edges: ", g.edges)
 
         for edge in g.edges: 
-              #self.network_logger.log_row(tick, line)
-              #print(tick, edge) 
               a1 = edge[0]
               a2 = edge[1]
               print (a1.id, a2.id)
+              self.network_logger.log_row(tick, edge[0].id, edge[1].id)
         self.network_logger.write() 
-        #print("Network: ", self.net)
         
     def at_end(self):
         self.data_set.close()
