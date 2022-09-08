@@ -40,8 +40,8 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.log_agents)
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
-        self.runner.schedule_end_event(self.log_network)
-        #self.runner.schedule_repeating_event(1, 10, self.log_network)
+        #self.runner.schedule_end_event(self.log_network)
+        self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -161,7 +161,6 @@ class Model:
             for i in range(n_entries):
                 person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
                 self.add_agent(person)
-            pass
 
         self.counts.pop_size = self.context.size()[-1]
         self.counts.n_incarcerated = sum(incaceration_states)
