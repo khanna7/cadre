@@ -179,7 +179,7 @@ class Model:
             n_edges = 0
             for p in self.context.agents():
                 #print(p)
-                #print(self.network.num_edges(p)) #PRINTTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
+                print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
                 n_edges += (self.network.num_edges(p))
                 pass
             print("Num edges", n_edges/2)
