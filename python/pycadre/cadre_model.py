@@ -40,8 +40,8 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.log_agents)
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
-        #self.runner.schedule_end_event(self.log_network)
-        self.runner.schedule_repeating_event(1, 10, self.log_network)
+        self.runner.schedule_end_event(self.log_network)
+        #self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -108,7 +108,7 @@ class Model:
         for edge in g.edges: 
               a1 = edge[0]
               a2 = edge[1]
-              print (a1.id, a2.id)
+              #print (a1.id, a2.id)
               self.network_logger.log_row(tick, edge[0].id, edge[1].id)
         self.network_logger.write() 
         
@@ -156,13 +156,27 @@ class Model:
         for p in exits: 
             self.remove_agent(p)
 
+        n_post_exits = self.context.size()[-1]
+        print("N after exits is ", n_post_exits)
+
         n_entries = len(exits)
         if n_entries > 0:
-            for i in range(self.name, self.name+n_entries):
+        ## if new people are entering:
+
+            ## create the person(s) and add them to the context
+            for i in range(self.name, self.name+n_entries): 
                 person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
                 #self.add_agent(person)
                 self.context.add(person)
                 print("New person added:", person)
+
+            ## update the network structure
+            g = self.network.graph
+            print("Type of g is", type(g))
+            print("Total number of edges is", len(g.edges))
+            print("Is g directed?", g.is_directed())
+            #print("Degree of node 7 is", g.nodes(8))
+            print("Degree sequence of all nodes is", self.network.num_edges(g.nodes))
 
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
