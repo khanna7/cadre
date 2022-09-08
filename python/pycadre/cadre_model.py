@@ -158,10 +158,13 @@ class Model:
 
         n_entries = len(exits)
         if n_entries > 0:
-            for i in range(n_entries):
+            for i in range(self.name, self.name+n_entries):
                 person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
-                self.add_agent(person)
+                #self.add_agent(person)
+                self.context.add(person)
+                print("New person added:", person)
 
+        self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
@@ -174,9 +177,11 @@ class Model:
         self.context.remove(agent)
 
     def add_agent(self, agent):
+        #self.name += 1
+        #print("Self.name", self.name)
         #p = cadre_person.Person(self.name, cadre_person.Person.TYPE, self.rank)
-        self.name += 1
-        self.context.add(agent)
+        #self.context.add(agent)
+        pass
 
     def start(self):
         self.runner.execute()
