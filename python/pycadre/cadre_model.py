@@ -158,32 +158,49 @@ class Model:
             self.remove_agent(p)
 
         n_post_exits = self.context.size()[-1]
-        print("N after exits is ", n_post_exits)
+        #print("N after exits is ", n_post_exits)
 
         n_entries = len(exits)
+
         if n_entries > 0:
         ## if new people are entering:
 
+            ## create a matrix for bernoulli draws to create edges with agents already in context
+            tie_matrix = np.zeros([n_entries, n_post_exits], dtype=int)
+            print("Dimensions of tie matrix are", np.shape(tie_matrix))
+            print("Number of rows is", np.shape(tie_matrix)[0])
+            print("Number of columns is", np.shape(tie_matrix)[1])
+            print("The tie matrix is:", sum(tie_matrix))
+
+            for row in range(np.shape(tie_matrix)[0]):
+                tie_matrix[row] = np.random.binomial(1, 0.5, np.shape(tie_matrix)[1])
+                #load_params.params_list['EDGE_PROB']
+                pass
+            print("The updated tie matrix is:", tie_matrix)
+
             ## create the person(s) and add them to the context
-            for i in range(self.name, self.name+n_entries): 
-                person = cadre_person.Person(name=i, type=cadre_person.Person.TYPE, rank=self.rank)  
-                #self.add_agent(person)
+            for new_agent in range(self.name, self.name+n_entries): 
+                person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)  
                 self.context.add(person)
                 print("New person added:", person, "has", self.network.num_edges(person), "edges")
-                #print(self.network.num_edges(p))
+                #g.add_edge()
+                
 
             ## update the network structure
             g = self.network.graph
+            #g.add_edge: row = self.name, col=
             print("Type of g is", type(g))
             print("Total number of edges is", len(g.edges))
             print("Is g directed?", g.is_directed())
             n_edges = 0
             for p in self.context.agents():
                 #print(p)
-                print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
+                #print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
                 n_edges += (self.network.num_edges(p)) #count number of edges for each node
                 pass
             print("Num edges over iterator", n_edges/2)
+
+
 
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
