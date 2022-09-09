@@ -180,7 +180,7 @@ class Model:
             for p in self.context.agents():
                 #print(p)
                 print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
-                n_edges += (self.network.num_edges(p))
+                n_edges += (self.network.num_edges(p)) #count number of edges for each node
                 pass
             print("Num edges over iterator", n_edges/2)
 
