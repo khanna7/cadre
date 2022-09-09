@@ -170,7 +170,7 @@ class Model:
             print("Dimensions of tie matrix are", np.shape(tie_matrix))
             print("Number of rows is", np.shape(tie_matrix)[0])
             print("Number of columns is", np.shape(tie_matrix)[1])
-            print("The tie matrix is:", sum(tie_matrix))
+            print("The tie matrix is:", tie_matrix)
 
             for row in range(np.shape(tie_matrix)[0]):
                 tie_matrix[row] = np.random.binomial(1, 0.5, np.shape(tie_matrix)[1])
