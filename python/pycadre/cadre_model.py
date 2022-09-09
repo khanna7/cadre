@@ -1,5 +1,6 @@
 from typing import Dict
 import networkx as nx
+import numpy as np
 from pycadre import cadre_person
 import pycadre.load_params as load_params
 from repast4py import logging, schedule
@@ -100,10 +101,10 @@ class Model:
     def log_network(self):
         tick = self.runner.schedule.tick 
         g = self.network.graph
-        print("Network: ", g)
-        print("Network Type: ", type(g))
-        print("Nodes: ", g.nodes)
-        print("Edges: ", g.edges)
+        #print("Network: ", g)
+        #print("Network Type: ", type(g))
+        #print("Nodes: ", g.nodes)
+        #print("Edges: ", g.edges)
 
         for edge in g.edges: 
               a1 = edge[0]
