@@ -42,7 +42,7 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.print_progress)
         self.runner.schedule_stop(params['STOP_AT'])
         #self.runner.schedule_end_event(self.log_network)
-        self.runner.schedule_repeating_event(1, 100, self.log_network)
+        self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -101,16 +101,11 @@ class Model:
     def log_network(self):
         tick = self.runner.schedule.tick 
         g = self.network.graph
-        #print("Network: ", g)
-        #print("Network Type: ", type(g))
-        #print("Nodes: ", g.nodes)
-        #print("Edges: ", g.edges)
 
         for edge in g.edges: 
-              a1 = edge[0]
-              a2 = edge[1]
-              #print (a1.id, a2.id)
-              self.network_logger.log_row(tick, edge[0].id, edge[1].id)
+              agent1 = edge[0]
+              agent2 = edge[1]
+              self.network_logger.log_row(tick, agent1.id, agent2.id)
         self.network_logger.write() 
         
     def at_end(self):
@@ -173,7 +168,7 @@ class Model:
             print("The tie matrix is:", tie_matrix)
 
             for row in range(np.shape(tie_matrix)[0]):
-                tie_matrix[row] = np.random.binomial(1, 0.5, np.shape(tie_matrix)[1])
+                tie_matrix[row] = np.random.binomial(1, 0.5, np.shape(tie_matrix)[1]) #REPLACE 0.5 with real edge probability
                 #load_params.params_list['EDGE_PROB']
                 pass
             print("The updated tie matrix is:", tie_matrix)
@@ -183,25 +178,25 @@ class Model:
                 person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)  
                 self.context.add(person)
                 print("New person added:", person, "has", self.network.num_edges(person), "edges")
-                #g.add_edge()
                 
+                ##add any new ties that appear for these agents
+                corresp_row_id = new_agent - self.name #row index of tie_matrix where this new agent's ties appear
+                print("Corresponding row ID", new_agent-self.name)
+                print(np.where(tie_matrix[corresp_row_id] == 1))
+                agents_to_form_new_ties_with = np.where(tie_matrix[corresp_row_id] == 1)
+                print("Agents to form new ties with", agents_to_form_new_ties_with[0])
+                print("a[0] type is ", type(agents_to_form_new_ties_with[0]))
+                
+                agent2 = self.context.agent((new_agent, 0, 0))
+                print("New agent:", agent2)
 
-            ## update the network structure
-            g = self.network.graph
-            #g.add_edge: row = self.name, col=
-            print("Type of g is", type(g))
-            print("Total number of edges is", len(g.edges))
-            print("Is g directed?", g.is_directed())
-            n_edges = 0
-            for p in self.context.agents():
-                #print(p)
-                #print(self.network.num_edges(p)) #PRINTS LIST OF EDGES FOR EACH AGENT IN THE CONTEXT
-                n_edges += (self.network.num_edges(p)) #count number of edges for each node
-                pass
-            print("Num edges over iterator", n_edges/2)
+                for agent in agents_to_form_new_ties_with[0]:
+                    agent1 = self.context.agent((agent, 0, 0))
+                    print("Existing agent:", agent1)
 
-
-
+                    if agent1 != None:
+                        self.network.graph.add_edge(agent1, agent2)
+                    
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
         self.counts.n_incarcerated = sum(incaceration_states)
@@ -224,23 +219,3 @@ class Model:
     def start(self):
         self.runner.execute()
                 
-
-
-            
-
-        
-
-
-
-             
-
-
-
-                        
-    
-                   
-
-
-
-                    
-         
