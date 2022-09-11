@@ -144,12 +144,15 @@ class Model:
 
         exits = []
     
+        print("self.context.agents type is", type(self.context.agents()))
+
         for p in self.context.agents():
             exit = p.exit_of_age()
             if exit:
                 exits.append(exit)
 
         for p in exits: 
+            print("Exiting agent: ", p.name)
             self.remove_agent(p)
 
         n_post_exits = self.context.size()[-1]
@@ -168,7 +171,7 @@ class Model:
             print("The tie matrix is:", tie_matrix)
 
             for row in range(np.shape(tie_matrix)[0]):
-                tie_matrix[row] = np.random.binomial(1, 0.5, np.shape(tie_matrix)[1]) #REPLACE 0.5 with real edge probability
+                tie_matrix[row] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], np.shape(tie_matrix)[1]) 
                 #load_params.params_list['EDGE_PROB']
                 pass
             print("The updated tie matrix is:", tie_matrix)
@@ -189,6 +192,9 @@ class Model:
                 
                 agent2 = self.context.agent((new_agent, 0, 0))
                 print("New agent:", agent2)
+
+                for p in self.context.agents():
+                    print ("Agent currently in context: ", p)
 
                 for agent in agents_to_form_new_ties_with[0]:
                     agent1 = self.context.agent((agent, 0, 0))
