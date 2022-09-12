@@ -144,7 +144,7 @@ class Model:
 
         exits = []
     
-        print("self.context.agents type is", type(self.context.agents()))
+        #print("self.context.agents type is", type(self.context.agents()))
 
         for p in self.context.agents():
             exit = p.exit_of_age()
@@ -161,47 +161,84 @@ class Model:
         n_entries = len(exits)
 
         if n_entries > 0:
+
         ## if new people are entering:
-
-            ## create a matrix for bernoulli draws to create edges with agents already in context
-            tie_matrix = np.zeros([n_entries, n_post_exits], dtype=int)
-            print("Dimensions of tie matrix are", np.shape(tie_matrix))
-            print("Number of rows is", np.shape(tie_matrix)[0])
-            print("Number of columns is", np.shape(tie_matrix)[1])
-            print("The tie matrix is:", tie_matrix)
-
-            for row in range(np.shape(tie_matrix)[0]):
-                tie_matrix[row] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], np.shape(tie_matrix)[1]) 
-                #load_params.params_list['EDGE_PROB']
-                pass
-            print("The updated tie matrix is:", tie_matrix)
-
-            ## create the person(s) and add them to the context
+            ## create a tie dictionary
+                # keys: pre-existing agents 
+                # values: bernoulli draw for each new agent
+            new_agent_ties_dict = {}
+            for existing_agent in self.context.agents():
+                new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
+            #print("Dict", new_agent_ties_dict)
+            print("\n", "Dict Keys", new_agent_ties_dict.keys())
+            print("\n", "Dict Values", new_agent_ties_dict.values())
+            
+            ## create the newly entering person(s) and add them to the context
+            new_agents = []
             for new_agent in range(self.name, self.name+n_entries): 
                 person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)  
                 self.context.add(person)
-                print("New person added:", person, "has", self.network.num_edges(person), "edges")
+                #print("New person added:", person, "has", self.network.num_edges(person), "edges")
+                print("New agent is", person)
+                new_agents.append(person)
+
+            print("New agents are:", new_agents)
+
+            ## add any ties that are formed for newly entering agents
+
+            # for key in new_agent_ties_dict.keys():
+            #     print(key)
+            # for value in (new_agent_ties_dict.values()):
+            #     print(value)
+            #     for i in range(n_entries):
+            #         print(value[i])
+            #         if value[i] == 1:
+            #             self.network.graph.add_edge(key, new_agents[i])
+
+            for key in new_agent_ties_dict.keys():
+                print(key)
+                value = new_agent_ties_dict[key]
+                for i in range(n_entries):
+                    print(value[i])
+                    if value[i] == 1:
+                        self.network.graph.add_edge(key, new_agents[i])
+
+            ## create a matrix for bernoulli draws to create edges with agents already in context
+            # tie_matrix = np.zeros([n_entries, n_post_exits], dtype=int)
+            # print("Dimensions of tie matrix are", np.shape(tie_matrix))
+            # print("Number of rows is", np.shape(tie_matrix)[0])
+            # print("Number of columns is", np.shape(tie_matrix)[1])
+            # print("The tie matrix is:", tie_matrix)
+
+            # for row in range(np.shape(tie_matrix)[0]):
+            #     tie_matrix[row] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], np.shape(tie_matrix)[1]) 
+            #     #load_params.params_list['EDGE_PROB']
+            #     pass
+            # print("The updated tie matrix is:", tie_matrix)
+
+
                 
-                ##add any new ties that appear for these agents
-                corresp_row_id = new_agent - self.name #row index of tie_matrix where this new agent's ties appear
-                print("Corresponding row ID", new_agent-self.name)
-                print(np.where(tie_matrix[corresp_row_id] == 1))
-                agents_to_form_new_ties_with = np.where(tie_matrix[corresp_row_id] == 1)
-                print("Agents to form new ties with", agents_to_form_new_ties_with[0])
-                print("a[0] type is ", type(agents_to_form_new_ties_with[0]))
+                # ##add any new ties that appear for these agents
+                # corresp_row_id = new_agent - self.name #row index of tie_matrix where this new agent's ties appear
+                # print("Corresponding row ID", new_agent-self.name)
+                # print(np.where(tie_matrix[corresp_row_id] == 1))
+                # agents_to_form_new_ties_with = np.where(tie_matrix[corresp_row_id] == 1)
+                # print("Agents to form new ties with", agents_to_form_new_ties_with[0])
+                # print("a[0] type is ", type(agents_to_form_new_ties_with[0]))
                 
-                agent2 = self.context.agent((new_agent, 0, 0))
-                print("New agent:", agent2)
+                # agent2 = self.context.agent((new_agent, 0, 0))
+                # print("New agent:", agent2)
 
-                for p in self.context.agents():
-                    print ("Agent currently in context: ", p)
+                # for p in self.context.agents():
+                #     #print ("Agent currently in context: ", p)
+                #     pass
 
-                for agent in agents_to_form_new_ties_with[0]:
-                    agent1 = self.context.agent((agent, 0, 0))
-                    print("Existing agent:", agent1)
+                # for agent in agents_to_form_new_ties_with[0]:
+                #     agent1 = self.context.agent((agent, 0, 0))
+                #     #print("Existing agent:", agent1)
 
-                    if agent1 != None:
-                        self.network.graph.add_edge(agent1, agent2)
+                #     if agent1 != None:
+                #         self.network.graph.add_edge(agent1, agent2)
                     
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
