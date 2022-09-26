@@ -1,6 +1,6 @@
 ---
 STOP_AT: 100
-N_AGENTS: 100
+N_AGENTS: 10000
 EDGE_PROB: 0.001
 #REF: Model Design
 
@@ -39,9 +39,13 @@ ALC_USE_STATES:
   TRANS_PROB_3_2: 0.0132
 # REF: https://drive.google.com/open?id=1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc&authuser=aditya_khanna%40brown.edu&usp=drive_fs
 
+PROBABILITY_BIWEEKLY_INCARCERATION: 0.017 
+# REF: Stated in Macmadu 2021 et al
+
 PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical
 #PROBABILITY_DAILY_INCARCERATION: 0.001223976
-# REF: Derived from Macmadu 2021
+# REF: CURRENTLY HYPOTHETICAL 
+# Should be Derived from Macmadu 2021 
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
 PROBABILITY_DAILY_RECIDIVISM: 
