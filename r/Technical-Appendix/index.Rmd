@@ -1,0 +1,63 @@
+---
+title: "Technical Appendix to the CADRE Model"
+author: "CADRE Project 8 Team"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib, cadre-appendix-library.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a minimal example of using the bookdown package to write a book.
+  The HTML output format for this example is bookdown::gitbook,
+  set in the _output.yml file.
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+  
+# Overview
+
+This is an early draft of what will become the companion Appendix to the modeling papers that we publish. Narrative text and the R code are interwoven. The computer code is also available in a public [GitHub repository](https://github.com/khanna7/cadre).
+
+This document is written as a **bookdown** document in **Markdown** to facilitate [reproducibility](https://bookdown.org/m_p_sperrin/intro_to_r_2020/projects-and-reproducibility.html). One advantage of this format is that the data sources, decisions about model parameterization, and the computer code implementing these decisions all exist in one place. This makes it easier to understand the reasoning behind the decisions we make, and appropriately source, cite, or derive our data as we go.
+
+The document can also be automatically updated whenever the underlying code or data change.
+
+## Usage Notes
+
+Each **bookdown** chapter is an .Rmd file, and each .Rmd file can contain one (and only one) chapter. A chapter *must* start with a first-level heading: `# A good chapter`, and can contain one (and only one) first-level heading.
+
+Use second-level and higher headings within chapters like: `## A short section` or `### An even shorter section`.
+
+The `index.Rmd` file is required, and is also our first book chapter. This creates the homepage when the book is "render"ed.
+
+## Render book
+
+You can render the HTML version of this example book without changing anything:
+
+1.  Find the **Build** pane in the RStudio IDE, and
+
+2.  Click on **Build Book**, then select your output format, or select "All formats" if you'd like to use multiple formats from the same book source files.
+
+Or build the book from the R console:
+
+```{r, eval=FALSE}
+bookdown::render_book()
+```
+
+To render this example to PDF as a `bookdown::pdf_book`, you'll need to install XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): <https://yihui.org/tinytex/>.
+
+## Viewing Instructions
+
+As you work, you may start a local server to live preview this HTML book. This preview will update as you edit the book when you save individual .Rmd files. You can start the server in a work session by using the RStudio add-in "Preview book", or from the R console:
+
+```{r eval=FALSE}
+bookdown::serve_book()
+```
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
