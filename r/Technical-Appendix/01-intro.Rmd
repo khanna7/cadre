@@ -94,8 +94,21 @@ PROB_DAILY_RECIDIVISM <- params$PROBABILITY_DAILY_RECIDIVISM
   # we'll break down the above by age and race
 ```
 
-Incarceration functions by defining two locations: 
-a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the 
-2-week incarceration probability for RI persons is 
-`r params$PROBABILITY_DAILY_INCARCER`%. 
+Incarceration functions by defining two locations: a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the 2-week incarceration probability for RI persons is `r 1.7`%.
+
+Considering that the risk of incarceration is distributed identically and independently across the biweekly period (i.e., 14 days), we obtain the daily incarceration rate using the binomial formula:
+
+$$1 - (1-p)^{14} = 0.017$$
+
+where p is the daily incarceration probability; (1-p) is the probability that a person does not get incarcerated in one day; $(1-p)^{14}$ is the probability that the person does \*not\* get incarcerated across the 14 days. Subtracting this probability from 1 gives the probability that the person will be incarcerated across the 14 days.
+
+Therefore,
+
+$$(1-p)^{14} = 1-0.017 = 0.983.$$ Therefore, $$(1-p) = 0.9831^{1/14} = 0.99877$$ and we conclude that the daily incarceration probability $p$ is `r 1-((1-0.017)^(1/14))`.
+
+Similarly per @Macmadu2021 et al, the 3-year recidivism probability for men and women with prior incarceration history is 51% and 36% respectively. For men, the daily recidivism probability ($p_{RM}$) can be obtained by solving:
+
+$$1 - (1-p_{RM})^{365 \times 3} = 0.51.$$ Thus, $$(1-p_{RM})^{365 \times 3} = 0.49.$$ 
+Therefore, 
+$p_{RM}$ = `r 1 - ((0.49)^(1/(365*3)))`.
 
