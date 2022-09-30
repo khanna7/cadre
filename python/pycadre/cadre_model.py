@@ -168,7 +168,8 @@ class Model:
                 # values: bernoulli draw for each new agent
             new_agent_ties_dict = {}
             for existing_agent in self.context.agents():
-                new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
+                #new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
+                new_agent_ties_dict[existing_agent] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], n_entries)
             #print("Dict", new_agent_ties_dict)
             print("\n", "Dict Keys", new_agent_ties_dict.keys())
             print("\n", "Dict Values", new_agent_ties_dict.values())
