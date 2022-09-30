@@ -6,4 +6,6 @@
 #SBATCH --mem=16G
 #SBATCH -t 1:00:00
 
-python3 pycadre myparams/model_params.yaml
+module load python/3.9.0
+source /users/akhann16/code/cadre/python/new_cadre_env/bin/activate
+python3 -m pycadre myparams/model_params.yaml
