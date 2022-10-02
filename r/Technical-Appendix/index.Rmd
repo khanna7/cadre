@@ -79,7 +79,7 @@ NAGENTS <- params$N_AGENTS
 MIN_AGE <- params$MIN_AGE
 MAX_AGE <- params$MAX_AGE
 
-runif(NAGENTS, MIN_AGE, MAX_AGE)
+#runif(NAGENTS, MIN_AGE, MAX_AGE)
 ```
 
 Per [census data](https://censusreporter.org/profiles/04000US44-rhode-island/), 63% of the RI population is in the range of our interest (`r MIN_AGE`-`r MAX_AGE` years). We consider the population to be uniformly distributed across this range, which might not be unreasonable given the shape of the distribution above.
@@ -264,8 +264,29 @@ graph LR
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 SMOKING_PREV <-params$SMOKING_PREV
+
+SMOKING_PREV_TAB <- as.data.frame(matrix(c(
+  "White Men", SMOKING_PREV$WHITE_MALE_NEVER, SMOKING_PREV$WHITE_MALE_CURRENT, SMOKING_PREV$WHITE_MALE_FORMER,
+  "White Women", SMOKING_PREV$WHITE_FEMALE_NEVER, SMOKING_PREV$WHITE_FEMALE_CURRENT, SMOKING_PREV$WHITE_FEMALE_FORMER, 
+    "Black Men", SMOKING_PREV$BLACK_MALE_NEVER, SMOKING_PREV$BLACK_MALE_CURRENT, SMOKING_PREV$BLACK_MALE_FORMER,
+    "Black Women", SMOKING_PREV$BLACK_FEMALE_NEVER, SMOKING_PREV$BLACK_FEMALE_CURRENT, SMOKING_PREV$BLACK_FEMALE_FORMER,
+    "Hispanic Men", SMOKING_PREV$HISPANIC_MALE_NEVER, SMOKING_PREV$HISPANIC_MALE_CURRENT, SMOKING_PREV$HISPANIC_MALE_FORMER,
+  "Hispanic Women", SMOKING_PREV$HISPANIC_FEMALE_NEVER, SMOKING_PREV$HISPANIC_FEMALE_CURRENT, SMOKING_PREV$HISPANIC_FEMALE_FORMER,
+  "Asian Men", SMOKING_PREV$ASIAN_MALE_NEVER, SMOKING_PREV$ASIAN_MALE_CURRENT, SMOKING_PREV$ASIAN_MALE_FORMER,
+  "Asian Women", SMOKING_PREV$ASIAN_FEMALE_NEVER, SMOKING_PREV$ASIAN_FEMALE_CURRENT, SMOKING_PREV$ASIAN_FEMALE_FORMER,
+    "Other Men", SMOKING_PREV$OTHER_MALE_NEVER, SMOKING_PREV$OTHER_MALE_CURRENT, SMOKING_PREV$OTHER_MALE_FORMER,
+  "Other Women", SMOKING_PREV$OTHER_FEMALE_NEVER, SMOKING_PREV$OTHER_FEMALE_CURRENT, SMOKING_PREV$OTHER_FEMALE_FORMER
+),
+  byrow = TRUE, ncol = 4)
+)
+colnames(SMOKING_PREV_TAB) <- c("Population", "Never", "Current", "Former")
+SMOKING_PREV_TAB
 ```
 
+```{r, echo=FALSE}
+knitr::kable(SMOKING_PREV_TAB, "pipe", caption = "Smoking States by Race/Ethnicity")
+```
+ 
 Per the [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm), the national prevalence of current smokers in the US is 
 ( The CDC defines "a current smoker" as someone who "who reported smoking at least 100 cigarettes during their lifetime and who, at the time they participated in a survey about this topic, reported smoking every day or some days.")
 
@@ -327,7 +348,7 @@ We'll probably want to talk about alternate parameterizations.)
 [text here]
 
 
-
+# Bibliography
 
 
 
