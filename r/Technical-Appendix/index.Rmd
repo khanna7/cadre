@@ -2,14 +2,13 @@
 title: "Technical Appendix to the CADRE Model"
 author: "CADRE Project 8 Team"
 date: "`r Sys.Date()`"
-documentclass: book
-bibliography: [book.bib, packages.bib, cadre-appendix-library.bib]
+output: pdf_document
+bibliography:
+- book.bib
+- packages.bib
+- "cadre-appendix-library.bib"
 link-citations: yes
-output:
-  html_document:
-    number_sections: false
-  pdf_document:
-    number_sections: false
+documentclass: book
 ---
   
 # Overview
@@ -240,6 +239,29 @@ TRANS_PROB_3_2 <- params$ALC_USE_STATES$TRANS_PROB_3_2
 
 ## Smoking: Behavioral States
 
+Per the 
+[CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm),
+and as published in previous studies (@Levy2005), 
+smoking behavior is often classified in one of three states:
+"Never Smokers" (i.e., persons who have smoked less than 100 cigarettes in their lifetime),
+"Current Smokers" (i.e., persons who have smoked at least 100 cigarettes 
+in their lifetime and at least once recently),
+and, 
+"Former Smokers" (i.e., persons who have smoked at least 100 cigarettes 
+in their lifetime but none recently). 
+For current and former smokers, we define recency as 30 days, as has been 
+done previously (@Ahmad2005), to formulate a state chart as shown below: 
+
+```{r, echo=FALSE}
+library(DiagrammeR)
+mermaid("
+graph LR
+  A(Never Smoker) --> B(Current Smoker)
+  B --> C(Former Smoker)
+  C --> B
+")
+```
+
 ```{r, results='hide', echo=FALSE, message=FALSE}
 SMOKING_PREV <-params$SMOKING_PREV
 ```
@@ -251,7 +273,7 @@ The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig
 
 
 
-```{r, echo=FALSE}
+```{r, results='hide', echo=FALSE, message=FALSE}
 params["SMOKING_PREV"]
 ```
 
