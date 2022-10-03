@@ -61,6 +61,7 @@ knitr::write_bib(c(
 # Population Overview
 
 ```{r, echo=FALSE}
+library(DiagrammeR)
 library(yaml)
 filename <- "/Volumes/GoogleDrive/My Drive/code/cadre/python/myparams/model_params.yaml"
 params <- read_yaml(filename)
@@ -118,9 +119,10 @@ AUD <- params$ALC_USE_PROPS$D
 
 We classify alcohol use behaviors in one of four categories, defined by frequency 
 of use, as in a previous pair of 
-modeling studies @Apostolopoulos2018I; @Apostolopoulos2018II. 
-The four categories are: "abstainers", "occassional users", "regular users", 
-"persons with high-risk use or Alcohol Use Disorder (AUD)".
+modeling studies (@Apostolopoulos2018I; @Apostolopoulos2018II). 
+The four categories are: persons who abstain, persnos who drink occassionally; 
+person who drink regularly; and, 
+persons with high-risk use or Alcohol Use Disorder (AUD)".
 
 To parameterize the distribution of persons in each of these categories, 
 data from the National Comorbidity Survey Replication, 
@@ -253,14 +255,18 @@ For current and former smokers, we define recency as 30 days, as has been
 done previously (@Ahmad2005), to formulate a state chart as shown below: 
 
 ```{r, echo=FALSE}
-library(DiagrammeR)
+
 mermaid("
 graph LR
-  A(Never Smoker) --> B(Current Smoker)
+  A(Never Smoker) --> B(Current Smoker) 
   B --> C(Former Smoker)
   C --> B
 ")
 ```
+A recent [CMS report]  
+(https://www.cms.gov/research-statistics-data-and-systems/research/cahps/downloads/03_mmccahpssmokingbehavrptpdf.pdf) 
+provides the proportion of current, former, and never smokers by race
+and ethnicity, as seen below.
 
 ```{r, results='hide', echo=FALSE, message=FALSE}
 SMOKING_PREV <-params$SMOKING_PREV
@@ -280,26 +286,38 @@ SMOKING_PREV_TAB <- as.data.frame(matrix(c(
   byrow = TRUE, ncol = 4)
 )
 colnames(SMOKING_PREV_TAB) <- c("Population", "Never", "Current", "Former")
-SMOKING_PREV_TAB
+#SMOKING_PREV_TAB
 ```
 
 ```{r, echo=FALSE}
 knitr::kable(SMOKING_PREV_TAB, "pipe", caption = "Smoking States by Race/Ethnicity")
 ```
  
-Per the [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm), the national prevalence of current smokers in the US is 
-( The CDC defines "a current smoker" as someone who "who reported smoking at least 100 cigarettes during their lifetime and who, at the time they participated in a survey about this topic, reported smoking every day or some days.")
+<!-- Weighting the rates of current, former and never smokers in each -->
+<!-- subpopulation by the relative proportion of that subpopulation,   -->
 
 The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm) also stratifies the national smoking rates by age, sex, and race/ethnicity. There is also a geographic prevalence of smoking (about 10% in the northeastern US), that is not stratified by demographic variables.
 
-
-
-```{r, results='hide', echo=FALSE, message=FALSE}
-params["SMOKING_PREV"]
-```
+[**ADD**: Mean % of current smokers weighted by race+sex distributions to compare 
+to CDC figure above.]
 
 
 ## Smoking: State Transitions
+
+We model transition between Current Smokers and Former Smokers for 
+each subpopulation defined above:
+
+We model smoking initiation rates as transitions from Never to Current Smoker 
+status.    
+
+See doi: 10.1001/jamanetworkopen.2020.19022 for age at initiation of ever smokers -
+shows that rase of initiation among ever smokers has risen, raising the need to
+promote smoking cessation programs among young adults. 
+
+For rates of smoking among persons with lung cancer, see doi:10.1001/jamaoncol.2020.6362.
+Rising rates of lung cancer among never smokers. 
+
+
 
 
 # Incarceration and Recidivism
