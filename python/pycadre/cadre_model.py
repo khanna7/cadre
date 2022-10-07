@@ -116,11 +116,13 @@ class Model:
         print("---------- Completing tick", tick, "----------")
 
     def step(self):
-        tick = self.runner.schedule.tick   
+        tick = self.runner.schedule.tick 
+        MIN_AGE = load_params.params_list['MIN_AGE']  
 
         incaceration_states = []
         smokers = []
         alc_use_status = []
+
         
         self.data_set.log(tick)
 
@@ -170,20 +172,20 @@ class Model:
             for existing_agent in self.context.agents():
                 #new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
                 new_agent_ties_dict[existing_agent] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], n_entries)
-            #print("Dict", new_agent_ties_dict)
-            print("\n", "Dict Keys", new_agent_ties_dict.keys())
-            print("\n", "Dict Values", new_agent_ties_dict.values())
             
             ## create the newly entering person(s) and add them to the context
             new_agents = []
             for new_agent in range(self.name, self.name+n_entries): 
-                person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)  
+                person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)
+                person.age = MIN_AGE
                 self.context.add(person)
-                #print("New person added:", person, "has", self.network.num_edges(person), "edges")
-                #print("New agent is", person)
                 new_agents.append(person)
+                print("New person age is: ", person.age)
+                print("New person race is: ", person.race)
+                print("New person race is female: ", person.female)
 
             print("New agents are:", new_agents)
+            #print("Their ages are:", new_agents.age)
 
             ## Add edges between the newly entering person(s) and pre-existing agents in the context
             for key in new_agent_ties_dict.keys():
