@@ -239,6 +239,9 @@ TRANS_PROB_3_2 <- params$ALC_USE_STATES$TRANS_PROB_3_2
  \end{pmatrix}.
 \end{equation}
 
+- *To Do*:
+* Map non-abstaining persons to daily drinks consumed.   
+
 ## Smoking: Behavioral States
 
 Per the 
@@ -301,23 +304,35 @@ The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig
 [**ADD**: Mean % of current smokers weighted by race+sex distributions to compare 
 to CDC figure above.]
 
+- *To Do*:
+* Map Current Smoking status to daily cigarettes smoked.   
 
 ## Smoking: State Transitions
 
-We model transition between Current Smokers and Former Smokers for 
-each subpopulation defined above:
+- We model transitions between Current Smokers and Former Smokers for 
+each race and sex combination defined above.
 
-We model smoking initiation rates as transitions from Never to Current Smoker 
-status.    
+- *To Do*: Estimate rate at which Never Smokers (broken down by age, race and sex)
+initiate smoking, and model it. 
 
-See doi: 10.1001/jamanetworkopen.2020.19022 for age at initiation of ever smokers -
+Other References to Consider:
+
+- See doi: 10.1001/jamanetworkopen.2020.19022 for age at initiation of ever smokers -
 shows that rase of initiation among ever smokers has risen, raising the need to
 promote smoking cessation programs among young adults. 
 
-For rates of smoking among persons with lung cancer, see doi:10.1001/jamaoncol.2020.6362.
+- For rates of smoking among persons with lung cancer, see doi:10.1001/jamaoncol.2020.6362.
 Rising rates of lung cancer among never smokers. 
 
+The PATH Study for smoking initiation rates. (Youth 12-17)
 
+What about smoking initiation in 18-24 year olds?
+
+- March 22 data release: Up to age 25. 
+
+PATH has a biomarker assessment for smoking initiation. 
+
+Monitoring the Future does as well. 
 
 
 # Incarceration and Recidivism
@@ -361,10 +376,39 @@ We'll probably want to talk about alternate parameterizations.)
 
 # Post-Release Smoking and Alcohol Use
 
+- See above identified need to map Current Smokers and Persons not Abstaining 
+from Alcohol to daily cigarettes smoked and daily drinks consumed respectively.
+
+- The literature synthesis thus far seems to suggest changes in frequency of 
+smoking and alcohol use, rather than a change in the behavioral state itself 
+(cessation for users, or initiation for abstainers).
+
+Some results thus far: 
+
+ - In general, post-incarceration, there was some evidence of decrease in overall tobacco smoking and alcohol use among justice-involved persons after release.   
+ 
+ - For instance, 74.5% of adult ex-jail inmates held on a felony conviction had used alcohol within a year of release (@Malouf2012).   
+ 
+ - Similarly, in a population of men and women ex-inmates in a large correctional facility in northeastern US, for those who predicted they were going to abstain from tobacco smoking, 3-weeks post-release, only 16.2% had refrained (@vandenBerg2014). 
+ 
+ - But while both majorities had reverted back to substance use, in the pre-post analysis, 46.2% decreased their frequency of alcohol use and 62% of ex-inmates smoked significantly less post-incarceration compared to pre-incarceration (@Tangney2016, @Puljević2018)
+ 
+ - Of those who decreased the amount of cigarettes smoked daily, 18% decreased by >20 cigarettes, 25% decreased by 11-20 cigarettes, and 21% decreased by 0-10 cigarettes. (@Puljević2018)
+
+
 # Social Network Structure 
 
-[text here]
+- A network structure with homogeneous probability for ties between persons has
+been simulated.
 
+- Persons newly entering the model are able to form connections with persons
+in the model.
+
+- Persons departing from the model dissolve their connections when they leave.
+
+- We are building a more realistic structure, one that incorporates clusters of
+stronger relations (close friends, family), algorithmic techniques. (See the 
+[LFR algorithm](https://networkx.org/documentation/networkx-2.1/reference/algorithms/generated/networkx.algorithms.community.community_generators.LFR_benchmark_graph.html) for a possible example.) 
 
 # Bibliography
 
