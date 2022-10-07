@@ -2,17 +2,13 @@
 title: "Technical Appendix to the CADRE Model"
 author: "CADRE Project 8 Team"
 date: "`r Sys.Date()`"
-site: bookdown::bookdown_site
-documentclass: book
-bibliography: [book.bib, packages.bib, cadre-appendix-library.bib]
-# url: your book url like https://bookdown.org/yihui/bookdown
-# cover-image: path to the social sharing image like images/cover.jpg
-description: |
-  This is a minimal example of using the bookdown package to write a book.
-  The HTML output format for this example is bookdown::gitbook,
-  set in the _output.yml file.
+output: pdf_document
+bibliography:
+- book.bib
+- packages.bib
+- "cadre-appendix-library.bib"
 link-citations: yes
-github-repo: rstudio/bookdown-demo
+documentclass: book
 ---
   
 # Overview
@@ -61,3 +57,360 @@ knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown'
 ), 'packages.bib')
 ```
+
+# Population Overview
+
+```{r, echo=FALSE}
+library(DiagrammeR)
+library(yaml)
+filename <- "/Volumes/GoogleDrive/My Drive/code/cadre/python/myparams/model_params.yaml"
+params <- read_yaml(filename)
+
+```
+
+A synthetic population consisting of `r params$N_AGENTS` agents between 18 and 64 years of age is simulated in an agent-based model (ABM) with social network structure. This simulated population is broadly representative of the 18-64 year old population of RI. The population size is deliberately kept relatively small in the early stages to make the model more efficient in terms of computation time.
+
+Each individual is assigned a set of demographic characteristics (age, race, sex), behavioral profiles (smoking, alcohol use), incarceration history. Feedback loops between the impacts of incarceration on smoking and alcohol use are simulated in the criminal-justice involved persons, and their social networks.
+
+## Demographics
+
+
+```{r, results='hide', echo=FALSE, message=FALSE, fig.show='hide'}
+NAGENTS <- params$N_AGENTS
+MIN_AGE <- params$MIN_AGE
+MAX_AGE <- params$MAX_AGE
+
+#runif(NAGENTS, MIN_AGE, MAX_AGE)
+```
+
+Per [census data](https://censusreporter.org/profiles/04000US44-rhode-island/), 63% of the RI population is in the range of our interest (`r MIN_AGE`-`r MAX_AGE` years). We consider the population to be uniformly distributed across this range, which might not be unreasonable given the shape of the distribution above.
+
+
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# sex (https://www.census.gov/quickfacts/RI)
+FEMALE_PROP <- params$FEMALE_PROP
+```
+
+Per [census data](see%20https://www.census.gov/quickfacts/RI), the proportion of females in RI is `r FEMALE_PROP*100`%. We dichotomize `r FEMALE_PROP*100`% of our our agents as being female, and `r 100-FEMALE_PROP*100`% as being male.
+
+
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+WHITE <- params$RACE_DISTRIBUTION$White #not Hispanic or Latino
+BLACK <- params$RACE_DISTRIBUTION$Black
+HISPANIC <- params$RACE_DISTRIBUTION$Hispanic
+ASIAN <- params$RACE_DISTRIBUTION$Asian
+OTHER <- 1- sum(c(WHITE, BLACK, HISPANIC, ASIAN))
+```
+
+Per [census data](see%20https://www.census.gov/quickfacts/RI), we parameterize the population as belonging to 5 race/ethnic categories: White, Black, Hispanic, Asian, and Other.
+
+# Substance Use Behaviors 
+
+## Alcohol Use: Behavioral States
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+ABSTAINERS <- params$ALC_USE_PROPS$A
+OCCASIONAL <- params$ALC_USE_PROPS$O
+REGULAR <- params$ALC_USE_PROPS$R
+AUD <- params$ALC_USE_PROPS$D
+```
+
+We classify alcohol use behaviors in one of four categories, defined by frequency 
+of use, as in a previous pair of 
+modeling studies (@Apostolopoulos2018I; @Apostolopoulos2018II). 
+The four categories are: persons who abstain, persnos who drink occassionally; 
+person who drink regularly; and, 
+persons with high-risk use or Alcohol Use Disorder (AUD)".
+
+To parameterize the distribution of persons in each of these categories, 
+data from the National Comorbidity Survey Replication, 
+as published in @Kalaydjian2009, where:
+
+    * (A) 91.7% (SE=0.9) reported >1 sip of alcohol at some time in their life, 
+    * (B) 72.9% (1.3) reported using alcohol regularly at some time in their life
+    * (C) 13.2% (0.6) met criteria for alcohol abuse at some time in their life, and 
+    * (D) 5.4% (0.3) met criteria for alcohol dependence at some time in their life.
+
+Thus, the proportion of abstainers is $1-A$ = `r ABSTAINERS*100`%. 
+Category B above is taken to be persons who use alcohol occasionally 
+(`r OCCASIONAL*100`%), Category C as "regular users" (`r REGULAR*100`), and 
+Category D denotes persons in the High-Risk/AUD category = 100-(A+B+C) = 
+`r AUD*100`%, which is very close to the value D reported by @Kalaydjian2009.
+
+## Alcohol Use: State Transitions
+
+We simulate transitions between states of alcohol use, thus incorporating changes
+in people's drinking behavior over the course of their lives. Because the rates
+of transitions between the four states of alcohol were not 
+available, we used the Metropolis Hastings algorithm to compute these transition 
+rates given the distribution of persons in each of the states as defined above.  
+The algorithm allows us to derive the transition rates so that the
+distribution of persons in each state of alcohol use remain consistent with the
+data presented above (i.e., the distribution remains ``stationary''). 
+
+Using the commonly used notation $\pi$ to denote the stationary distribution 
+as a row vector, we have
+
+\begin{equation} 
+  \pi = (`r ABSTAINERS`,  
+  `r OCCASIONAL`, 
+  `r REGULAR`,  
+  `r AUD`)
+\end{equation} 
+
+We additionally set up rules for this system that permit 
+transitions between the four states of alcohol use, 
+represented as a transition matrix $\mathbf{P_{ALCOHOL}}$ below:
+
+\begin{equation} 
+  \mathbf{P_{ALCOHOL}} = 
+\begin{pmatrix}
+  p_{11} & p_{12} & p_{13} & p_{14} \\
+  p_{21} & p_{22} & p_{23} & p_{24} \\
+  p_{31} & p_{32} & p_{33} & p_{34} \\
+  p_{41} & p_{42} & p_{43} & p_{44} \\
+ \end{pmatrix}.
+\end{equation} 
+
+The numbers 1, 2, 3, and 4 respectively denote states of 
+abstention, occasional use, regular use, and heavy drinking/AUD respectively.
+The probabilities denoted by $p_{xy}$ denote the probability of tranisitioning
+between states $x$ and $y$ in a given day. Our system prohibits transitions by 
+that would involve changing two or more levels in a day. Thus,  
+
+\begin{equation} 
+  \mathbf{P_{ALCOHOL}} = 
+\begin{pmatrix}
+  p_{11} & p_{12} & 0 & 0 \\
+  p_{21} & p_{22} & p_{23} & 0 \\
+  0 & p_{32} & p_{33} & p_{34} \\
+  0 & 0 & p_{43} & p_{44} \\
+ \end{pmatrix}.
+\end{equation} 
+
+The non-zero entries in a given row in $\mathbf{P_{ALCOHOL}}$
+describe all the possible transitions that any agent can make in a given day, 
+and therefore sum to 1.
+
+Denoting the unknown transition rates as a row vector 
+$ \mathbf{\lambda} = (\lambda_1, \lambda_2, \lambda_3, \lambda_4), $
+we use the Metropoplis Hastings algorithm to solve the following system of 
+equations:
+
+\begin{equation} 
+\mathbf{\lambda} \mathbf{P_{ALCOHOL}} = \mathbf{\pi}.
+\end{equation} 
+
+Solving the above [system of equations](https://drive.google.com/file/d/1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc/view?usp=sharing) 
+yields:
+
+\begin{matrix}
+  83 p_{12} & = & 729 p_{21} \\
+  729 p_{23} &=& 132 p_{32} \\
+  132 p_{34} &=& 56 p_{43} \\
+  \end{matrix}.
+
+Any set of probability values that match the above criteria would provide a 
+solution to the above set of equations. We choose a set that gives considers
+high probabilities for people to remain in their alcohol use state, and relatively
+low probabilities to transition out of it:
+
+```{r, results='hide', echo=FALSE, message=FALSE, fig.show='hide'}
+
+TRANS_PROB_0_1 <- params$ALC_USE_STATES$TRANS_PROB_0_1
+TRANS_PROB_1_2 <- params$ALC_USE_STATES$TRANS_PROB_1_2
+TRANS_PROB_2_3 <- params$ALC_USE_STATES$TRANS_PROB_2_3
+
+TRANS_PROB_1_0 <- params$ALC_USE_STATES$TRANS_PROB_1_0
+TRANS_PROB_2_1 <- params$ALC_USE_STATES$TRANS_PROB_2_1
+TRANS_PROB_3_2 <- params$ALC_USE_STATES$TRANS_PROB_3_2
+
+```
+
+\begin{equation} 
+  \mathbf{P_{ALCOHOL}} = 
+\begin{pmatrix}
+  `r 1-TRANS_PROB_0_1` & `r TRANS_PROB_0_1` & 0 & 0 \\
+  `r TRANS_PROB_1_0`  & `r 1-(TRANS_PROB_1_0 + TRANS_PROB_1_2)` & `r TRANS_PROB_1_2` & 0 \\
+  0 & `r TRANS_PROB_2_1` & `r  1-(TRANS_PROB_2_1 + TRANS_PROB_2_3)` & `r TRANS_PROB_2_3` \\
+  0 & 0 & `r TRANS_PROB_3_2`  & `r 1-TRANS_PROB_3_2` \\
+ \end{pmatrix}.
+\end{equation}
+
+- *To Do*:
+* Map non-abstaining persons to daily drinks consumed.   
+
+## Smoking: Behavioral States
+
+Per the 
+[CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm),
+and as published in previous studies (@Levy2005), 
+smoking behavior is often classified in one of three states:
+"Never Smokers" (i.e., persons who have smoked less than 100 cigarettes in their lifetime),
+"Current Smokers" (i.e., persons who have smoked at least 100 cigarettes 
+in their lifetime and at least once recently),
+and, 
+"Former Smokers" (i.e., persons who have smoked at least 100 cigarettes 
+in their lifetime but none recently). 
+For current and former smokers, we define recency as 30 days, as has been 
+done previously (@Ahmad2005), to formulate a state chart as shown below: 
+
+```{r, echo=FALSE}
+
+mermaid("
+graph LR
+  A(Never Smoker) --> B(Current Smoker) 
+  B --> C(Former Smoker)
+  C --> B
+")
+```
+A recent [CMS report]  
+(https://www.cms.gov/research-statistics-data-and-systems/research/cahps/downloads/03_mmccahpssmokingbehavrptpdf.pdf) 
+provides the proportion of current, former, and never smokers by race
+and ethnicity, as seen below.
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+SMOKING_PREV <-params$SMOKING_PREV
+
+SMOKING_PREV_TAB <- as.data.frame(matrix(c(
+  "White Men", SMOKING_PREV$WHITE_MALE_NEVER, SMOKING_PREV$WHITE_MALE_CURRENT, SMOKING_PREV$WHITE_MALE_FORMER,
+  "White Women", SMOKING_PREV$WHITE_FEMALE_NEVER, SMOKING_PREV$WHITE_FEMALE_CURRENT, SMOKING_PREV$WHITE_FEMALE_FORMER, 
+    "Black Men", SMOKING_PREV$BLACK_MALE_NEVER, SMOKING_PREV$BLACK_MALE_CURRENT, SMOKING_PREV$BLACK_MALE_FORMER,
+    "Black Women", SMOKING_PREV$BLACK_FEMALE_NEVER, SMOKING_PREV$BLACK_FEMALE_CURRENT, SMOKING_PREV$BLACK_FEMALE_FORMER,
+    "Hispanic Men", SMOKING_PREV$HISPANIC_MALE_NEVER, SMOKING_PREV$HISPANIC_MALE_CURRENT, SMOKING_PREV$HISPANIC_MALE_FORMER,
+  "Hispanic Women", SMOKING_PREV$HISPANIC_FEMALE_NEVER, SMOKING_PREV$HISPANIC_FEMALE_CURRENT, SMOKING_PREV$HISPANIC_FEMALE_FORMER,
+  "Asian Men", SMOKING_PREV$ASIAN_MALE_NEVER, SMOKING_PREV$ASIAN_MALE_CURRENT, SMOKING_PREV$ASIAN_MALE_FORMER,
+  "Asian Women", SMOKING_PREV$ASIAN_FEMALE_NEVER, SMOKING_PREV$ASIAN_FEMALE_CURRENT, SMOKING_PREV$ASIAN_FEMALE_FORMER,
+    "Other Men", SMOKING_PREV$OTHER_MALE_NEVER, SMOKING_PREV$OTHER_MALE_CURRENT, SMOKING_PREV$OTHER_MALE_FORMER,
+  "Other Women", SMOKING_PREV$OTHER_FEMALE_NEVER, SMOKING_PREV$OTHER_FEMALE_CURRENT, SMOKING_PREV$OTHER_FEMALE_FORMER
+),
+  byrow = TRUE, ncol = 4)
+)
+colnames(SMOKING_PREV_TAB) <- c("Population", "Never", "Current", "Former")
+#SMOKING_PREV_TAB
+```
+
+```{r, echo=FALSE}
+knitr::kable(SMOKING_PREV_TAB, "pipe", caption = "Smoking States by Race/Ethnicity")
+```
+ 
+<!-- Weighting the rates of current, former and never smokers in each -->
+<!-- subpopulation by the relative proportion of that subpopulation,   -->
+
+The [CDC](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/adult_data/cig_smoking/index.htm) also stratifies the national smoking rates by age, sex, and race/ethnicity. There is also a geographic prevalence of smoking (about 10% in the northeastern US), that is not stratified by demographic variables.
+
+[**ADD**: Mean % of current smokers weighted by race+sex distributions to compare 
+to CDC figure above.]
+
+- *To Do*:
+* Map Current Smoking status to daily cigarettes smoked.   
+
+## Smoking: State Transitions
+
+- We model transitions between Current Smokers and Former Smokers for 
+each race and sex combination defined above.
+
+- *To Do*: Estimate rate at which Never Smokers (broken down by age, race and sex)
+initiate smoking, and model it. 
+
+Other References to Consider:
+
+- See doi: 10.1001/jamanetworkopen.2020.19022 for age at initiation of ever smokers -
+shows that rase of initiation among ever smokers has risen, raising the need to
+promote smoking cessation programs among young adults. 
+
+- For rates of smoking among persons with lung cancer, see doi:10.1001/jamaoncol.2020.6362.
+Rising rates of lung cancer among never smokers. 
+
+The PATH Study for smoking initiation rates. (Youth 12-17)
+
+What about smoking initiation in 18-24 year olds?
+
+- March 22 data release: Up to age 25. 
+
+PATH has a biomarker assessment for smoking initiation. 
+
+Monitoring the Future does as well. 
+
+
+# Incarceration and Recidivism
+
+```{r, results='hide', echo=FALSE, message=FALSE}
+# 2-week risk #macmadu 2021 (table 1)
+PROB_DAILY_INCARCERATION <- params$PROBABILITY_DAILY_INCARCERATION
+PROB_DAILY_RECIDIVISM <- params$PROBABILITY_DAILY_RECIDIVISM
+  # we'll break down the above by age and race
+```
+
+Incarceration functions by defining two locations: a "correctional setting" (CS), and a "home" setting. Per @Macmadu2021, the 2-week incarceration probability for RI persons is `r 1.7`%.
+
+Considering that the risk of incarceration is distributed identically and independently across the biweekly period (i.e., 14 days), we obtain the daily incarceration rate using the binomial formula:
+
+$$1 - (1-p)^{14} = 0.017$$
+
+where p is the daily incarceration probability; (1-p) is the probability that a person does not get incarcerated in one day; $(1-p)^{14}$ is the probability that the person does \*not\* get incarcerated across the 14 days. Subtracting this probability from 1 gives the probability that the person will be incarcerated across the 14 days.
+
+Therefore,
+
+$$(1-p)^{14} = 1-0.017 = 0.983.$$ Therefore, $$(1-p) = 0.9831^{1/14} = 0.99877$$ and we conclude that the daily incarceration probability $p$ is `r 1-((1-0.017)^(1/14))`.
+
+Similarly per @Macmadu2021 et al, the 3-year recidivism probability for men and women with prior incarceration history is 51% and 36% respectively. For men, the daily recidivism probability ($p_{RM}$) can be obtained by solving:
+
+$$1 - (1-p_{RM})^{365 \times 3} = 0.51.$$ Thus, $$(1-p_{RM})^{365 \times 3} = 0.49.$$ 
+Therefore, 
+$p_{RM}$ = `r 1 - ((0.49)^(1/(365*3)))`.
+
+Similarly, for women,
+$$1 - (1-p_{RF})^{365\times3} = 0.36$$
+where $p_{RF}$ is the daily probability of recidivism for women. 
+We solve this equation to get 
+$ p_{RF} =$ 
+`r 1 - ((0.64)^(1/1095))`. 
+
+(There is a bit of an anomaly here since the daily probability of recividism 
+for men and women is lower than the daily probability of first-time incarceration.
+I emailed Dr. Macmadu to talk about this but I didn't hear back. 
+We'll probably want to talk about alternate parameterizations.)
+
+# Post-Release Smoking and Alcohol Use
+
+- See above identified need to map Current Smokers and Persons not Abstaining 
+from Alcohol to daily cigarettes smoked and daily drinks consumed respectively.
+
+- The literature synthesis thus far seems to suggest changes in frequency of 
+smoking and alcohol use, rather than a change in the behavioral state itself 
+(cessation for users, or initiation for abstainers).
+
+Some results thus far: 
+
+ - In general, post-incarceration, there was some evidence of decrease in overall tobacco smoking and alcohol use among justice-involved persons after release.   
+ 
+ - For instance, 74.5% of adult ex-jail inmates held on a felony conviction had used alcohol within a year of release (@Malouf2012).   
+ 
+ - Similarly, in a population of men and women ex-inmates in a large correctional facility in northeastern US, for those who predicted they were going to abstain from tobacco smoking, 3-weeks post-release, only 16.2% had refrained (@vandenBerg2014). 
+ 
+ - But while both majorities had reverted back to substance use, in the pre-post analysis, 46.2% decreased their frequency of alcohol use and 62% of ex-inmates smoked significantly less post-incarceration compared to pre-incarceration (@Tangney2016, @Puljević2018)
+ 
+ - Of those who decreased the amount of cigarettes smoked daily, 18% decreased by >20 cigarettes, 25% decreased by 11-20 cigarettes, and 21% decreased by 0-10 cigarettes. (@Puljević2018)
+
+
+# Social Network Structure 
+
+- A network structure with homogeneous probability for ties between persons has
+been simulated.
+
+- Persons newly entering the model are able to form connections with persons
+in the model.
+
+- Persons departing from the model dissolve their connections when they leave.
+
+- We are building a more realistic structure, one that incorporates clusters of
+stronger relations (close friends, family), algorithmic techniques. (See the 
+[LFR algorithm](https://networkx.org/documentation/networkx-2.1/reference/algorithms/generated/networkx.algorithms.community.community_generators.LFR_benchmark_graph.html) for a possible example.) 
+
+# Bibliography
+
+
+
