@@ -5,7 +5,7 @@ from pycadre import cadre_person
 import pycadre.load_params as load_params
 from repast4py import logging, schedule
 from repast4py import network
-from repast4py.network import write_network, read_network
+from repast4py.network import write_network, read_network   
 from repast4py import context as ctx
 from mpi4py import MPI
 import csv
@@ -161,6 +161,7 @@ class Model:
         #print("N after exits is ", n_post_exits)
 
         n_entries = len(exits)
+        self.n_entries = n_entries
 
         if n_entries > 0:
 
@@ -172,7 +173,11 @@ class Model:
             for existing_agent in self.context.agents():
                 #new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
                 new_agent_ties_dict[existing_agent] = np.random.binomial(1, load_params.params_list['EDGE_PROB'], n_entries)
+
+            self.new_agent_ties_dict = new_agent_ties_dict #this is used to test the new edges added to the new agents
             
+            #print("New agent tie matrix:", new_agent_ties_dict)
+
             ## create the newly entering person(s) and add them to the context
             new_agents = []
             for new_agent in range(self.name, self.name+n_entries): 
@@ -182,19 +187,16 @@ class Model:
                 new_agents.append(person)
                 print("New person age is: ", person.age)
                 print("New person race is: ", person.race)
-                print("New person race is female: ", person.female)
-
-            print("New agents are:", new_agents)
-            #print("Their ages are:", new_agents.age)
+                print("New person gender is: female", "\n") if person.female == 1 else print("New person gender is: male", "\n")
 
             ## Add edges between the newly entering person(s) and pre-existing agents in the context
             for key in new_agent_ties_dict.keys():
-                #print(key)
                 value = new_agent_ties_dict[key]
                 for i in range(n_entries):
-                    #print(value[i])
                     if value[i] == 1:
                         self.network.graph.add_edge(key, new_agents[i])
+
+            
                     
         self.name = self.name + n_entries
         self.counts.pop_size = self.context.size()[-1]
