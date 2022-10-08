@@ -1,6 +1,7 @@
 ---
 STOP_AT: 1
 N_AGENTS: 10000
+EDGE_PROB: 1
 #REF: Model Design
 
 MIN_AGE: 18
