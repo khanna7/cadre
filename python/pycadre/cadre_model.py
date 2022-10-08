@@ -181,9 +181,9 @@ class Model:
             ## create the newly entering person(s) and add them to the context
             new_agents = []
             for new_agent in range(self.name, self.name+n_entries): 
-                person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank)
+                person = cadre_person.Person(name=new_agent, type=cadre_person.Person.TYPE, rank=self.rank, age=MIN_AGE)
                 person.age = MIN_AGE
-                self.context.add(person)
+                #self.context.add(person)
                 new_agents.append(person)
                 print("New person age is: ", person.age)
                 print("New person race is: ", person.race)

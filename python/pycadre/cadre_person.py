@@ -17,7 +17,7 @@ class Person(core.Agent):
     """
     TYPE = 0 
 
-    def __init__(self, name:int, type:int, rank:int):
+    def __init__(self, name:int, type:int, rank:int, **kwargs):
 
         
         super().__init__(id=name, type=Person.TYPE, rank=rank)
