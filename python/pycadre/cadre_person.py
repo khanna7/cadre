@@ -167,19 +167,32 @@ class Person(core.Agent):
             self.last_release_tick = tick
             self.incarceration_duration = -1
                    
-    def simulate_recidivism(self, tick, probability_daily_recidivism_females, probability_daily_recidivism_males):
+    def simulate_recidivism(self, tick, 
+        probability_daily_recidivism_females, 
+        probability_daily_recidivism_males,
+        probability_daily_incarceration):
 
+        RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list['RECIDIVISM_UPDATED_PROB_LIMIT']
         prob = random.uniform(0, 1)
+        time_since_release = tick - self.last_release_tick 
         
         if self.current_incarceration_status == 0:
+
             if self.n_incarcerations > 0:
-                if self.female == 1:
-                    if prob < probability_daily_recidivism_females:
+                    if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
+                        # recidivism probability only applies for a certain num of days after release
+                        if self.female == 1:
+                            if prob < probability_daily_recidivism_females:
+                                self.update_attributes_at_incarceration_tick(tick=tick)
+
+                        elif self.female == 0:
+                            if prob < probability_daily_recidivism_males:                    
+                                self.update_attributes_at_incarceration_tick(tick=tick)
+
+                    elif time_since_release > RECIDIVISM_UPDATED_PROB_LIMIT:
+                        # after recidivism limit period, inc prob is the same for both genders 
+                        if prob < probability_daily_incarceration:
                             self.update_attributes_at_incarceration_tick(tick=tick)
-            
-            elif self.female == 0:
-                if prob < probability_daily_recidivism_males:
-                         self.update_attributes_at_incarceration_tick(tick=tick)
 
     def assign_smoker_status(self):
 
