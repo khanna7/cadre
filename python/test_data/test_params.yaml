@@ -50,6 +50,11 @@ PROBABILITY_DAILY_RECIDIVISM:
 # REF: Derived from Macmadu 2021
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
+RECIDIVISM_UPDATED_PROB_LIMIT: 180
+# REF: Macmadu 2021
+# Recidivism probability remains in effect for 180 days after release
+# after 180 days, it reverts to original incarceration probability
+
 SENTENCE_DURATION: 5
 # REF: Hypothetical
 
