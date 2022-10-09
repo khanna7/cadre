@@ -133,7 +133,10 @@ class Model:
             person.simulate_incarceration(tick=tick, probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
             if(person.current_incarceration_status == 1):
                 person.incarceration_duration += 1
-            person.simulate_recidivism(tick=tick, probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'])
+            person.simulate_recidivism(tick=tick, 
+                probability_daily_recidivism_females=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'], 
+                probability_daily_recidivism_males=load_params.params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'],
+                probability_daily_incarceration=load_params.params_list['PROBABILITY_DAILY_INCARCERATION'])
 
             incaceration_states.append(person.current_incarceration_status)
             smokers.append(person.smoker)
