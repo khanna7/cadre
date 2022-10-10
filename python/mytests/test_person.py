@@ -230,6 +230,7 @@ class TestPerson(unittest.TestCase):
         """
         
         test_recividism_params_list = TestPerson.params_list.copy()
+        
         test_recividism_params_list['STOP_AT'] = 2
         test_recividism_params_list['RECIDIVISM_UPDATED_PROB_LIMIT'] = 1
         test_recividism_params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'] = 1
