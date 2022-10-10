@@ -212,5 +212,45 @@ class TestPerson(unittest.TestCase):
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect))/len(m_du_collect)
 
 
+    def test_recidivism_model(self):
+
+        """        
+        Test recidivism model by creating a copy of the params dictionary & setting:
+         stop_at parameter = 2
+        
+        and initialize model with all agents:
+         current incarceration status to 0
+         last incarceration tick set to -1
+         daily recidivism probability set to 1 
+         number prior incarcerations set to 1
+        
+        When the model completes running, all agents should be: 
+          currently incarcerated
+          n_incarcerations should be zero
+        """
+        
+        test_recividism_params_list = TestPerson.params_list.copy()
+        test_recividism_params_list['STOP_AT'] = 2
+        test_recividism_params_list['RECIDIVISM_UPDATED_PROB_LIMIT'] = 1
+        test_recividism_params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'] = 1
+        test_recividism_params_list['PROBABILITY_DAILY_RECIDIVISM']['MALES'] = 1
+
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=test_recividism_params_list)
+        
+        for person in model.context.agents():
+            person.current_incarceration_status = 0
+            person.last_incarceration_tick = -1
+            person.last_release_tick = 0
+            person.when_to_release = 0
+            person.n_incarcerations = 1
+
+        model.start()
+
+        for person in model.context.agents():
+            self.assertEqual(person.current_incarceration_status, 1)
+            self.assertEqual(person.n_incarcerations, 2)
+
+
+
 if __name__ == '__main__':  
     unittest.main()
