@@ -10,7 +10,7 @@ from repast4py import context as ctx
 class TestModel(unittest.TestCase):
     params_list = pycadre.load_params.load_params('../../cadre/python/test_data/test_params.yaml', '')
 
-    def step_test_edge_formation(self):
+    def test_edge_formation(self):
         
         """Test edge formation for newly entering agents
         set edge probability = 1 (done in test parameters) 
