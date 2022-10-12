@@ -1,0 +1,150 @@
+---
+title: "Smoke Level Transition Matrix Analysis"
+author: "Yurui Zhang"
+date: "2022-08-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+white_Male_current <- 0.119
+white_Male_former <- 0.598
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (white_Male_former/white_Male_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="white male", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+white_Female_current <- 0.104
+white_Female_former <- 0.340
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (white_Female_former/white_Female_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="white Female", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+black_Male_current <- 0.205
+black_Male_former <- 0.473
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (black_Male_former/black_Male_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="black male", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+black_Female_current <- 0.113
+black_Female_former <- 0.290
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (black_Female_former/black_Female_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="black Female", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+hispanic_Male_current <- 0.127
+hispanic_Male_former <- 0.492
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (hispanic_Male_former/hispanic_Male_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="hispanic male", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+hispanic_Female_current <- 0.066
+hispanic_Female_former <- 0.221
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (hispanic_Female_former/hispanic_Female_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="hispanic Female", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+asian_Male_current <- 0.069
+asian_Male_former <- 0.462
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (asian_Male_former/asian_Male_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="asian male", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+asian_Female_current <- 0.038
+asian_Female_former <- 0.169
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (asian_Female_former/asian_Female_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="asian Female", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+other_Male_current <- 0.155
+other_Male_former <- 0.536
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (other_Male_former/other_Male_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="other male", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
+
+```{r}
+other_Female_current <- 0.149
+other_Female_former <- 0.410
+
+former_stays <- seq(from = -1, to = 2, by = 0.01)
+current_stays <- (other_Female_former/other_Female_current)*(former_stays-1)+1
+
+plot(current_stays, former_stays, xlim=range(0:1), ylim=range(0:1),type = "b", pch = 19, col = "blue", main="other Female", xlab = "current_stays", ylab = "former_stays")
+
+grid(nx = NULL, ny = NULL,
+     col = "grey", lwd = 1)
+
+```
