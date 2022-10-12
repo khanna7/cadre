@@ -177,19 +177,40 @@ class TestPerson(unittest.TestCase):
 
 
     def test_alco_status(self):
-        nsteps = 25
+
+        """        
+        Test alcohol use status distributions: 
+         - initialize model with 'STOP_AT' changed to 25
+         - run the model
+        
+        Compare if the proportion of persons in each alcohol use state
+        is within 0.01 units of the target proportion (0-1 scale)  
+                 """
+
+        test_alco_status_params_list = TestPerson.params_list.copy()
+
+        ABSTAINERS_PROP = test_alco_status_params_list['ALC_USE_PROPS']['A']
+        OCCASIONAL_PROP = test_alco_status_params_list['ALC_USE_PROPS']['O']
+        REGULAR_PROP = test_alco_status_params_list['ALC_USE_PROPS']['R']
+        AUD_PROP = test_alco_status_params_list['ALC_USE_PROPS']['D']
+
+        test_alco_status_params_list['STOP_AT'] = 25
         all_alco = []
 
-        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=test_alco_status_params_list)
         model.start()
 
         for person in model.context.agents():
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco))/len(all_alco)
-        self.assertAlmostEqual(alco_dist[0], 0.083, delta=4)
+        self.assertAlmostEqual(alco_dist[0], ABSTAINERS_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[1], OCCASIONAL_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[2], REGULAR_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[3], AUD_PROP, delta=0.01)
 
     def test_sentence_duration_emp(self):
+        
         DU_dis =  TestPerson.params_list['SENTENCE_DURATION_EMP']
 
         f_du_dis = [DU_dis['females'][0], DU_dis['females'][1], DU_dis['females'][2], DU_dis['females'][3], DU_dis['females'][4]]
@@ -212,7 +233,7 @@ class TestPerson(unittest.TestCase):
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect))/len(m_du_collect)
 
 
-    def test_recidivism_model(self):
+    def test_alco_status_model(self):
 
         """        
         Test recidivism model by creating a copy of the params dictionary & setting:
@@ -230,7 +251,7 @@ class TestPerson(unittest.TestCase):
         """
         
         test_recividism_params_list = TestPerson.params_list.copy()
-        
+
         test_recividism_params_list['STOP_AT'] = 2
         test_recividism_params_list['RECIDIVISM_UPDATED_PROB_LIMIT'] = 1
         test_recividism_params_list['PROBABILITY_DAILY_RECIDIVISM']['FEMALES'] = 1
