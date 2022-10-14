@@ -1,7 +1,7 @@
 ---
 title: "Smoke Level Transition Matrix Analysis"
-author: "Yurui Zhang"
-date: "2022-08-08"
+author: "Yurui Zhang and Aditya Khanna"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
