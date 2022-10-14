@@ -1,0 +1,33 @@
+---
+title: "Analysis of Starting Network Dataset"
+output: html_notebook
+---
+
+Purpose: To determine if missing agents at time 1 are
+not due to skipping nodes without edges. 
+
+```{r, setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "/Users/adityakhanna/Google Drive/My Drive/code/cadre/python")
+```
+
+Read in the data:
+
+```{r}
+library(network)
+net <- read.table("network.txt", skip = 10001, row.names = NULL)
+head(net)
+dim(net)
+head(cbind(net[,1],net[,2]), 25)
+```
+Unique IDs in the edgelist at the start:
+
+```{r}
+nodes_in_edgelist <- c(net[,1], net[,2])
+length(nodes_in_edgelist)
+
+unique_nodes_in_edgelist <- unique(nodes_in_edgelist)
+length(unique_nodes_in_edgelist)
+```
+
+Each node has at least one edge at the start. So missing agents at time 1 are
+not due to skipping nodes without edges. 
