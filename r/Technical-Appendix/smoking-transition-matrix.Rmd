@@ -30,7 +30,7 @@ grid(nx = NULL, ny = NULL,
 former_stays
 current_stays
 
-tail(cbind(former_stays, current_stays), 100)
+tail(cbind(former_stays, current_stays), 200)
 
 ```
 
@@ -362,7 +362,26 @@ Consolidated probabilities former smokers to relapse and for current smokers
 to cease smoking are:
 
 ```{r echo=TRUE, results='markup'}
-smoking_transition_matrix
+knitr::kable(smoking_transition_matrix)
 ```
 
+The average times to relapse are therefore:
 
+```{r echo=TRUE, results='markup'}
+smoking_transition_matrix
+dim(smoking_transition_matrix)
+smoking_transition_matrix[,1]
+relapse_rates <- smoking_transition_matrix[,1]
+smoking_time_to_relapse <-
+  lapply(smoking_transition_matrix[,1], function (x) summary(rgeom(10000, x)))
+smoking_time_to_relapse
+```
+
+The average times to cessation are:
+
+```{r echo=TRUE, results='markup'}
+cessation_rates <- smoking_transition_matrix[,2]
+smoking_time_to_cessation <-
+  lapply(smoking_transition_matrix[,2], function (x) summary(rgeom(10000, x)))
+smoking_time_to_cessation
+```
