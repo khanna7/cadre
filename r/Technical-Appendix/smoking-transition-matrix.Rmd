@@ -43,10 +43,13 @@ white_male_no_trans_prob <- cbind(former_stays[white_male_optim_pair_value],
                                   current_stays[white_male_optim_pair_value]) 
 names(white_male_no_trans_prob) <- c("stay_former_smoker", "stay_current_smoker")
 white_male_no_trans_prob
+
 ```
 # White Women
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
+
 white_Female_current <- 0.104
 white_Female_former <- 0.340
 
@@ -77,6 +80,7 @@ white_female_no_trans_prob
 # Black Men
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 black_Male_current <- 0.205
 black_Male_former <- 0.473
 
@@ -106,6 +110,7 @@ black_male_no_trans_prob
 # Black Women
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 black_Female_current <- 0.113
 black_Female_former <- 0.290
 
@@ -134,6 +139,7 @@ black_female_no_trans_prob
 # Hispanic Men
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 hispanic_Male_current <- 0.127
 hispanic_Male_former <- 0.492
 
@@ -163,6 +169,7 @@ hispanic_male_no_trans_prob
 # Hispanic Women
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 hispanic_Female_current <- 0.066
 hispanic_Female_former <- 0.221
 
@@ -193,6 +200,7 @@ hispanic_female_no_trans_prob
 # Asian Men
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 asian_Male_current <- 0.069
 asian_Male_former <- 0.462
 
@@ -223,6 +231,7 @@ asian_male_no_trans_prob
 # Asian Women
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 asian_Female_current <- 0.038
 asian_Female_former <- 0.169
 
@@ -252,6 +261,7 @@ asian_female_no_trans_prob
 # Other Men
 
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 other_Male_current <- 0.155
 other_Male_former <- 0.536
 
@@ -282,6 +292,7 @@ other_male_no_trans_prob
 
 # Other Women
 ```{r}
+rm(list=c("former_stays", "current_stays"))
 other_Female_current <- 0.149
 other_Female_former <- 0.410
 
@@ -323,8 +334,8 @@ smoking_maintain_status_matrix <-
       black_female_no_trans_prob,
       hispanic_male_no_trans_prob,
       hispanic_female_no_trans_prob,
-      other_male_no_trans_prob,
-      other_female_no_trans_prob
+      asian_male_no_trans_prob,
+      asian_female_no_trans_prob
     )
   )
 row.names(smoking_maintain_status_matrix) <-
@@ -335,8 +346,8 @@ row.names(smoking_maintain_status_matrix) <-
     "Black Females",
     "Hispanic Males",
     "Hispanic Females",
-    "Other Males",
-    "Other Females"
+    "Asian Males",
+    "Asian Females"
   )
 
 colnames(smoking_maintain_status_matrix) <- 
@@ -389,7 +400,7 @@ smoking_time_to_cessation
 This analysis assumes that all current smokers  (conditioned on race and sex) 
 are equally likely to try quitting and 
 all former smokers (conditioned on race and sex) are equally likely to relapse.
-
+  
 This is probably not very realistic - a better assumption might consider agent-level 
 behaviors that suggest that 55.1% of adult smokers made a quit attempt in the last
 year and 7.5% quit ([CDC Fact Sheet](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/cessation/smoking-cessation-fast-facts/index.html)). 
