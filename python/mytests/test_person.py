@@ -136,6 +136,21 @@ class TestPerson(unittest.TestCase):
             )
 
     def test_assign_smoking_status(self):
+
+        """
+        Test smoking use status distributions:
+         - initialize model with 'STOP_AT' changed to 25
+         - Now the model includes transitions between current and former smoking states
+         - run the model
+
+        Compare if the proportion of current/former/never white male smokers 
+        is within 0.03 units of the target proportions (0-1 scale)
+        Tests for other demographic groups to be added
+        """
+
+        test_smoking_status_params_list = TestPerson.params_list.copy()
+        test_smoking_status_params_list["STOP_AT"] = 25
+        
         SMOKING_CATS = TestPerson.params_list["SMOKING_CATS"]
         SMOKING_PREV = TestPerson.params_list["SMOKING_PREV"]
 
@@ -185,7 +200,7 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=test_smoking_status_params_list)
         model.start()
 
         for person in model.context.agents():
@@ -239,17 +254,17 @@ class TestPerson(unittest.TestCase):
             len(white_male_current_smoker_ids_intersect)
             / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[0],
-            delta=0.02,
+            delta=0.03,
         )
         self.assertAlmostEqual(
             len(white_male_former_smoker_ids_intersect) / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[1],
-            delta=0.05,
+            delta=0.03,
         )
         self.assertAlmostEqual(
             len(white_male_never_smoker_ids_intersect) / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[2],
-            delta=0.05,
+            delta=0.03,
         )
 
     def test_alco_status(self):
