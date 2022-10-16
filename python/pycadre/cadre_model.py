@@ -172,6 +172,7 @@ class Model:
             person.aging()
 
             person.transition_alc_use()
+            person.transition_smoking_status()
             person.simulate_incarceration(
                 tick=tick,
                 probability_daily_incarceration=load_params.params_list[
@@ -250,11 +251,6 @@ class Model:
                 person.age = MIN_AGE
                 # self.context.add(person)
                 new_agents.append(person)
-                print("New person age is: ", person.age)
-                print("New person race is: ", person.race)
-                print(
-                    "New person gender is: female", "\n"
-                ) if person.female == 1 else print("New person gender is: male", "\n")
 
             ## Add edges between the newly entering person(s) and pre-existing agents in the context
             for key in new_agent_ties_dict.keys():
