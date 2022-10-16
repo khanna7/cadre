@@ -385,3 +385,17 @@ smoking_time_to_cessation <-
   lapply(smoking_transition_matrix[,2], function (x) summary(rgeom(10000, x)))
 smoking_time_to_cessation
 ```
+
+This analysis assumes that all current smokers  (conditioned on race and sex) 
+are equally likely to try quitting and 
+all former smokers (conditioned on race and sex) are equally likely to relapse.
+
+This is probably not very realistic - a better assumption might consider agent-level 
+behaviors that suggest that 55.1% of adult smokers made a quit attempt in the last
+year and 7.5% quit ([CDC Fact Sheet](https://www.cdc.gov/tobacco/data_statistics/fact_sheets/cessation/smoking-cessation-fast-facts/index.html)). 
+
+See data from the PATH Study on relapse rates among persons who quit smoking  
+[Pierce et al](https://paperpile.com/app/p/62406b1b-5617-08b9-8adf-52ddbd38b07b)
+and relapse as a function of duration [Herd et al](https://paperpile.com/app/p/df6149a3-c109-0021-827d-90e99e20a1ab).
+
+
