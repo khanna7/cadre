@@ -311,18 +311,58 @@ other_female_no_trans_prob
 
 # Consolidated Results
 
+
+
+```{r, include=TRUE, results='markup'}
+smoking_maintain_status_matrix <- 
+  as.matrix(
+    rbind(
+      white_male_no_trans_prob,
+      white_female_no_trans_prob,
+      black_male_no_trans_prob,
+      black_female_no_trans_prob,
+      hispanic_male_no_trans_prob,
+      hispanic_female_no_trans_prob,
+      other_male_no_trans_prob,
+      other_female_no_trans_prob
+    )
+  )
+row.names(smoking_maintain_status_matrix) <-
+  c(
+    "White Males",
+    "White Females",
+    "Black Males",
+    "Black Females",
+    "Hispanic Males",
+    "Hispanic Females",
+    "Other Males",
+    "Other Females"
+  )
+
+colnames(smoking_maintain_status_matrix) <- 
+  c("Maintain Former Status (p)", 
+    "Maintain Current Status(p)"
+  )
+
+
+smoking_transition_matrix <-
+  1-smoking_maintain_status_matrix
+colnames(smoking_transition_matrix) <- 
+  c("Former -> Current (p)",
+    "Current -> Former (p)")
+```
+
 Consolidated probabilities for all race/ethnicity and gender combinations to stay
 as former and current smokers are:
 
-```{r, include=TRUE, results='markup'}
-rbind(
-  white_male_no_trans_prob,
-  white_female_no_trans_prob,
-  black_male_no_trans_prob,
-  black_female_no_trans_prob,
-  hispanic_male_no_trans_prob,
-  hispanic_female_no_trans_prob,
-  other_male_no_trans_prob,
-  other_female_no_trans_prob
-)
+```{r echo=TRUE, results='markup'}
+smoking_maintain_status_matrix
 ```
+Consolidated probabilities former smokers to relapse and for current smokers
+to cease smoking are:
+
+```{r echo=TRUE, results='markup'}
+smoking_transition_matrix
+```
+
+
