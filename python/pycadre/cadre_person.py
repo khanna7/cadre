@@ -107,7 +107,6 @@ class Person(core.Agent):
 
     def transition_smoking_status(self):
         SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
-        #print(SMOKING_TRANSITION_PROBS)
         WHITE_MALES_CESSATION = SMOKING_TRANSITION_PROBS["WHITE_MALES"]["CESSATION"]
         WHITE_MALES_RELAPSE = SMOKING_TRANSITION_PROBS["WHITE_MALES"]["RELAPSE"]
         WHITE_FEMALES_CESSATION = SMOKING_TRANSITION_PROBS["WHITE_FEMALES"]["CESSATION"]
@@ -133,45 +132,37 @@ class Person(core.Agent):
                 if self.female == 1:
                     if prob <= WHITE_FEMALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
                 
                 elif self.female == 0:
                     if prob <= WHITE_MALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
 
             elif self.race == "Black":
                 if self.female == 1:
                     if prob <= BLACK_FEMALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
                 
                 elif self.female == 0:
                     if prob <= BLACK_MALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
 
             elif self.race == "Hispanic":
                 if self.female == 1:
                     if prob <= HISPANIC_FEMALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
                 
                 elif self.female == 0:
                     if prob <= HISPANIC_MALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
 
             elif self.race == "Asian":
                 if self.female == 1:
                     if prob <= ASIAN_FEMALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
                 
                 elif self.female == 0:
                     if prob <= ASIAN_MALES_CESSATION: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "smoker stops")
 
         # relapse for former smokers
         if self.smoker == "Former":
@@ -179,45 +170,37 @@ class Person(core.Agent):
                 if self.female == 1:
                     if prob <= WHITE_FEMALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
                 
                 elif self.female == 0:
                     if prob <= WHITE_MALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
 
             elif self.race == "Black":
                 if self.female == 1:
                     if prob <= BLACK_FEMALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
-                
+
                 elif self.female == 0:
                     if prob <= BLACK_MALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
 
             elif self.race == "Hispanic":
                 if self.female == 1:
                     if prob <= HISPANIC_FEMALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
                 
                 elif self.female == 0:
                     if prob <= HISPANIC_MALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
 
             elif self.race == "Asian":
                 if self.female == 1:
                     if prob <= ASIAN_FEMALES_RELAPSE: 
                         self.smoker = "Current"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
                 
                 elif self.female == 0:
                     if prob <= ASIAN_MALES_RELAPSE: 
                         self.smoker = "Former"
-                        print(self.race, "Female (", self.female, ")", "former smoker relapses")
 
 
     def simulate_incarceration(self, tick, probability_daily_incarceration):
