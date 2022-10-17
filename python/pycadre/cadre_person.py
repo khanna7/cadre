@@ -47,6 +47,8 @@ class Person(core.Agent):
         self.sentence_duration = -1
         self.when_to_release = -1
         self.n_incarcerations = 0
+        self.entry_at_tick = -1
+        self.exit_at_tick = -1
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
 
     def save(self):
@@ -65,9 +67,10 @@ class Person(core.Agent):
         TICK_TO_YEAR_RATIO = load_params.params_list["TICK_TO_YEAR_RATIO"]
         self.age += 1 / TICK_TO_YEAR_RATIO
 
-    def exit_of_age(self):
+    def exit_of_age(self, tick):
         MAX_AGE = load_params.params_list["MAX_AGE"]
         if self.age > MAX_AGE:
+            self.exit_at_tick = tick
             return self
 
     def transition_alc_use(self):

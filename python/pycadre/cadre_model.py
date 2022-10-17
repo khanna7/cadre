@@ -78,6 +78,8 @@ class Model:
             "agent_last_incarceration_tick",
             "agent_last_release_tick",
             "agent_current_incarceration_status",
+            "agent_entry_at_tick",
+            "agent_exit_at_tick"
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
@@ -138,6 +140,8 @@ class Model:
                 person.last_incarceration_tick,
                 person.last_release_tick,
                 person.current_incarceration_status,
+                person.entry_at_tick,
+                person.exit_at_tick
             )
         self.agent_logger.write()
 
@@ -208,12 +212,13 @@ class Model:
         # print("self.context.agents type is", type(self.context.agents()))
 
         for p in self.context.agents():
-            exit = p.exit_of_age()
+            exit = p.exit_of_age(tick)
             if exit:
                 exits.append(exit)
 
         for p in exits:
             print("Exiting agent: ", p.name)
+            p.exit_at_tick = tick
             self.remove_agent(p)
 
         n_post_exits = self.context.size()[-1]
@@ -247,9 +252,18 @@ class Model:
                     type=cadre_person.Person.TYPE,
                     rank=self.rank,
                     age=MIN_AGE,
+                    entry_at_tick = tick
                 )
+                person.name = new_agent
                 person.age = MIN_AGE
-                # self.context.add(person)
+                person.entry_at_tick = tick
+
+                print("New person ID is: ", person.name)
+                print("New person age is: ", person.age)
+                print("New person race is: ", person.race)
+                print("New person time of entry is: ", person.entry_at_tick)
+                
+                self.context.add(person)
                 new_agents.append(person)
 
             ## Add edges between the newly entering person(s) and pre-existing agents in the context
