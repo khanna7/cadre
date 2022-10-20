@@ -143,14 +143,14 @@ class TestPerson(unittest.TestCase):
          - Now the model includes transitions between current and former smoking states
          - run the model
 
-        Compare if the proportion of current/former/never white male smokers 
+        Compare if the proportion of current/former/never white male smokers
         is within 0.03 units of the target proportions (0-1 scale)
         Tests for other demographic groups to be added
         """
 
         test_smoking_status_params_list = TestPerson.params_list.copy()
         test_smoking_status_params_list["STOP_AT"] = 25
-        
+
         SMOKING_CATS = TestPerson.params_list["SMOKING_CATS"]
         SMOKING_PREV = TestPerson.params_list["SMOKING_PREV"]
 
@@ -200,7 +200,9 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=test_smoking_status_params_list)
+        model = cadre_model.Model(
+            comm=MPI.COMM_WORLD, params=test_smoking_status_params_list
+        )
         model.start()
 
         for person in model.context.agents():
@@ -355,7 +357,7 @@ class TestPerson(unittest.TestCase):
         """
 
         test_recividism_params_list = TestPerson.params_list.copy()
-        
+
         N_AGENTS = test_recividism_params_list["STOP_AT"]
         test_recividism_params_list["STOP_AT"] = 2
         test_recividism_params_list["STOP_AT"] = 2
@@ -377,9 +379,9 @@ class TestPerson(unittest.TestCase):
         model.start()
 
         for person in model.context.agents():
-            if person.name < N_AGENTS: 
-                #needed because agents enter at all times since age initialization was changed, 
-                #and newly entering agents don't become incarerated because their attributes are not reset
+            if person.name < N_AGENTS:
+                # needed because agents enter at all times since age initialization was changed,
+                # and newly entering agents don't become incarerated because their attributes are not reset
                 self.assertEqual(person.current_incarceration_status, 1)
                 self.assertEqual(person.n_incarcerations, 2)
 
