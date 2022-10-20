@@ -28,7 +28,7 @@ class TestPerson(unittest.TestCase):
 
         for age in ages:
             self.assertTrue(age >= MIN_AGE)
-            self.assertTrue(age <= MAX_AGE)
+            self.assertTrue(age <= MAX_AGE + 1)
 
             if TestPerson.params_list["N_AGENTS"] >= 1000:
                 # only try this if n is sufficiently large, or test fails

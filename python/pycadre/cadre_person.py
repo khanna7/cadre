@@ -24,7 +24,7 @@ class Person(core.Agent):
         super().__init__(id=name, type=Person.TYPE, rank=rank)
 
         MIN_AGE = load_params.params_list["MIN_AGE"]
-        MAX_AGE = load_params.params_list["MAX_AGE"] + 1
+        MAX_AGE = load_params.params_list["MAX_AGE"] 
         RACE_CATS = load_params.params_list["RACE_CATS"]
         FEMALE_PROP = load_params.params_list["FEMALE_PROP"]
         RD = load_params.params_list["RACE_DISTRIBUTION"]
