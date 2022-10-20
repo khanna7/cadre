@@ -337,7 +337,7 @@ class TestPerson(unittest.TestCase):
         f_du_collect_dist = pd.value_counts(np.array(f_du_collect)) / len(f_du_collect)
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect)) / len(m_du_collect)
 
-    def test_alco_status_model(self):
+    def test_recidivism_model(self):
 
         """
         Test recidivism model by creating a copy of the params dictionary & setting:
@@ -355,7 +355,9 @@ class TestPerson(unittest.TestCase):
         """
 
         test_recividism_params_list = TestPerson.params_list.copy()
-
+        
+        N_AGENTS = test_recividism_params_list["STOP_AT"]
+        test_recividism_params_list["STOP_AT"] = 2
         test_recividism_params_list["STOP_AT"] = 2
         test_recividism_params_list["RECIDIVISM_UPDATED_PROB_LIMIT"] = 1
         test_recividism_params_list["PROBABILITY_DAILY_RECIDIVISM"]["FEMALES"] = 1
@@ -375,8 +377,11 @@ class TestPerson(unittest.TestCase):
         model.start()
 
         for person in model.context.agents():
-            self.assertEqual(person.current_incarceration_status, 1)
-            self.assertEqual(person.n_incarcerations, 2)
+            if person.name < N_AGENTS: 
+                #needed because agents enter at all times since age initialization was changed, 
+                #and newly entering agents don't become incarerated because their attributes are not reset
+                self.assertEqual(person.current_incarceration_status, 1)
+                self.assertEqual(person.n_incarcerations, 2)
 
 
 if __name__ == "__main__":
