@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+ 
+
+```{r}
+library(data.table)
+```
+Read the agent data into data-table:
+
+```{r}
+agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
+```
+
+Filter all data at tick 991:
+```{r}
+agent_dt_991 <- agent_dt[tick == 991] 
+agent_dt_991[,.N]
+
+agent_dt_991[agent_id > 9999, .N]
+tail(agent_dt_991[agent_id > 9999])
+
+summary(agent_dt_991$agent_entry_at_tick)
+summary(agent_dt_991$agent_exit_at_tick)
+
+
+```
+The mean age of agents at time by time of entry at tick 1:
+```{r}
+agent_dt[tick == 1, .("mean_age_today"=mean(agent_age), .N), 
+                        by=.(agent_entry_at_tick),
+         ]
+
+
+```
+
+And at tick 991:
+
+```{r}
+agent_dt[tick == 991, .("mean_age_today"=mean(agent_age), .N), 
+                        by=.(agent_entry_at_tick),
+         ]
+```
