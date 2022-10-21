@@ -33,7 +33,7 @@ class Person(core.Agent):
         ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
 
         self.name = name
-        self.age = random.uniform(MIN_AGE, MAX_AGE-1)
+        self.age = random.uniform(MIN_AGE, MAX_AGE)
         self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         self.female = random.binomial(1, FEMALE_PROP)
         self.alc_use_status = random.choice(
