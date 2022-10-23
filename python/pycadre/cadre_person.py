@@ -47,6 +47,7 @@ class Person(core.Agent):
         self.sentence_duration = -1
         self.when_to_release = -1
         self.n_incarcerations = 0
+        self.n_releases = 0
         self.entry_at_tick = -1
         self.exit_at_tick = -1
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
@@ -273,6 +274,7 @@ class Person(core.Agent):
         self.current_incarceration_status = 0
         self.last_release_tick = tick
         self.incarceration_duration = -1
+        self.n_releases += 1
 
     def simulate_recidivism(
         self,

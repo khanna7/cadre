@@ -69,17 +69,19 @@ class Model:
         # initialize the agent logging
         tabular_logging_cols = [
             "tick",
-            "agent_id",
-            "agent_age",
-            "agent_race",
-            "agent_female",
-            "agent_alc_use_status",
-            "agent_smoking_status",
-            "agent_last_incarceration_tick",
-            "agent_last_release_tick",
-            "agent_current_incarceration_status",
-            "agent_entry_at_tick",
-            "agent_exit_at_tick"
+            "id",
+            "age",
+            "race",
+            "female",
+            "alc_use_status",
+            "smoking_status",
+            "last_incarceration_tick",
+            "last_release_tick",
+            "current_incarceration_status",
+            "entry_at_tick",
+            "exit_at_tick",
+            "n_incarcerations",
+            "n_releases"
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
@@ -141,7 +143,9 @@ class Model:
                 person.last_release_tick,
                 person.current_incarceration_status,
                 person.entry_at_tick,
-                person.exit_at_tick
+                person.exit_at_tick,
+                person.n_incarcerations,
+                person.n_releases
             )
         self.agent_logger.write()
 

@@ -3,9 +3,7 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-We start by confirming the ages of the agents by their time of entry. 
-This will allow us to check if the age assignment of new agents,
-and their age increment, are working correctly. 
+We confirm below various attributes of the agents that are logged.
 
 We will do this in `data.table` for speed. 
 
@@ -16,8 +14,14 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
+agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log_1.csv")
 ```
+
+# Age Assignment at Entry
+
+We check below the ages of new agents, 
+and if their initial age assignments 
+and age increments are working correctly. 
 
 How many agents are present at tick 991:
 
@@ -32,8 +36,9 @@ agent_dt[tick == 991 & agent_id > 9999, .N]
 
 The mean age of agents at time by time of entry at tick 1:
 ```{r}
-agent_dt[tick == 1, .("mean_age_today"=mean(agent_age), .N), 
-                        by=.(agent_entry_at_tick),
+agent_dt[tick == 1, 
+         .("mean_age_today"=mean(age), .N), 
+                        by=.(entry_at_tick),
          ]
 
 
@@ -41,8 +46,9 @@ agent_dt[tick == 1, .("mean_age_today"=mean(agent_age), .N),
 At tick 491:
 
 ```{r}
-agent_dt[tick == 491, .("mean_age_today"=mean(agent_age), .N), 
-                        by=.(agent_entry_at_tick),
+agent_dt[tick == 491, 
+         .("mean_age_today"=mean(age), .N), 
+                        by=.(entry_at_tick),
          ]
 
 
@@ -51,8 +57,9 @@ agent_dt[tick == 491, .("mean_age_today"=mean(agent_age), .N),
 And at tick 991:
 
 ```{r}
-agent_dt[tick == 991, .("mean_age_today"=mean(agent_age), .N), 
-                        by=.(agent_entry_at_tick),
+agent_dt[tick == 991, 
+         .("mean_age_today"=mean(age), .N), 
+                        by=.(entry_at_tick),
          ]
 ```
 
@@ -65,3 +72,62 @@ and at tick 991, this agent was 21 years old (991-365 years older than 18, round
 
 So, the aging process seems to work as expected.
 
+
+# Incarceration Statistics
+
+Mean number of incarcerations at tick 991:
+
+```{r}
+agent_dt[tick == 991, 
+         .(
+           "mean_n_incarcerations" = mean(n_incarcerations),
+           "min_n_incarcerations" = min(n_incarcerations),
+           "max_n_incarcerations" = max(n_incarcerations),
+           "median_n_incarcerations" = median(n_incarcerations),
+           "n_ever_incarcerated_agents"=sum(n_incarcerations > 0),
+         .N)] 
+```   
+# Incarceration Duration
+
+Compute statistics on agents whose last release date is 
+after their last incarceration date.
+
+```{r}
+agent_dt[tick == 991 & last_release_tick > last_incarceration_tick, 
+         .(
+           "mean_duration" = mean(last_release_tick - last_incarceration_tick),
+           "max_duration" = max(last_release_tick - last_incarceration_tick),
+           "min_duration" = min(last_release_tick - last_incarceration_tick),
+           "median_duration" = median(last_release_tick - last_incarceration_tick),
+         .N)] 
+```
+
+
+
+# Release Statistics
+
+## Number
+
+```{r}
+agent_dt[tick == 991, 
+         .(
+           "mean_n_releases" = mean(n_releases),
+           "min_n_releases" = min(n_releases),
+           "max_n_releases" = max(n_releases),
+           "median_n_releases" = median(n_releases),
+           "n_ever_released_agents"=sum(n_releases > 0),
+         .N)] 
+```
+## Duration
+Compute statistics on agents whose last release date is 
+\*before\* their last incarceration date.
+
+```{r}
+agent_dt[tick == 991 & last_release_tick < last_incarceration_tick, 
+         .(
+           "mean_rel_dur" = mean(abs(last_release_tick - last_incarceration_tick)),
+           "max_rel_dur" = max(abs(last_release_tick - last_incarceration_tick)),
+           "min_rel_dur" = min(abs(last_release_tick - last_incarceration_tick)),
+           "median_rel_dur" = median(abs(last_release_tick - last_incarceration_tick)),
+         .N)] 
+```
