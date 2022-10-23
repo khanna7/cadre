@@ -15,6 +15,42 @@ Read the agent data into data-table:
 
 ```{r}
 agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
+last_tick <- 1000
+```
+
+# Demographics
+
+```{r}
+agent_dt[tick == last_tick, .N, by=race]
+```
+```{r}
+agent_dt[tick == last_tick, .N, by=female]
+```
+```{r}
+agebreaks <- c(18, 25, 35, 45, 55, 65)
+agelabels <- c("18-24", "25-34", "35-44", "45-54", "55-64")
+```
+
+
+```{r}
+agent_dt[tick == last_tick, .N, ]
+setDT(agent_dt)[ , age_groups := cut(age, 
+                                breaks = agebreaks, 
+                                include.lowest = TRUE,
+                                right = FALSE, 
+                                labels = agelabels)]
+
+agent_dt[tick == last_tick, .N, by=age_groups]
+
+agent_dt[tick == last_tick & age < 25, , by=c(order("age"), "age_groups")]
+
+agent_dt[tick == last_incarceration_tick, .(age, age_groups)][order(age)]
+
+```
+
+```{r}
+agent_dt[tick == last_tick, .N, by=c("age_groups", "race", "female")][order(age_groups, race, female)]
+agent_dt[tick == last_tick, .N, by=c("race", "age_groups", "female")][order(race, age_groups)]
 ```
 
 # Age Assignment at Entry
@@ -23,15 +59,15 @@ We check below the ages of new agents,
 and if their initial age assignments 
 and age increments are working correctly. 
 
-How many agents are present at tick 991:
+How many agents are present at the last tick:
 
 ```{r}
-agent_dt[tick == 991, .N] 
+agent_dt[tick == last_tick, .N] 
 ```
 How many agents present at tick 991 entered after model initialization?
 
 ```{r}
-agent_dt[tick == 991 & agent_id > 9999, .N] 
+agent_dt[tick == 991 & id > 9999, .N] 
 ```
 
 The mean age of agents at time by time of entry at tick 1:
