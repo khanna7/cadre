@@ -14,7 +14,7 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log_1.csv")
+agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
 ```
 
 # Age Assignment at Entry
@@ -129,5 +129,30 @@ agent_dt[tick == 991 & last_release_tick < last_incarceration_tick,
            "max_rel_dur" = max(abs(last_release_tick - last_incarceration_tick)),
            "min_rel_dur" = min(abs(last_release_tick - last_incarceration_tick)),
            "median_rel_dur" = median(abs(last_release_tick - last_incarceration_tick)),
+         .N)] 
+```
+
+
+# Smoking transition behavior
+
+```{r}
+agent_dt[tick == 1000, 
+         .(
+           "mean_n_smkg_trans" = mean(n_smkg_stat_trans),
+           "max_n_smkg_trans" = max(n_smkg_stat_trans),
+           "min_n_smkg_trans" = min(n_smkg_stat_trans),
+           "median_n_smkg_trans" = median(n_smkg_stat_trans),
+         .N)] 
+```
+
+# Alcohol transition behavior
+
+```{r}
+agent_dt[tick == 1000, 
+         .(
+           "mean_n_alc_trans" = mean(n_alc_use_stat_trans),
+           "max_n_alc_trans" = max(n_alc_use_stat_trans),
+           "min_n_alc_trans" = min(n_alc_use_stat_trans),
+           "median_n_alc_trans" = median(n_alc_use_stat_trans),
          .N)] 
 ```
