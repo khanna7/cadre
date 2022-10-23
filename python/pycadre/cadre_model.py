@@ -44,6 +44,7 @@ class Model:
         self.runner.schedule_stop(params["STOP_AT"])
         # self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_repeating_event(1, 10, self.log_network)
+        self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
         # create the context to hold the agents and manage cross process
@@ -81,7 +82,9 @@ class Model:
             "entry_at_tick",
             "exit_at_tick",
             "n_incarcerations",
-            "n_releases"
+            "n_releases",
+            "n_smkg_stat_trans",
+            "n_alc_use_stat_trans",
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
@@ -145,7 +148,9 @@ class Model:
                 person.entry_at_tick,
                 person.exit_at_tick,
                 person.n_incarcerations,
-                person.n_releases
+                person.n_releases,
+                person.n_smkg_stat_trans,
+                person.n_alc_use_stat_trans
             )
         self.agent_logger.write()
 
