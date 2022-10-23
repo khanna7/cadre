@@ -51,6 +51,8 @@ class Person(core.Agent):
         self.entry_at_tick = -1
         self.exit_at_tick = -1
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
+        self.n_smkg_stat_trans = 0
+        self.n_alc_use_stat_trans = 0
 
     def save(self):
         """Saves the state of this agent as tuple.
@@ -90,24 +92,30 @@ class Person(core.Agent):
         if self.alc_use_status == 0:
             if prob <= TRANS_PROB_0_1:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 1:
             if prob <= TRANS_PROB_1_2:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
             elif prob > 1 - TRANS_PROB_1_0:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 2:
             if prob <= TRANS_PROB_2_3:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
             elif prob > 1 - TRANS_PROB_2_1:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 3:
             if prob > 1 - TRANS_PROB_3_2:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
 
     def transition_smoking_status(self):
         SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
@@ -142,37 +150,45 @@ class Person(core.Agent):
                 if self.female == 1:
                     if prob <= WHITE_FEMALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= WHITE_MALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Black":
                 if self.female == 1:
                     if prob <= BLACK_FEMALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= BLACK_MALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Hispanic":
                 if self.female == 1:
                     if prob <= HISPANIC_FEMALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= HISPANIC_MALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Asian":
                 if self.female == 1:
                     if prob <= ASIAN_FEMALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= ASIAN_MALES_CESSATION:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
         # relapse for former smokers
         if self.smoker == "Former":
@@ -180,37 +196,45 @@ class Person(core.Agent):
                 if self.female == 1:
                     if prob <= WHITE_FEMALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= WHITE_MALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Black":
                 if self.female == 1:
                     if prob <= BLACK_FEMALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= BLACK_MALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Hispanic":
                 if self.female == 1:
                     if prob <= HISPANIC_FEMALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= HISPANIC_MALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
             elif self.race == "Asian":
                 if self.female == 1:
                     if prob <= ASIAN_FEMALES_RELAPSE:
                         self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
 
                 elif self.female == 0:
                     if prob <= ASIAN_MALES_RELAPSE:
                         self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
     def simulate_incarceration(self, tick, probability_daily_incarceration):
 
