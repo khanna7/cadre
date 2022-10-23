@@ -42,9 +42,9 @@ ALC_USE_STATES:
 PROBABILITY_BIWEEKLY_INCARCERATION: 0.017 
 # REF: Stated in Macmadu 2021 et al
 
-PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical value used for model development
-#PROBABILITY_DAILY_INCARCERATION: 0.001223976
-# Should be Derived from Macmadu 2021 
+#PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical value used for model development
+PROBABILITY_DAILY_INCARCERATION: 0.001223976
+# Derived from Macmadu 2021 
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
 PROBABILITY_DAILY_RECIDIVISM: 
@@ -53,9 +53,9 @@ PROBABILITY_DAILY_RECIDIVISM:
 # REF: Derived from Macmadu 2021
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
-RECIDIVISM_UPDATED_PROB_LIMIT: 180
+RECIDIVISM_UPDATED_PROB_LIMIT: 1095
 # REF: Macmadu 2021
-# Recidivism probability remains in effect for 180 days after release
+# Recidivism probability remains in effect for 3 years after release
 # after 180 days, it reverts to original incarceration probability
 
 SENTENCE_DURATION: 5
