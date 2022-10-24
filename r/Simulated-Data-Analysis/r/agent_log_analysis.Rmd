@@ -8,6 +8,7 @@ We confirm below various attributes of the agents that are logged.
 We will do this in `data.table` for speed. 
 
 ```{r}
+rm(list=ls())
 library(data.table)
 ```
 
@@ -21,11 +22,15 @@ last_tick <- 1000
 # Demographics
 
 ```{r}
-agent_dt[tick == last_tick, .N, by=race]
+agent_dt[tick == last_tick, .N, by=race][,"%":=round(N/sum(N)*100)][order(race)]
 ```
-```{r}
-agent_dt[tick == last_tick, .N, by=female]
+```{r echo=TRUE}
+agent_dt[tick==last_tick, .N, by=female][order(female)]
+#[,"%":=N/sum(N)]
+#[order(race)]
 ```
+
+
 ```{r}
 agebreaks <- c(18, 25, 35, 45, 55, 65)
 agelabels <- c("18-24", "25-34", "35-44", "45-54", "55-64")
@@ -39,18 +44,50 @@ setDT(agent_dt)[ , age_groups := cut(age,
                                 include.lowest = TRUE,
                                 right = FALSE, 
                                 labels = agelabels)]
-
-agent_dt[tick == last_tick, .N, by=age_groups]
-
-agent_dt[tick == last_tick & age < 25, , by=c(order("age"), "age_groups")]
-
-agent_dt[tick == last_incarceration_tick, .(age, age_groups)][order(age)]
-
+nrow(agent_dt[tick == last_tick])
 ```
 
 ```{r}
 agent_dt[tick == last_tick, .N, by=c("age_groups", "race", "female")][order(age_groups, race, female)]
 agent_dt[tick == last_tick, .N, by=c("race", "age_groups", "female")][order(race, age_groups)]
+```
+```{r}
+agent_dt[tick==last_tick, .N, by=c("race", "female")][,"%":=N/sum(N)*100][order(race)]
+```
+
+```{r}
+agent_dt[tick==last_tick, .N, by=c("age_groups")][,"%":=round(N/sum(N)*100)][order(age_groups)]
+```
+Median age at the start: 
+
+```{r}
+agent_dt[tick==1, median(age)]
+```
+
+Median age at the end:
+
+```{r}
+nrow(agent_dt[tick==last_tick])
+agent_dt[tick==last_tick, median(age)]
+```
+
+# Baseline Smoking Behaviors
+
+
+```{r}
+ans <- agent_dt[tick==last_tick & race == "Black" & female == 0, .N, by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][]
+ans
+
+```
+
+# Baseline Alcohol Use
+
+```{r}
+agent_dt[tick == last_tick, .N, by = c("alc_use_status")][, 
+  "%" := round(N /sum(N) * 100, 0)][
+  order(alc_use_status)][
+    
+  ]
 ```
 
 # Age Assignment at Entry
@@ -63,7 +100,7 @@ How many agents are present at the last tick:
 
 ```{r}
 agent_dt[tick == last_tick, .N] 
-```
+```   
 How many agents present at tick 991 entered after model initialization?
 
 ```{r}
