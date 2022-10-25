@@ -16,7 +16,7 @@ Read the agent data into data-table:
 
 ```{r}
 agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
-last_tick <- 1000
+last_tick <- 10950
 ```
 
 # Demographics
@@ -148,10 +148,10 @@ So, the aging process seems to work as expected.
 
 # Incarceration Statistics
 
-Mean number of incarcerations at tick 991:
+Mean number of incarcerations at last tick:
 
 ```{r}
-agent_dt[tick == 991, 
+agent_dt[tick == last_tick, 
          .(
            "mean_n_incarcerations" = mean(n_incarcerations),
            "min_n_incarcerations" = min(n_incarcerations),
@@ -166,7 +166,7 @@ Compute statistics on agents whose last release date is
 after their last incarceration date.
 
 ```{r}
-agent_dt[tick == 991 & last_release_tick > last_incarceration_tick, 
+agent_dt[tick == last_tick & last_release_tick >= last_incarceration_tick, 
          .(
            "mean_duration" = mean(last_release_tick - last_incarceration_tick),
            "max_duration" = max(last_release_tick - last_incarceration_tick),
@@ -182,7 +182,7 @@ agent_dt[tick == 991 & last_release_tick > last_incarceration_tick,
 ## Number
 
 ```{r}
-agent_dt[tick == 991, 
+agent_dt[tick == last_tick, 
          .(
            "mean_n_releases" = mean(n_releases),
            "min_n_releases" = min(n_releases),
@@ -196,7 +196,7 @@ Compute statistics on agents whose last release date is
 \*before\* their last incarceration date.
 
 ```{r}
-agent_dt[tick == 991 & last_release_tick < last_incarceration_tick, 
+agent_dt[tick == last_tick & last_release_tick < last_incarceration_tick, 
          .(
            "mean_rel_dur" = mean(abs(last_release_tick - last_incarceration_tick)),
            "max_rel_dur" = max(abs(last_release_tick - last_incarceration_tick)),
@@ -209,7 +209,7 @@ agent_dt[tick == 991 & last_release_tick < last_incarceration_tick,
 # Smoking transition behavior
 
 ```{r}
-agent_dt[tick == 1000, 
+agent_dt[tick == last_tick, 
          .(
            "mean_n_smkg_trans" = mean(n_smkg_stat_trans),
            "max_n_smkg_trans" = max(n_smkg_stat_trans),
@@ -221,7 +221,7 @@ agent_dt[tick == 1000,
 # Alcohol transition behavior
 
 ```{r}
-agent_dt[tick == 1000, 
+agent_dt[tick == last_tick, 
          .(
            "mean_n_alc_trans" = mean(n_alc_use_stat_trans),
            "max_n_alc_trans" = max(n_alc_use_stat_trans),
