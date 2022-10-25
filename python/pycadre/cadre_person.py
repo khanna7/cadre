@@ -24,7 +24,7 @@ class Person(core.Agent):
         super().__init__(id=name, type=Person.TYPE, rank=rank)
 
         MIN_AGE = load_params.params_list["MIN_AGE"]
-        MAX_AGE = load_params.params_list["MAX_AGE"] + 1
+        MAX_AGE = load_params.params_list["MAX_AGE"] 
         RACE_CATS = load_params.params_list["RACE_CATS"]
         FEMALE_PROP = load_params.params_list["FEMALE_PROP"]
         RD = load_params.params_list["RACE_DISTRIBUTION"]
@@ -33,7 +33,7 @@ class Person(core.Agent):
         ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
 
         self.name = name
-        self.age = random.randint(MIN_AGE, MAX_AGE)
+        self.age = random.uniform(MIN_AGE, MAX_AGE)
         self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         self.female = random.binomial(1, FEMALE_PROP)
         self.alc_use_status = random.choice(
@@ -47,7 +47,12 @@ class Person(core.Agent):
         self.sentence_duration = -1
         self.when_to_release = -1
         self.n_incarcerations = 0
+        self.n_releases = 0
+        self.entry_at_tick = -1
+        self.exit_at_tick = -1
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
+        self.n_smkg_stat_trans = 0
+        self.n_alc_use_stat_trans = 0
 
     def save(self):
         """Saves the state of this agent as tuple.
@@ -65,9 +70,10 @@ class Person(core.Agent):
         TICK_TO_YEAR_RATIO = load_params.params_list["TICK_TO_YEAR_RATIO"]
         self.age += 1 / TICK_TO_YEAR_RATIO
 
-    def exit_of_age(self):
+    def exit_of_age(self, tick):
         MAX_AGE = load_params.params_list["MAX_AGE"]
         if self.age > MAX_AGE:
+            self.exit_at_tick = tick
             return self
 
     def transition_alc_use(self):
@@ -86,24 +92,149 @@ class Person(core.Agent):
         if self.alc_use_status == 0:
             if prob <= TRANS_PROB_0_1:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 1:
             if prob <= TRANS_PROB_1_2:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
             elif prob > 1 - TRANS_PROB_1_0:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 2:
             if prob <= TRANS_PROB_2_3:
                 self.alc_use_status += 1
+                self.n_alc_use_stat_trans += 1
 
             elif prob > 1 - TRANS_PROB_2_1:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 3:
             if prob > 1 - TRANS_PROB_3_2:
                 self.alc_use_status -= 1
+                self.n_alc_use_stat_trans += 1
+
+    def transition_smoking_status(self):
+        SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
+        WHITE_MALES_CESSATION = SMOKING_TRANSITION_PROBS["WHITE_MALES"]["CESSATION"]
+        WHITE_MALES_RELAPSE = SMOKING_TRANSITION_PROBS["WHITE_MALES"]["RELAPSE"]
+        WHITE_FEMALES_CESSATION = SMOKING_TRANSITION_PROBS["WHITE_FEMALES"]["CESSATION"]
+        WHITE_FEMALES_RELAPSE = SMOKING_TRANSITION_PROBS["WHITE_FEMALES"]["RELAPSE"]
+        BLACK_MALES_CESSATION = SMOKING_TRANSITION_PROBS["BLACK_MALES"]["CESSATION"]
+        BLACK_MALES_RELAPSE = SMOKING_TRANSITION_PROBS["BLACK_MALES"]["RELAPSE"]
+        BLACK_FEMALES_CESSATION = SMOKING_TRANSITION_PROBS["BLACK_FEMALES"]["CESSATION"]
+        BLACK_FEMALES_RELAPSE = SMOKING_TRANSITION_PROBS["BLACK_FEMALES"]["RELAPSE"]
+        HISPANIC_MALES_CESSATION = SMOKING_TRANSITION_PROBS["HISPANIC_MALES"][
+            "CESSATION"
+        ]
+        HISPANIC_MALES_RELAPSE = SMOKING_TRANSITION_PROBS["HISPANIC_MALES"]["RELAPSE"]
+        HISPANIC_FEMALES_CESSATION = SMOKING_TRANSITION_PROBS["HISPANIC_FEMALES"][
+            "CESSATION"
+        ]
+        HISPANIC_FEMALES_RELAPSE = SMOKING_TRANSITION_PROBS["HISPANIC_FEMALES"][
+            "RELAPSE"
+        ]
+        ASIAN_MALES_CESSATION = SMOKING_TRANSITION_PROBS["ASIAN_MALES"]["CESSATION"]
+        ASIAN_MALES_RELAPSE = SMOKING_TRANSITION_PROBS["ASIAN_MALES"]["RELAPSE"]
+        ASIAN_FEMALES_CESSATION = SMOKING_TRANSITION_PROBS["ASIAN_FEMALES"]["CESSATION"]
+        ASIAN_FEMALES_RELAPSE = SMOKING_TRANSITION_PROBS["ASIAN_FEMALES"]["RELAPSE"]
+
+        prob = random.uniform(0, 1)
+
+        # cessation for current smokers
+        if self.smoker == "Current":
+            if self.race == "White":
+                if self.female == 1:
+                    if prob <= WHITE_FEMALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= WHITE_MALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Black":
+                if self.female == 1:
+                    if prob <= BLACK_FEMALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= BLACK_MALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Hispanic":
+                if self.female == 1:
+                    if prob <= HISPANIC_FEMALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= HISPANIC_MALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Asian":
+                if self.female == 1:
+                    if prob <= ASIAN_FEMALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= ASIAN_MALES_CESSATION:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
+
+        # relapse for former smokers
+        if self.smoker == "Former":
+            if self.race == "White":
+                if self.female == 1:
+                    if prob <= WHITE_FEMALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= WHITE_MALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Black":
+                if self.female == 1:
+                    if prob <= BLACK_FEMALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= BLACK_MALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Hispanic":
+                if self.female == 1:
+                    if prob <= HISPANIC_FEMALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= HISPANIC_MALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+            elif self.race == "Asian":
+                if self.female == 1:
+                    if prob <= ASIAN_FEMALES_RELAPSE:
+                        self.smoker = "Current"
+                        self.n_smkg_stat_trans += 1
+
+                elif self.female == 0:
+                    if prob <= ASIAN_MALES_RELAPSE:
+                        self.smoker = "Former"
+                        self.n_smkg_stat_trans += 1
 
     def simulate_incarceration(self, tick, probability_daily_incarceration):
 
@@ -167,6 +298,7 @@ class Person(core.Agent):
         self.current_incarceration_status = 0
         self.last_release_tick = tick
         self.incarceration_duration = -1
+        self.n_releases += 1
 
     def simulate_recidivism(
         self,

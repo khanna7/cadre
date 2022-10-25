@@ -28,7 +28,7 @@ class TestPerson(unittest.TestCase):
 
         for age in ages:
             self.assertTrue(age >= MIN_AGE)
-            self.assertTrue(age <= MAX_AGE)
+            self.assertTrue(age <= MAX_AGE + 1)
 
             if TestPerson.params_list["N_AGENTS"] >= 1000:
                 # only try this if n is sufficiently large, or test fails
@@ -136,6 +136,21 @@ class TestPerson(unittest.TestCase):
             )
 
     def test_assign_smoking_status(self):
+
+        """
+        Test smoking use status distributions:
+         - initialize model with 'STOP_AT' changed to 25
+         - Now the model includes transitions between current and former smoking states
+         - run the model
+
+        Compare if the proportion of current/former/never white male smokers
+        is within 0.03 units of the target proportions (0-1 scale)
+        Tests for other demographic groups to be added
+        """
+
+        test_smoking_status_params_list = TestPerson.params_list.copy()
+        test_smoking_status_params_list["STOP_AT"] = 25
+
         SMOKING_CATS = TestPerson.params_list["SMOKING_CATS"]
         SMOKING_PREV = TestPerson.params_list["SMOKING_PREV"]
 
@@ -185,7 +200,9 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
+        model = cadre_model.Model(
+            comm=MPI.COMM_WORLD, params=test_smoking_status_params_list
+        )
         model.start()
 
         for person in model.context.agents():
@@ -239,17 +256,17 @@ class TestPerson(unittest.TestCase):
             len(white_male_current_smoker_ids_intersect)
             / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[0],
-            delta=0.02,
+            delta=0.03,
         )
         self.assertAlmostEqual(
             len(white_male_former_smoker_ids_intersect) / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[1],
-            delta=0.05,
+            delta=0.03,
         )
         self.assertAlmostEqual(
             len(white_male_never_smoker_ids_intersect) / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[2],
-            delta=0.05,
+            delta=0.03,
         )
 
     def test_alco_status(self):
@@ -322,7 +339,7 @@ class TestPerson(unittest.TestCase):
         f_du_collect_dist = pd.value_counts(np.array(f_du_collect)) / len(f_du_collect)
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect)) / len(m_du_collect)
 
-    def test_alco_status_model(self):
+    def test_recidivism_model(self):
 
         """
         Test recidivism model by creating a copy of the params dictionary & setting:
@@ -341,6 +358,8 @@ class TestPerson(unittest.TestCase):
 
         test_recividism_params_list = TestPerson.params_list.copy()
 
+        N_AGENTS = test_recividism_params_list["STOP_AT"]
+        test_recividism_params_list["STOP_AT"] = 2
         test_recividism_params_list["STOP_AT"] = 2
         test_recividism_params_list["RECIDIVISM_UPDATED_PROB_LIMIT"] = 1
         test_recividism_params_list["PROBABILITY_DAILY_RECIDIVISM"]["FEMALES"] = 1
@@ -360,8 +379,11 @@ class TestPerson(unittest.TestCase):
         model.start()
 
         for person in model.context.agents():
-            self.assertEqual(person.current_incarceration_status, 1)
-            self.assertEqual(person.n_incarcerations, 2)
+            if person.name < N_AGENTS:
+                # needed because agents enter at all times since age initialization was changed,
+                # and newly entering agents don't become incarerated because their attributes are not reset
+                self.assertEqual(person.current_incarceration_status, 1)
+                self.assertEqual(person.n_incarcerations, 2)
 
 
 if __name__ == "__main__":
