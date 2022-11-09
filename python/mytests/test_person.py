@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 from pycadre import cadre_model
+from pycadre.person_creator import PersonCreator
 import pycadre.load_params
 from mpi4py import MPI
 from repast4py import context as ctx
@@ -23,7 +24,7 @@ class TestPerson(unittest.TestCase):
 
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             ages.append(person.age)
 
         for age in ages:
@@ -34,6 +35,14 @@ class TestPerson(unittest.TestCase):
                 # only try this if n is sufficiently large, or test fails
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
+    def test_person_creator(self):
+        person_creator = PersonCreator(0)
+        p1 = person_creator.create_person(tick=1, age=47, female=False, race="White")
+        self.assertEqual(p1.entry_at_tick, 1)
+        self.assertEqual(p1.age, 47)
+        self.assertEqual(p1.female, False)
+        self.assertEqual(p1.race, "White")
+
     def test_race_assignment(self):
 
         RD = TestPerson.params_list["RACE_DISTRIBUTION"]
@@ -42,7 +51,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             races.append(person.race)
 
         # print("Races: "  + str(races))
@@ -67,7 +76,7 @@ class TestPerson(unittest.TestCase):
 
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             ages_init.append(person.age)
             person.aging()
             ages_final.append(person.age)
@@ -85,7 +94,7 @@ class TestPerson(unittest.TestCase):
         # test case where 0 < incarceration probability < 1
         probability_daily_incarceration = 0.5
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             self.assertTrue(
                 person.current_incarceration_status == 0,
                 "all persons are not initially un-incarcerated",
@@ -102,8 +111,9 @@ class TestPerson(unittest.TestCase):
             )
 
         # test case where incarceration probability = 1
+
         probability_daily_incarceration = 1
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             person.simulate_incarceration(
                 tick=nsteps, probability_daily_incarceration=1
             )
@@ -120,13 +130,13 @@ class TestPerson(unittest.TestCase):
         nsteps = 1
         inc_states = []
 
-        for p in model.context.agents():
+        for p in model.network.get_agents():
             # print(p.current_incarceration_status)
             inc_states.append(p.current_incarceration_status)
 
         inc_states = []  # make incarceration status list empty
 
-        for p in model.context.agents():
+        for p in model.network.get_agents():
             p.sentence_duration = 0  # assign
             p.simulate_release(tick=nsteps)
             inc_states.append(p.current_incarceration_status)
@@ -204,8 +214,7 @@ class TestPerson(unittest.TestCase):
             comm=MPI.COMM_WORLD, params=test_smoking_status_params_list
         )
         model.start()
-
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             smokers.append(person.smoker)
             races.append(person.race)
             sexes.append(person.female)
@@ -295,7 +304,7 @@ class TestPerson(unittest.TestCase):
         )
         model.start()
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco)) / len(all_alco)
@@ -330,7 +339,7 @@ class TestPerson(unittest.TestCase):
         model = cadre_model.Model(comm=MPI.COMM_WORLD, params=TestPerson.params_list)
         model.start()
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             if person.female == 1:
                 f_du_collect.append(person.incarceration_duration)
             else:
@@ -369,7 +378,7 @@ class TestPerson(unittest.TestCase):
             comm=MPI.COMM_WORLD, params=test_recividism_params_list
         )
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             person.current_incarceration_status = 0
             person.last_incarceration_tick = -1
             person.last_release_tick = 0
@@ -378,7 +387,7 @@ class TestPerson(unittest.TestCase):
 
         model.start()
 
-        for person in model.context.agents():
+        for person in model.network.get_agents():
             if person.name < N_AGENTS:
                 # needed because agents enter at all times since age initialization was changed,
                 # and newly entering agents don't become incarerated because their attributes are not reset
