@@ -38,15 +38,22 @@ coverage report
 More on [Coverage](https://coverage.readthedocs.io/en/6.4.1/)
 
 
-# On OSCAR (Brown's CCV's Linux system)
+# On OSCAR 
 
-From `/gpfs/home/akhann16/code/cadre/python`, do 
-`ls -ltr *.sh`
+- Without `swift-t`:
 
-Then:
-```
-sbatch jobscript.sh 
-```
+ From `/gpfs/home/akhann16/code/cadre/python`, do 
+ `ls -ltr *.sh`
 
+ Then:
+ ```
+ sbatch jobscript.sh 
+ ```
+ 
+- With `swift-t`:
+
+ ```
+ sbatch submit_using_swift.sh
+ ```
 
 
