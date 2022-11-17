@@ -1,0 +1,37 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+rm(list=ls())
+library(data.table)
+```
+
+```{r}
+network_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/network_log_2.csv")
+str(network_dt)
+```
+```{r}
+last_tick <- max(network_dt$tick)
+```
+
+
+```{r}
+network_dt[tick == last_tick]
+dim(network_dt[tick == last_tick])
+
+network_dt_tick18250 <- network_dt[tick == last_tick, .SD, .SDcols=c("p1", "p2")]
+network_dt_500r <- network_dt_tick18250[1:500,]
+dim(network_dt_500r)
+fwrite(network_dt_500r, "/Users/adityakhanna/network_dt_500r.csv")
+```
+Mean degree
+
+```{r}
+tot_n_edges <- nrow(network_dt[tick == last_tick])
+n_agents <- 1e4
+
+tot_n_edges*2/n_agents
+```
+
