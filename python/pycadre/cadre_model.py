@@ -1,14 +1,9 @@
 from typing import Dict
-import networkx as nx
-import numpy as np
-from pycadre import cadre_person
 import pycadre.load_params as load_params
+from pycadre.cadre_network import ErdosReyniNetwork
+from pycadre.person_creator import init_person_creator
 from repast4py import logging, schedule
-from repast4py import network
-from repast4py.network import write_network, read_network
-from repast4py import context as ctx
 from mpi4py import MPI
-import csv
 from dataclasses import dataclass
 
 
@@ -47,51 +42,36 @@ class Model:
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
-        # create the context to hold the agents and manage cross process
-        # synchronization
-        self.context = ctx.SharedContext(comm)
-        self.comm = comm
-        self.rank = comm.Get_rank()
-
-        # self.rank = self.comm.Get_rank()
-
-        self.graph = []
-        n_agents = load_params.params_list["N_AGENTS"]
-
-        self.name = n_agents
+        init_person_creator(comm.Get_rank())
 
         # initialize network and add projection to context
-        fpath = params["network_file"]
-        read_network(
-            fpath, self.context, cadre_person.create_person, cadre_person.restore_person
+        self.network = ErdosReyniNetwork(
+            comm,
+            load_params.params_list["N_AGENTS"],
+            load_params.params_list["EDGE_PROB"],
+            load_params.params_list["MIN_AGE"],
         )
-        self.network = self.context.get_projection("network_init")
+
+        self.rank = comm.Get_rank()
 
         # initialize the agent logging
         tabular_logging_cols = [
             "tick",
-            "id",
-            "age",
-            "race",
-            "female",
-            "alc_use_status",
-            "smoking_status",
-            "last_incarceration_tick",
-            "last_release_tick",
-            "current_incarceration_status",
-            "entry_at_tick",
-            "exit_at_tick",
-            "n_incarcerations",
-            "n_releases",
-            "n_smkg_stat_trans",
-            "n_alc_use_stat_trans",
+            "agent_id",
+            "agent_age",
+            "agent_race",
+            "agent_female",
+            "agent_alc_use_status",
+            "agent_smoking_status",
+            "agent_last_incarceration_tick",
+            "agent_last_release_tick",
+            "agent_current_incarceration_status",
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
         )
 
-        # agent_count = list(self.context.size().values())[0]
-        agent_count = self.context.size()[-1]
+        agent_count = self.network.get_num_agents()
         n_incarcerated = []
         current_smokers = []
         AUD = []
@@ -106,6 +86,7 @@ class Model:
         )
 
         # initialize the counts logging
+
         self.counts = CountsLog(
             agent_count,
             len(n_incarcerated),
@@ -133,7 +114,7 @@ class Model:
 
     def log_agents(self):
         tick = self.runner.schedule.tick
-        for person in self.context.agents():
+        for person in self.network.get_agents():
             self.agent_logger.log_row(
                 tick,
                 person.name,
@@ -145,20 +126,13 @@ class Model:
                 person.last_incarceration_tick,
                 person.last_release_tick,
                 person.current_incarceration_status,
-                person.entry_at_tick,
-                person.exit_at_tick,
-                person.n_incarcerations,
-                person.n_releases,
-                person.n_smkg_stat_trans,
-                person.n_alc_use_stat_trans
             )
         self.agent_logger.write()
 
     def log_network(self):
         tick = self.runner.schedule.tick
-        g = self.network.graph
 
-        for edge in g.edges:
+        for edge in self.network.get_edges():
             agent1 = edge[0]
             agent2 = edge[1]
             self.network_logger.log_row(tick, agent1.id, agent2.id)
@@ -173,7 +147,6 @@ class Model:
 
     def step(self):
         tick = self.runner.schedule.tick
-        MIN_AGE = load_params.params_list["MIN_AGE"]
 
         incaceration_states = []
         smokers = []
@@ -181,7 +154,7 @@ class Model:
 
         self.data_set.log(tick)
 
-        for person in self.context.agents():
+        for person in self.network.get_agents():
             person.aging()
 
             person.transition_alc_use()
@@ -211,95 +184,17 @@ class Model:
             smokers.append(person.smoker)
             alc_use_status.append(person.alc_use_status)
 
-        n = self.context.size()[-1]
         current_smokers = [i for i, x in enumerate(smokers) if x == "Current"]
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        exits = []
+        self.network.step(tick)
 
-        # print("self.context.agents type is", type(self.context.agents()))
-
-        for p in self.context.agents():
-            exit = p.exit_of_age(tick)
-            if exit:
-                exits.append(exit)
-
-        for p in exits:
-            print("Exiting agent: ", p.name)
-            p.exit_at_tick = tick
-            self.remove_agent(p)
-
-        n_post_exits = self.context.size()[-1]
-        # print("N after exits is ", n_post_exits)
-
-        n_entries = len(exits)
-        self.n_entries = n_entries
-
-        if n_entries > 0:
-
-            ## if new people are entering:
-            ## create a tie dictionary
-            # keys: pre-existing agents
-            # values: bernoulli draw for each new agent
-            new_agent_ties_dict = {}
-            for existing_agent in self.context.agents():
-                # new_agent_ties_dict[existing_agent] = np.random.binomial(1, 0.5, n_entries)
-                new_agent_ties_dict[existing_agent] = np.random.binomial(
-                    1, load_params.params_list["EDGE_PROB"], n_entries
-                )
-
-            self.new_agent_ties_dict = new_agent_ties_dict  # this is used to test the new edges added to the new agents
-
-            # print("New agent tie matrix:", new_agent_ties_dict)
-
-            ## create the newly entering person(s) and add them to the context
-            new_agents = []
-            for new_agent in range(self.name, self.name + n_entries):
-                person = cadre_person.Person(
-                    name=new_agent,
-                    type=cadre_person.Person.TYPE,
-                    rank=self.rank,
-                    age=MIN_AGE,
-                    entry_at_tick = tick
-                )
-                person.name = new_agent
-                person.age = MIN_AGE
-                person.entry_at_tick = tick
-
-                print("New person ID is: ", person.name)
-                print("New person age is: ", person.age)
-                print("New person race is: ", person.race)
-                print("New person time of entry is: ", person.entry_at_tick)
-                
-                self.context.add(person)
-                new_agents.append(person)
-
-            ## Add edges between the newly entering person(s) and pre-existing agents in the context
-            for key in new_agent_ties_dict.keys():
-                value = new_agent_ties_dict[key]
-                for i in range(n_entries):
-                    if value[i] == 1:
-                        self.network.graph.add_edge(key, new_agents[i])
-
-        self.name = self.name + n_entries
-        self.counts.pop_size = self.context.size()[-1]
+        self.counts.pop_size = self.network.get_num_agents()
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
-        self.counts.n_exits = len(exits)
-        self.counts.n_entries = n_entries
-
-    def remove_agent(self, agent):
-        self.context.remove(agent)
-
-    def add_agent(self, agent):
-        # self.name += 1
-        # print("Self.name", self.name)
-        # p = cadre_person.Person(self.name, cadre_person.Person.TYPE, self.rank)
-        # self.context.add(agent)
-        pass
 
     def start(self):
         self.runner.execute()

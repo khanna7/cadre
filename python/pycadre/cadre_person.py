@@ -1,6 +1,7 @@
 from functools import partial
 from unicodedata import name
 from repast4py import core, schedule
+
 from numpy import random
 import pycadre.load_params as load_params
 import csv
@@ -19,12 +20,20 @@ class Person(core.Agent):
 
     TYPE = 0
 
-    def __init__(self, name: int, type: int, rank: int, **kwargs):
-
+    def __init__(
+        self,
+        name: int,
+        type: int,
+        rank: int,
+        age: int = None,
+        race=None,
+        female=None,
+        tick=None,
+    ):
         super().__init__(id=name, type=Person.TYPE, rank=rank)
 
         MIN_AGE = load_params.params_list["MIN_AGE"]
-        MAX_AGE = load_params.params_list["MAX_AGE"] 
+        MAX_AGE = load_params.params_list["MAX_AGE"]
         RACE_CATS = load_params.params_list["RACE_CATS"]
         FEMALE_PROP = load_params.params_list["FEMALE_PROP"]
         RD = load_params.params_list["RACE_DISTRIBUTION"]
@@ -33,9 +42,11 @@ class Person(core.Agent):
         ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
 
         self.name = name
-        self.age = random.uniform(MIN_AGE, MAX_AGE)
-        self.race = random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
-        self.female = random.binomial(1, FEMALE_PROP)
+        self.age = age if age is not None else random.uniform(MIN_AGE, MAX_AGE)
+        self.race = (
+            race if race is not None else random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
+        )
+        self.female = female if female is not None else random.binomial(1, FEMALE_PROP)
         self.alc_use_status = random.choice(
             range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS
         )
@@ -48,11 +59,17 @@ class Person(core.Agent):
         self.when_to_release = -1
         self.n_incarcerations = 0
         self.n_releases = 0
-        self.entry_at_tick = -1
+        self.entry_at_tick = tick if tick is not None else -1
         self.exit_at_tick = -1
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
         self.n_smkg_stat_trans = 0
         self.n_alc_use_stat_trans = 0
+
+    def __str__(self):
+        return (
+            super().__str__()
+            + f" (age = {self.age}, race = {self.race}, female = {self.female} entry_at_tick = {self.entry_at_tick})"
+        )
 
     def save(self):
         """Saves the state of this agent as tuple.
