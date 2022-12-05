@@ -43,10 +43,12 @@ Confirm that the mpi4py is installed:
 (cadre_env_openmpi_4.0.5_gcc_10.2_slurm20) [akhann16@login005 python]$ env MPICC=/gpfs/runtime/opt/mpi/openmpi_4.0.5_gcc_10.2_slurm20/bin/mpicc pip3 install mpi4py
 Requirement already satisfied: mpi4py in ./cadre_env_openmpi_4.0.5_gcc_10.2_slurm20/lib/python3.9/site-packages (3.1.3)
 ```
-## Reinstall mpi4py
+## Reinstall mpi4py (if needed)
+
+```
 (cadre_env_openmpi_4.0.5_gcc_10.2_slurm20) [akhann16@login005 python]$ env MPICC=/gpfs/runtime/opt/mpi/openmpi_4.0.5_gcc_10.2_slurm20/bin/mpicc pip3 install mpi4py --force-reinstal
 l
-
+```
 
 ## Update requirements.txt when needed:
 
