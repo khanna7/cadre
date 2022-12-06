@@ -15,8 +15,8 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
-last_tick <- 10950
+agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log_3.csv")
+last_tick <- max(agent_dt$tick)
 ```
 
 # Demographics
@@ -147,6 +147,46 @@ So, the aging process seems to work as expected.
 
 
 # Incarceration Statistics
+
+Number and proportion of incarcerated persons at last tick:
+
+```{r}
+agent_dt[tick==last_tick, .N, by=c("current_incarceration_status")][,"prop":=round(N/sum(N)*100, 0)][]
+```
+Break down number and proportions of incarcerated persons at last tick by race, sex and age:
+
+```{r}
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("race")][,"prop":=round(N/sum(N)*100, 0)][]
+
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("female")][,"prop":=round(N/sum(N)*100, 0)][]
+
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("age_groups")][,"prop":=round(N/sum(N)*100, 0)][]
+
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("race", "female", "age_groups")][order(race, female, age_groups)][,"prop":=round(N/sum(N)*100, 0)][]
+```
+
+Break down number and proportions of persons every incarcerated at last tick by race, sex and age:
+
+```{r}
+ever_inc_dt <- 
+  agent_dt[tick==last_incarceration_tick & n_incarcerations > 0, 
+           .N, 
+           by=c("race", "female", "age_groups")][order(race, female, age_groups)][
+             ,"prop":=round(N/sum(N)*100, 0)][]
+
+ever_inc_dt
+```
+```{r}
+ever_inc_dt[, colSums(.SD), .SDcols = 4:5]
+```
 
 Mean number of incarcerations at last tick:
 

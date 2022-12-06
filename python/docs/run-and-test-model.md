@@ -1,4 +1,7 @@
-## From the `python` directory, execute:  
+
+# Locally (on Mac OS X)
+
+From the `python` directory, execute:  
 
 ### To Run Model as a Single Process
 
@@ -33,4 +36,24 @@ coverage report
 (Use `coverage run -m --source=pycadre/ unittest discover mytests` to avoid unnecessary report on top matter on personal Macbook. )
 
 More on [Coverage](https://coverage.readthedocs.io/en/6.4.1/)
+
+
+# On OSCAR 
+
+- Without `swift-t`:
+
+ From `/gpfs/home/akhann16/code/cadre/python`, do 
+ `ls -ltr *.sh`
+
+ Then:
+ ```
+ sbatch jobscript.sh 
+ ```
+ 
+- With `swift-t`:
+
+ ```
+ sbatch submit_using_swift.sh
+ ```
+
 

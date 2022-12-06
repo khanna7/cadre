@@ -122,7 +122,7 @@ of use, as in a previous pair of
 modeling studies (@Apostolopoulos2018I; @Apostolopoulos2018II). 
 The four categories are: persons who abstain, persnos who drink occassionally; 
 person who drink regularly; and, 
-persons with high-risk use or Alcohol Use Disorder (AUD)".
+persons with high-risk use or Alcohol Use Disorder (AUD).''
 
 To parameterize the distribution of persons in each of these categories, 
 data from the National Comorbidity Survey Replication, 
