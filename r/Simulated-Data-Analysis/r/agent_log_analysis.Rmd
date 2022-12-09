@@ -15,7 +15,7 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log.csv")
+agent_dt <- fread("/users/akhann16/code/cadre/python/output/agent_log.csv")
 last_tick <- max(agent_dt$tick)
 ```
 
