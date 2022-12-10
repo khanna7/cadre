@@ -266,6 +266,14 @@ Smoking State Distributions:
 ans <- agent_dt[tick == last_tick, .N, by=c("race", "smoking_status")][order(race)]
 ans 
 
+ans[, prop := N / sum(N), by = race][]
+
+ans_num_smokers <- ans[smoking_status %in% c("Former", "Current", "Never"),
+                       .(num_smokers = sum(N)),
+                       by = race]
+ans_num_smokers
+sum(ans_num_smokers$num_smokers)
+
 ```
 
 
