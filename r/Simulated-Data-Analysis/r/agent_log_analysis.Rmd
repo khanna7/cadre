@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 We confirm below various attributes of the agents that are logged.
@@ -15,7 +17,7 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/agent_log_3.csv")
+agent_dt <- fread("/gpfs/data/akhann16/akhann16/cadre_simulated_data/2022-12-09/agent_log.csv")
 last_tick <- max(agent_dt$tick)
 ```
 
@@ -258,6 +260,23 @@ agent_dt[tick == last_tick,
          .N)] 
 ```
 
+Smoking State Distributions:
+
+```{r}
+ans <- agent_dt[tick == last_tick, .N, by=c("race", "smoking_status")][order(race)]
+ans 
+
+ans[, prop := N / sum(N), by = race][]
+
+ans_num_smokers <- ans[smoking_status %in% c("Former", "Current", "Never"),
+                       .(num_smokers = sum(N)),
+                       by = race]
+ans_num_smokers
+sum(ans_num_smokers$num_smokers)
+
+```
+
+
 # Alcohol transition behavior
 
 ```{r}
@@ -269,3 +288,12 @@ agent_dt[tick == last_tick,
            "median_n_alc_trans" = median(n_alc_use_stat_trans),
          .N)] 
 ```
+
+Alcohol Use State Distributions:
+
+```{r}
+ans <- agent_dt[tick == last_tick, .N, by=alc_use_status]
+prop <- ans$N/sum(ans$N)
+cbind(ans[,1], prop)
+```
+
