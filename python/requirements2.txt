@@ -72,7 +72,7 @@ python-dateutil==2.8.2
 pytz==2022.1
 PyYAML==6.0
 pyzmq==23.0.0
-repast4py==1.0.4b1
+repast4py==1.0.5b1
 requests==2.27.1
 scipy==1.8.1
 seirsplus==1.0.9
