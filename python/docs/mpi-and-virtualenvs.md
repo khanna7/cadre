@@ -43,6 +43,11 @@ pip3 install --no-cache-dir mpi4py
 
 (The `--no-cache-dir` is to make sure that the mpi isn't installed just from the cache.)
 
+## To check if the mpi4py is compiled using the correct module:
+
+```
+ldd  <your venv directory>/lib/python3.9/site-packages/mpi4py/MPI.cpython-39-x86_64-linux-gnu.so
+```
 
 ## Install repast4py
 
