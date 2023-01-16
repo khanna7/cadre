@@ -3,6 +3,7 @@ title: "R Notebook"
 output:
   html_document:
     df_print: paged
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 We confirm below various attributes of the agents that are logged.
@@ -17,7 +18,7 @@ library(data.table)
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/gpfs/data/akhann16/akhann16/cadre_simulated_data/2022-12-09/agent_log.csv")
+agent_dt <- fread("/gpfs/data/akhann16/akhann16/cadre_simulated_data/2023-01-15/agent_log_8.csv")
 last_tick <- max(agent_dt$tick)
 ```
 
@@ -76,6 +77,15 @@ agent_dt[tick==last_tick, median(age)]
 # Baseline Smoking Behaviors
 
 
+At the first tick:
+
+```{r}
+ans <- agent_dt[tick==1 & race == "Black" & female == 0, .N, by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][]
+ans
+
+```
+
+At the last tick:
 ```{r}
 ans <- agent_dt[tick==last_tick & race == "Black" & female == 0, .N, by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][]
 ans

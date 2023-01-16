@@ -6,7 +6,8 @@
 #SBATCH --mem=16G
 #SBATCH -t 1:00:00
 
-module load python/3.9.0
-#source /users/akhann16/code/cadre/python/new_cadre_env/bin/activate
-source /gpfs/home/akhann16/code/cadre/python/cadre_env_openmpi_4.0.5_gcc_10.2_slurm20/bin/activate  
+source settings.sh
+module list
+ldd new_cadre_env_4/lib/python3.9/site-packages/mpi4py/MPI.cpython-39-x86_64-linux-gnu.so 
+source new_cadre_env_3/bin/activate
 python3 -m pycadre myparams/model_params.yaml
