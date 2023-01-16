@@ -28,6 +28,13 @@ to test `test_simulate_incarceration` method in `TestPerson` class in `test_pers
 
 
 ### Test Coverage
+
+```
+python -m unittest discover -s mytests/ -p "test_*.py"
+```
+
+**The command below is not working:**
+
 ```
 coverage run -m unittest discover mytests
 coverage report
