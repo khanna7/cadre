@@ -5,18 +5,20 @@ from pycadre.person_creator import init_person_creator
 
 
 class ErdosReyniNetwork:
-    def __init__(self, comm, n_agents, edge_prob, min_age):
+    def __init__(self, comm, edge_prob):
+        self.comm = comm
         self.context = ctx.SharedContext(comm)
         self.rank = comm.Get_rank()
-        self.person_creator = init_person_creator(self.rank)
+        self.person_creator = init_person_creator()
         self.edge_prob = edge_prob
-        self.min_age = min_age
-        network_init = nx.erdos_renyi_graph(n_agents, edge_prob)
-        self.network = network.UndirectedSharedNetwork("erdos_renyi_network", comm)
+
+    def init_network(self, n_agents):
+        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob)
+        self.network = network.UndirectedSharedNetwork("erdos_renyi_network", self.comm)
         self.context.add_projection(self.network)
         persons = []
         for node in network_init.nodes:
-            person = self.person_creator.create_person(tick=1)
+            person = self.person_creator.create_person(tick=0)
             persons.append(person)
             self.add_without_edges(person)
         for edge in network_init.edges:
@@ -26,7 +28,7 @@ class ErdosReyniNetwork:
         for p in self.get_agents():
             if p.exit_of_age(tick):
                 self.remove_agent(p)
-                new = self.person_creator.create_person(age=self.min_age, tick=tick)
+                new = self.person_creator.create_person(tick=tick)
                 self.add(new)
 
     def add(self, agent):

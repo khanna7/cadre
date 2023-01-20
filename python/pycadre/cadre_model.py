@@ -42,14 +42,13 @@ class Model:
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
-        init_person_creator(comm.Get_rank())
+        init_person_creator()
 
         # initialize network and add projection to context
-        self.network = ErdosReyniNetwork(
-            comm,
+        self.network = ErdosReyniNetwork(comm, load_params.params_list["EDGE_PROB"])
+
+        self.network.init_network(
             load_params.params_list["N_AGENTS"],
-            load_params.params_list["EDGE_PROB"],
-            load_params.params_list["MIN_AGE"],
         )
 
         self.rank = comm.Get_rank()
@@ -57,17 +56,6 @@ class Model:
         # initialize the agent logging
         tabular_logging_cols = [
             "tick",
-<<<<<<< HEAD
-            "agent_id",
-            "agent_age",
-            "agent_race",
-            "agent_female",
-            "agent_alc_use_status",
-            "agent_smoking_status",
-            "agent_last_incarceration_tick",
-            "agent_last_release_tick",
-            "agent_current_incarceration_status",
-=======
             "id",
             "age",
             "race",
@@ -83,16 +71,6 @@ class Model:
             "n_releases",
             "n_smkg_stat_trans",
             "n_alc_use_stat_trans",
-            # "agent_id",
-            # "agent_age",
-            # "agent_race",
-            # "agent_female",
-            # "agent_alc_use_status",
-            # "agent_smoking_status",
-            # "agent_last_incarceration_tick",
-            # "agent_last_release_tick",
-            # "agent_current_incarceration_status",
->>>>>>> master
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
@@ -153,6 +131,12 @@ class Model:
                 person.last_incarceration_tick,
                 person.last_release_tick,
                 person.current_incarceration_status,
+                person.entry_at_tick,
+                person.exit_at_tick,
+                person.n_incarcerations,
+                person.n_releases,
+                person.n_smkg_stat_trans,
+                person.n_alc_use_stat_trans
             )
         self.agent_logger.write()
 

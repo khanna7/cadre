@@ -36,7 +36,7 @@ class TestPerson(unittest.TestCase):
                 self.assertAlmostEqual(np.mean(ages), mean_age_target, delta=1)
 
     def test_person_creator(self):
-        person_creator = PersonCreator(0)
+        person_creator = PersonCreator()
         p1 = person_creator.create_person(tick=1, age=47, female=False, race="White")
         self.assertEqual(p1.entry_at_tick, 1)
         self.assertEqual(p1.age, 47)

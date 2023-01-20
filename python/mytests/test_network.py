@@ -14,11 +14,12 @@ class TestNetwork(unittest.TestCase):
     )
 
     def test_create_new_edges(self):
-        network = cadre_network.ErdosReyniNetwork(MPI.COMM_WORLD, 10000, 0.001, 25)
-        person_creator = init_person_creator(0)
+        network = cadre_network.ErdosReyniNetwork(MPI.COMM_WORLD, 0.001)
+        network.init_network(1000)
+        person_creator = init_person_creator()
         for i in range(10000):
             all_agents = network.get_agents()
             network.remove_agent(random.choice(all_agents))
             new_agent = person_creator.create_person()
             network.add(new_agent)
-        self.assertAlmostEqual(network.get_num_edges(), 50000, delta=1000)
+        self.assertAlmostEqual(network.get_num_edges(), 500, delta=100)
