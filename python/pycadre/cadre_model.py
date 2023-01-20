@@ -57,6 +57,7 @@ class Model:
         # initialize the agent logging
         tabular_logging_cols = [
             "tick",
+<<<<<<< HEAD
             "agent_id",
             "agent_age",
             "agent_race",
@@ -66,6 +67,32 @@ class Model:
             "agent_last_incarceration_tick",
             "agent_last_release_tick",
             "agent_current_incarceration_status",
+=======
+            "id",
+            "age",
+            "race",
+            "female",
+            "alc_use_status",
+            "smoking_status",
+            "last_incarceration_tick",
+            "last_release_tick",
+            "current_incarceration_status",
+            "entry_at_tick",
+            "exit_at_tick",
+            "n_incarcerations",
+            "n_releases",
+            "n_smkg_stat_trans",
+            "n_alc_use_stat_trans",
+            # "agent_id",
+            # "agent_age",
+            # "agent_race",
+            # "agent_female",
+            # "agent_alc_use_status",
+            # "agent_smoking_status",
+            # "agent_last_incarceration_tick",
+            # "agent_last_release_tick",
+            # "agent_current_incarceration_status",
+>>>>>>> master
         ]
         self.agent_logger = logging.TabularLogger(
             comm, load_params.params_list["agent_log_file"], tabular_logging_cols
