@@ -26,7 +26,7 @@ class PersonCreator:
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
         ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
 
-        my_age = age if age is not None else random.uniform(MIN_AGE, MAX_AGE)
+        my_age = max(MIN_AGE, age) if age is not None else random.uniform(MIN_AGE, MAX_AGE)
         race = (
             race if race is not None else random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         )
