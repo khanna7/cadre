@@ -45,7 +45,7 @@ class Model:
         self.person_creator = init_person_creator()
 
         # initialize network and add projection to context
-        self.network = ErdosReyniNetwork(self.comm, load_params.params_list["EDGE_PROB"])
+        self.network = ErdosReyniNetwork(comm, load_params.params_list["EDGE_PROB"])
 
         self.network.init_network(
             load_params.params_list["N_AGENTS"],
