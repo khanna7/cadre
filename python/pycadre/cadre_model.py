@@ -42,10 +42,10 @@ class Model:
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
-        init_person_creator()
+        self.person_creator = init_person_creator()
 
         # initialize network and add projection to context
-        self.network = ErdosReyniNetwork(comm, load_params.params_list["EDGE_PROB"])
+        self.network = ErdosReyniNetwork(self.comm, load_params.params_list["EDGE_PROB"])
 
         self.network.init_network(
             load_params.params_list["N_AGENTS"],
@@ -117,27 +117,30 @@ class Model:
             loggers, MPI.COMM_WORLD, load_params.params_list["counts_log_file"]
         )
 
+    def log_agent(self, person, tick):
+        self.agent_logger.log_row(
+            tick,
+            person.name,
+            round(person.age),
+            person.race,
+            person.female,
+            person.alc_use_status,
+            person.smoker,
+            person.last_incarceration_tick,
+            person.last_release_tick,
+            person.current_incarceration_status,
+            person.entry_at_tick,
+            person.exit_at_tick,
+            person.n_incarcerations,
+            person.n_releases,
+            person.n_smkg_stat_trans,
+            person.n_alc_use_stat_trans
+        )
+
     def log_agents(self):
         tick = self.runner.schedule.tick
         for person in self.network.get_agents():
-            self.agent_logger.log_row(
-                tick,
-                person.name,
-                round(person.age),
-                person.race,
-                person.female,
-                person.alc_use_status,
-                person.smoker,
-                person.last_incarceration_tick,
-                person.last_release_tick,
-                person.current_incarceration_status,
-                person.entry_at_tick,
-                person.exit_at_tick,
-                person.n_incarcerations,
-                person.n_releases,
-                person.n_smkg_stat_trans,
-                person.n_alc_use_stat_trans
-            )
+            self.log_agent(person, tick)
         self.agent_logger.write()
 
     def log_network(self):
@@ -199,13 +202,22 @@ class Model:
         AUD_persons = [i for i, x in enumerate(alc_use_status) if x == 3]
         alc_abstainers = [i for i, x in enumerate(alc_use_status) if x == 0]
 
-        self.network.step(tick)
+        self.network_step(tick)
 
         self.counts.pop_size = self.network.get_num_agents()
         self.counts.n_incarcerated = sum(incaceration_states)
         self.counts.n_current_smokers = len(current_smokers)
         self.counts.n_AUD = len(AUD_persons)
         self.counts.n_alcohol_abstainers = len(alc_abstainers)
+
+    def network_step(self, tick):
+        for p in self.network.get_agents():
+            if p.exit_of_age(tick):
+                p.exit_at_tick = tick
+                self.log_agent(p, tick)
+                self.network.remove_agent(p)
+                new = self.person_creator.create_person(tick=tick)
+                self.network.add(new)
 
     def start(self):
         self.runner.execute()
