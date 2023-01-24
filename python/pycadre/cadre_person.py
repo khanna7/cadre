@@ -25,31 +25,19 @@ class Person(core.Agent):
         name: int,
         type: int,
         rank: int,
-        age: int = None,
-        race=None,
-        female=None,
-        tick=None,
+        alc_use_status,
+        age: int,
+        race,
+        female,
+        tick,
     ):
         super().__init__(id=name, type=Person.TYPE, rank=rank)
 
-        MIN_AGE = load_params.params_list["MIN_AGE"]
-        MAX_AGE = load_params.params_list["MAX_AGE"]
-        RACE_CATS = load_params.params_list["RACE_CATS"]
-        FEMALE_PROP = load_params.params_list["FEMALE_PROP"]
-        RD = load_params.params_list["RACE_DISTRIBUTION"]
-        RACE_DISTRIBUTION = [RD["White"], RD["Black"], RD["Hispanic"], RD["Asian"]]
-        AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
-        ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
-
         self.name = name
-        self.age = age if age is not None else random.uniform(MIN_AGE, MAX_AGE)
-        self.race = (
-            race if race is not None else random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
-        )
-        self.female = female if female is not None else random.binomial(1, FEMALE_PROP)
-        self.alc_use_status = random.choice(
-            range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS
-        )
+        self.age = age
+        self.race = race
+        self.female = female
+        self.alc_use_status = alc_use_status
         self.current_incarceration_status = 0
         self.last_incarceration_tick = -1
         self.incarceration_duration = -1

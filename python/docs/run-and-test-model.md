@@ -56,6 +56,10 @@ More on [Coverage](https://coverage.readthedocs.io/en/6.4.1/)
  ```
  sbatch jobscript.sh 
  ```
+
+> **Note:** Check if `jobscript.sh` is directing slurm output to a specific directory. If so, first make sure the directory exists. If it doesn't, create it. 
+
+
  
 - With `swift-t`:
 
