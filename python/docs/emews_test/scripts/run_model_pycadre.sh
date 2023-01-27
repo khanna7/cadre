@@ -54,7 +54,8 @@ YAML_FILE=$4
 #arg_array=( "$PY_FILE"
 #            "$YAML_FILE"
 #            "$PARAM_LINE" )
-arg_array=( "-m" "pycadre" "$PARAM_FILE" "-p" "$PARAM_LINE")
+#arg_array=( "-m" "pycadre" "$YAML_FILE" "-p" "$PARAM_LINE")
+arg_array=( "-m" "pycadre" "$YAML_FILE" "$PARAM_LINE")
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution
