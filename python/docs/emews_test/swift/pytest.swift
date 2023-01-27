@@ -8,7 +8,8 @@ import python;
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 
-file model_sh = input(emews_root+"/scripts/run_model_pytest.sh");
+#file model_sh = input(emews_root+"/scripts/run_model_pytest.sh");
+file model_sh = input(emews_root+"/scripts/run_model_pycadre.sh.sh");
 file upf = input(argv("f"));
 string param_file = argv("param_file");
 
