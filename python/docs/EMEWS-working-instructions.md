@@ -8,6 +8,7 @@
 ### Filetree
 
 The EMEWS project root contains the following files:
+
 <img width="272" alt="Screen Shot 2023-02-07 at 1 56 30 PM" src="https://user-images.githubusercontent.com/8194564/217339644-5bc4fdf5-b883-4846-aa7e-a6e6fb61ab4b.png">
 
 
