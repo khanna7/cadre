@@ -111,6 +111,9 @@ SMOKING_PREV:
 # Calculations/conceptualization explained at https://docs.google.com/document/d/13sHUYZz7SCZ2T35BcfnmOJSGCJ8KGptzE-0DGxJNhcI/edit?usp=sharing
 # RATES FOR "OTHER" CATEGORY ARE AVERAGED ACROSS ALL THE OTHER RACE/ETHNICITIES
 
+SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS: 1.7
+# Per National Survey of  American Life, persons with incarceration history smoke at 1.7x the rate of persons without (Bailey 2015).
+
 SMOKING_TRANSITION_PROBS:
   WHITE_MALES:
                 RELAPSE: 0.014            
