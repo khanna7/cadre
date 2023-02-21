@@ -299,11 +299,16 @@ class Person(core.Agent):
             self.sentence_duration = random.randint(1096, 2191)
 
     def simulate_release(self, tick):
-
+    # reset incarceration status
         self.current_incarceration_status = 0
         self.last_release_tick = tick
         self.incarceration_duration = -1
         self.n_releases += 1
+
+        # update smoking status for released agents
+        if self.smoker != "Never":
+            self.update_smoker_status()
+
 
     def simulate_recidivism(
         self,
@@ -340,7 +345,6 @@ class Person(core.Agent):
     def assign_smoker_status(self):
         SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
         SMOKING_PREV = load_params.params_list["SMOKING_PREV"]
-        SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS = load_params.params_list["SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS"]
 
         SMOKING_PREV_BY_RACE_AND_GENDER = {
             "White": {
@@ -395,14 +399,29 @@ class Person(core.Agent):
         
         smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[self.race][self.female]
         self.smoker = random.choice(SMOKING_CATS, p=smoking_prev)
+        
+        
 
-        # print the values of the variables to the console
-        print("Person ID:", self.id)
-        print("Person n_releases:", self.n_releases)
-        print("Person smoking status:", self.smoker)
-        #print("SMOKING_CATS:", SMOKING_CATS)
-        #print("SMOKING_PREV:", SMOKING_PREV)
-        #print("SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS:", SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS)
+def update_smoker_status(self):
+    SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
+    SMOKING_PREV = load_params.params_list["SMOKING_PREV"]
+    INCARCERATION_MULTIPLIER = load_params.params_list["SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS"]
+
+    for person in self.persons:
+        smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[person.race][person.female]
+
+        # weight the smoking probability by previous incarceration status
+        current_prev, former_prev, never_prev = smoking_prev
+
+        if person.n_releases > 0:
+            current_prev *= INCARCERATION_MULTIPLIER
+            former_prev /= INCARCERATION_MULTIPLIER
+            smoking_prev_weighted = [current_prev, former_prev, never_prev]
+        else:
+            smoking_prev_weighted = smoking_prev
+
+        person.smoker = random.choice(SMOKING_CATS, p=smoking_prev_weighted)
+
 
 def create_person(nid, agent_type, rank, **kwargs):
     return Person(nid, agent_type, rank)
