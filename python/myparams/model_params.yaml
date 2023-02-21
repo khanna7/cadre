@@ -5,7 +5,7 @@ EDGE_PROB: 0.001
 #REF: Model Design
 
 MIN_AGE: 18
-MAX_AGE: 64
+MAX_AGE: 84
 #REF: Model Design
 
 TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
