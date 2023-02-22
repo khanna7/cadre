@@ -52,6 +52,7 @@ class Person(core.Agent):
         self.assign_smoker_status()  # note self.smoker = self.assign_smoker_status() was giving all smoking statuses as None. but this works
         self.n_smkg_stat_trans = 0
         self.n_alc_use_stat_trans = 0
+        #self.previous_smoking_status = None #to model transition in smoking status
 
     def __str__(self):
         return (
@@ -304,11 +305,12 @@ class Person(core.Agent):
         self.last_release_tick = tick
         self.incarceration_duration = -1
         self.n_releases += 1
+        self.previous_smoking_status = self.smoker
 
         # update smoking status for released agents
-        if self.smoker != "Never":
-            self.update_smoker_status()
-
+        # if self.smoker != "Never":
+        # self.update_smoker_status() 
+            
 
     def simulate_recidivism(
         self,
@@ -402,26 +404,19 @@ class Person(core.Agent):
         
         
 
-    def update_smoker_status(self):
-        SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
-        SMOKING_PREV = load_params.params_list["SMOKING_PREV"]
-        INCARCERATION_MULTIPLIER = load_params.params_list["SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS"]
+    # def update_postrelease_smoker_status(self):
+    #     INCARCERATION_MULTIPLIER = load_params.params_list["SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS"]
 
-        for person in self.persons:
-            smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[person.race][person.female]
-
-            # weight the smoking probability by previous incarceration status
-            current_prev, former_prev, never_prev = smoking_prev
-
-            if person.n_releases > 0:
-                current_prev *= INCARCERATION_MULTIPLIER
-                former_prev /= INCARCERATION_MULTIPLIER
-                smoking_prev_weighted = [current_prev, former_prev, never_prev]
-            else:
-                smoking_prev_weighted = smoking_prev
-
-            person.smoker = random.choice(SMOKING_CATS, p=smoking_prev_weighted)
-
+    #     ## for any given released person, 
+    #         ## is their current smoking status Former (F)?
+    #         prev_smoker_status = self.smoker
+    #         print("Person smoking status: ", prev_smoker_status)
+    #         ## if yes,
+    #             ## what was their original probability of being assigned to F (p_F)?
+    #             ## their new probability of staying in F is p_F_new = 1/1.7 * p_f
+    #             ## draw a random number prob
+    #             ## if prob < p_F_new then the person stays in state F
+    #             ## or they transition to C.  
 
 def create_person(nid, agent_type, rank, **kwargs):
     return Person(nid, agent_type, rank)
