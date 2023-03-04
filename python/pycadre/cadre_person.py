@@ -320,7 +320,6 @@ class Person(core.Agent):
         probability_daily_recidivism_males,
         probability_daily_incarceration,
     ):
-
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
             "RECIDIVISM_UPDATED_PROB_LIMIT"
         ]
@@ -413,8 +412,8 @@ class Person(core.Agent):
                         SMOKING_PREV["WHITE_MALE_NEVER"]
                     ),
                     1: (
-                        SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.7 + SMOKING_PREV["WHITE_FEMALE_NEVER"]),
+                        SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.61,
+                        1-(SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["WHITE_FEMALE_NEVER"]),
                         SMOKING_PREV["WHITE_FEMALE_NEVER"]
                     )
                 },
@@ -425,8 +424,8 @@ class Person(core.Agent):
                         SMOKING_PREV["BLACK_MALE_NEVER"]
                     ),
                     1: (
-                        SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.7 + SMOKING_PREV["BLACK_FEMALE_NEVER"]),
+                        SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.61,
+                        1-(SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["BLACK_FEMALE_NEVER"]),
                         SMOKING_PREV["BLACK_FEMALE_NEVER"]
                     )
                 },
@@ -437,8 +436,8 @@ class Person(core.Agent):
                         SMOKING_PREV["HISPANIC_MALE_NEVER"]
                     ),
                     1: (
-                        SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.7 + SMOKING_PREV["HISPANIC_FEMALE_NEVER"]),
+                        SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.61,
+                        1-(SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["HISPANIC_FEMALE_NEVER"]),
                         SMOKING_PREV["HISPANIC_FEMALE_NEVER"]
                     )
                 },
@@ -449,8 +448,8 @@ class Person(core.Agent):
                         SMOKING_PREV["ASIAN_MALE_NEVER"]
                     ),
                     1: (
-                        SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.7 + SMOKING_PREV["ASIAN_FEMALE_NEVER"]),
+                        SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.61,
+                        1-(SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["ASIAN_FEMALE_NEVER"]),
                         SMOKING_PREV["ASIAN_FEMALE_NEVER"]
                     )
                 }
