@@ -307,6 +307,7 @@ class Person(core.Agent):
         self.n_releases += 1
         #self.previous_smoking_status = self.smoker
         self.assign_smoker_status() 
+        self.update_alc_use_post_release()
 
         # update smoking status for released agents
         # if self.smoker != "Never":
@@ -457,10 +458,25 @@ class Person(core.Agent):
 
         smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[self.race][self.female]
         self.smoker = random.choice(SMOKING_CATS, p=smoking_prev)
-        
+
+    def update_alc_use_post_release(self):
+        AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
+        ALC_USE_PROPS_INIT = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
+        ALC_USE_PROPS_POSTRELEASE = ALC_USE_PROPS_INIT
+        ALC_USE_PROPS_POSTRELEASE[3] = 0.17
+        ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
+        ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
+
+        if (self.n_releases > 0):
+            if (self.alc_use_status != 0):
+                alc_use_status_postrelease = random.choice(
+                    range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
+                )
+                print("alc_use_pr = ", alc_use_status_postrelease)
+                self.alc_use_status = alc_use_status_postrelease
+
 def create_person(nid, agent_type, rank, **kwargs):
     return Person(nid, agent_type, rank)
-
 
 def restore_person(agent_data):
     uid = agent_data[0]
