@@ -17,6 +17,14 @@
       "Hash": "470851b6d5d0ac559e9d01bb352b4021",
       "Requirements": []
     },
+    "RColorBrewer": {
+      "Package": "RColorBrewer",
+      "Version": "1.1-3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "45f0398006e83a5b10b72a90663d8d8c",
+      "Requirements": []
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -70,6 +78,14 @@
       "Hash": "0d297d01734d2bcea40197bd4971a764",
       "Requirements": []
     },
+    "colorspace": {
+      "Package": "colorspace",
+      "Version": "2.1-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f20c47fd52fae58b4e377c37bb8c335b",
+      "Requirements": []
+    },
     "curl": {
       "Package": "curl",
       "Version": "5.0.0",
@@ -112,6 +128,22 @@
       "Hash": "6b6c0f8467cd4ce0b500cabbc1bd1763",
       "Requirements": []
     },
+    "fansi": {
+      "Package": "fansi",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1d9e7ad3c8312a192dea7d3db0274fde",
+      "Requirements": []
+    },
+    "farver": {
+      "Package": "farver",
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8106d78941f34855c440ddb946b8f7a5",
+      "Requirements": []
+    },
     "fastmap": {
       "Package": "fastmap",
       "Version": "1.1.0",
@@ -128,12 +160,39 @@
       "Hash": "7c89603d81793f0d5486d91ab1fc6f1d",
       "Requirements": []
     },
+    "ggplot2": {
+      "Package": "ggplot2",
+      "Version": "3.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d494daf77c4aa7f084dbbe6ca5dcaca7",
+      "Requirements": [
+        "cli",
+        "glue",
+        "gtable",
+        "isoband",
+        "lifecycle",
+        "rlang",
+        "scales",
+        "tibble",
+        "vctrs",
+        "withr"
+      ]
+    },
     "glue": {
       "Package": "glue",
       "Version": "1.6.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4f2596dfb05dac67b9dc558e5c6fba2e",
+      "Requirements": []
+    },
+    "gtable": {
+      "Package": "gtable",
+      "Version": "0.3.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "36b4265fb818f6a342bed217549cd896",
       "Requirements": []
     },
     "highr": {
@@ -159,6 +218,14 @@
         "fastmap",
         "rlang"
       ]
+    },
+    "isoband": {
+      "Package": "isoband",
+      "Version": "0.2.7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0080607b4a1a7b28979aecef976d8bc2",
+      "Requirements": []
     },
     "jquerylib": {
       "Package": "jquerylib",
@@ -192,6 +259,14 @@
         "yaml"
       ]
     },
+    "labeling": {
+      "Package": "labeling",
+      "Version": "0.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3d5108641f47470611a32d0bdf357a72",
+      "Requirements": []
+    },
     "lifecycle": {
       "Package": "lifecycle",
       "Version": "1.0.3",
@@ -223,6 +298,16 @@
         "rlang"
       ]
     },
+    "munsell": {
+      "Package": "munsell",
+      "Version": "0.5.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6dfe8bf774944bd5595785e3229d8771",
+      "Requirements": [
+        "colorspace"
+      ]
+    },
     "openssl": {
       "Package": "openssl",
       "Version": "2.0.5",
@@ -239,6 +324,30 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2735eb4b51c302014f53acbb3c80a65f",
+      "Requirements": []
+    },
+    "pillar": {
+      "Package": "pillar",
+      "Version": "1.8.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f2316df30902c81729ae9de95ad5a608",
+      "Requirements": [
+        "cli",
+        "fansi",
+        "glue",
+        "lifecycle",
+        "rlang",
+        "utf8",
+        "vctrs"
+      ]
+    },
+    "pkgconfig": {
+      "Package": "pkgconfig",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "01f28d4278f15c76cddbea05899c5d6f",
       "Requirements": []
     },
     "rappdirs": {
@@ -322,6 +431,23 @@
         "rlang"
       ]
     },
+    "scales": {
+      "Package": "scales",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "906cb23d2f1c5680b8ce439b44c6fa63",
+      "Requirements": [
+        "R6",
+        "RColorBrewer",
+        "farver",
+        "labeling",
+        "lifecycle",
+        "munsell",
+        "rlang",
+        "viridisLite"
+      ]
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.7.8",
@@ -354,6 +480,22 @@
       "Hash": "34c16f1ef796057bfa06d3f4ff818a5d",
       "Requirements": []
     },
+    "tibble": {
+      "Package": "tibble",
+      "Version": "3.1.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "56b6934ef0f8c68225949a8672fe1a8f",
+      "Requirements": [
+        "fansi",
+        "lifecycle",
+        "magrittr",
+        "pillar",
+        "pkgconfig",
+        "rlang",
+        "vctrs"
+      ]
+    },
     "tinytex": {
       "Package": "tinytex",
       "Version": "0.42",
@@ -363,6 +505,14 @@
       "Requirements": [
         "xfun"
       ]
+    },
+    "utf8": {
+      "Package": "utf8",
+      "Version": "1.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1fe17157424bb09c48a8b3b550c753bc",
+      "Requirements": []
     },
     "vctrs": {
       "Package": "vctrs",
@@ -376,6 +526,22 @@
         "lifecycle",
         "rlang"
       ]
+    },
+    "viridisLite": {
+      "Package": "viridisLite",
+      "Version": "0.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "62f4b5da3e08d8e5bcba6cac15603f70",
+      "Requirements": []
+    },
+    "withr": {
+      "Package": "withr",
+      "Version": "2.5.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c0e49a9760983e81e55cdd9be92e7182",
+      "Requirements": []
     },
     "xfun": {
       "Package": "xfun",
