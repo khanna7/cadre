@@ -13,24 +13,98 @@ We will do this in `data.table` for speed.
 ```{r}
 rm(list=ls())
 library(data.table)
+library(ggplot2)
+library(yaml)
 ```
+
+Read input parameters:
+
+```{r}
+input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
+```
+
 
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/gpfs/data/akhann16/akhann16/cadre_simulated_data/2023-01-15/agent_log_8.csv")
+agent_dt <- fread("~/code/cadre/python/output/agent_log.csv")
 last_tick <- max(agent_dt$tick)
 ```
 
 # Demographics
 
 ```{r}
-agent_dt[tick == last_tick, .N, by=race][,"%":=round(N/sum(N)*100)][order(race)]
+agent_dt_by_race <- agent_dt[tick == last_tick, .N, by=race][,"per_cent":=round(N/sum(N)*100)][order(race)]
+target_values <- data.frame(race = names(input_params$RACE_DISTRIBUTION), 
+                            target_pct = unlist(input_params$RACE_DISTRIBUTION))
 ```
+
+```{r}
+# Calculate the percentages
+agent_dt_by_race[, .(count = .N), by = race][, percentage := round(count/sum(count) * 100, 2)]
+
+# Order the data by race
+agent_dt_by_race <- agent_dt_by_race[order(race)]
+
+# Create the bar chart
+ggplot(agent_dt_by_race, aes(x = race, y = per_cent, fill = race)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#7bccc4", "#43a2ca", "#0868ac", "#f0f9e8")) +
+  labs(title = "Race Distribution",
+       x = "Race",
+       y = "Percentage",
+       fill = "Race")+
+  geom_segment(data = target_values, 
+               aes(x = race, xend = race, y = 0, yend = target_pct), 
+               color = "red", size = 1, linetype = "dashed") +
+  geom_text(data = target_values, 
+            aes(x = race, y = target_pct*97, label = paste0(round(target_pct*100, 1), "%")),
+            vjust = -0.5, size = 4, color = "red")
+```
+
 ```{r echo=TRUE}
 agent_dt[tick==last_tick, .N, by=female][,"%":=N/sum(N)][order(female)]
-#[order(race)]
+female_target <- input_params$FEMALE_PROP
+
+gender_pct <- agent_dt[tick == last_tick, .N, by = female][, "%":= N/sum(N)][order(female)]
 ```
+```{r}
+# calculate percentages
+gender_pct <- agent_dt[tick == last_tick, .N, by = female][, "%":= N/sum(N)][order(female)]
+
+# read in YAML file with target value
+female_target <- input_params$FEMALE_PROP
+
+# calculate target percentages for each gender
+female_target_pct <- female_target
+male_target_pct <- 1 - female_target
+
+# calculate actual percentages for each gender
+female_actual_pct <- gender_pct[female == 1, `%`]
+male_actual_pct <- gender_pct[female == 0, `%`]
+
+
+# create plot
+ggplot(gender_pct, aes(x = ifelse(female == 0, "Male", "Female"), y = `%`, fill = ifelse(female == 0, "Male", "Female"))) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#1b9e77", "#d95f02")) +
+  annotate("text", x = 1, y = female_actual_pct, 
+           label = paste0("Female Target = ", round(female_actual_pct*100, 1), "%"), 
+           color = "#1b9e77", size = 4, vjust = 0) +
+  annotate("text", x = 2, y = male_actual_pct, 
+           label = paste0("Male Target = ", round(male_actual_pct*100, 1), "%"), 
+           color = "#d95f02", size = 4, vjust = 0) +
+  labs(title = "Agent Gender Distribution",
+       x = "",
+       y = "Percentage",
+       fill = "") +
+  theme_minimal()
+
+
+
+
+```
+
 
 
 ```{r}
@@ -73,6 +147,23 @@ nrow(agent_dt[tick==last_tick])
 agent_dt[tick==last_tick, median(age)]
 ```
 
+```{r}
+
+# Create age groups
+agent_dt_by_age_group <- agent_dt[tick==last_tick, .N, by = .(age_group = cut(age, breaks = c(18, 25, 35, 45, 55, 65, 75, 80, 84)))]
+
+# Create bar chart
+ggplot(agent_dt_by_age_group, aes(x = age_group, y = N, fill = age_group)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf")) +
+  labs(title = "Agent Age Distribution",
+       x = "Age Group",
+       y = "Count",
+       fill = "Age Group") +
+  theme_minimal()
+
+```
+
 # Baseline Smoking Behaviors
 
 
@@ -106,6 +197,21 @@ smkg_prev_black_men_target
 
 ```
 
+```{r}
+# Count the number and percentage of each smoking status
+smoking_dt <- agent_dt[tick == last_tick, .N, by = smoking_status][, `:=` (percentage = round(N/sum(N)*100, 2))]
+# Create the bar chart
+ggplot(smoking_dt, aes(x = smoking_status, y = percentage, fill = smoking_status)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#fec44f", "#43a2ca", "#7bccc4")) +
+  labs(title = "Agent Smoking Status Distribution",
+       x = "Smoking Status",
+       y = "Percentage",
+       fill = "Smoking Status") +
+  theme_minimal()
+
+```
+
 # Baseline Alcohol Use
 
 ```{r}
@@ -122,6 +228,71 @@ alc_use_targets <- c(alc_use_props$A, alc_use_props$O, alc_use_props$R, alc_use_
 cbind(alc_use_last_tick[["%"]], alc_use_targets)
 ```
 
+```{r}
+# Calculate the percentages for alcohol use status
+alc_use_dt <- agent_dt[tick == last_tick, .N, by = alc_use_status][, `:=` (percentage = round(N/sum(N)*100, 2))]
+# Order the data table by alcohol use status
+setorder(alc_use_dt, alc_use_status)
+# Rename the alcohol use status codes to descriptive labels
+alc_use_dt[, alc_use_status := factor(alc_use_status, levels = c(0, 1, 2, 3), 
+                                      labels = c("Lifetime Abstainer", 
+                                                 "Ocassional", 
+                                                 "Regular", 
+                                                 "Heavy"))]
+
+ggplot(alc_use_dt, aes(x = alc_use_status, y = percentage, fill = alc_use_status)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Alcohol Use Status Distribution",
+       x = "Use Frequency",
+       y = "Percentage",
+       fill = "Alcohol Use Status") +
+  theme_minimal() +
+  guides(fill = "none") +
+  geom_text(aes(label = paste0(as.numeric(input_params$ALC_USE_PROPS)*100, "%")), 
+            position = position_stack(vjust = 1.02))+
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10))
+
+
+```
+
+# Smoking and Alcohol Co-Use
+
+```{r}
+# Create a contingency table of smoking and alcohol use status
+smoking_alc_use_table <- dcast(agent_dt[tick == last_tick], smoking_status ~ alc_use_status, value.var = "id", fun.aggregate = length)
+smoking_alc_use_table <- smoking_alc_use_table[, .(smoking_status, `Lifetime Abstainer` = `0`, Occasional = `1`, Regular = `2`, Heavy = `3`)]
+smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status")
+
+# Create a stacked bar chart of smoking and alcohol use status
+ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = variable)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Smoking and Alcohol Use Status Distribution",
+       x = "Smoking Status",
+       y = "Count",
+       fill = "Alcohol Use Status") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")) +
+  guides(fill = "none")
+
+```
+```{r}
+# Create a contingency table of smoking and alcohol use status
+smoking_alc_use_table <- dcast(agent_dt[tick == last_tick], smoking_status ~ alc_use_status, value.var = "id", fun.aggregate = length)
+smoking_alc_use_table <- smoking_alc_use_table[, .(smoking_status, `Lifetime Abstainer` = `0`, Occasional = `1`, Regular = `2`, Heavy = `3`)]
+smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status")
+
+# Create a stacked bar chart of smoking and alcohol use status
+ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = variable)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Smoking and Alcohol Use Status Distribution",
+       x = "Smoking Status",
+       y = "Count") +
+  scale_fill_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c"), 
+                    labels = c("Lifetime Abstainer", "Occasional", "Regular", "Heavy"),
+                    name = "Alcohol Use Status") +
+  theme_minimal()
+
+```
 # Age Assignment at Entry
 
 We check below the ages of new agents, 
