@@ -28,8 +28,19 @@ Read the agent data into data-table:
 
 ```{r}
 agent_dt <- fread("~/code/cadre/python/output/agent_log.csv")
+str(agent_dt)
 last_tick <- max(agent_dt$tick)
 ```
+
+How many unique agents are in the dataset?
+
+```{r}
+length(unique(agent_dt$id))
+range(unique(agent_dt$id))
+```
+
+There are `r length(unique(agent_dt$id))` unique agents in the dataset. Their IDs 
+range from `r min((unique(agent_dt$id)))` to `r max((unique(agent_dt$id)))`.
 
 # Demographics
 
@@ -376,7 +387,75 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
          by=c("race", "female", "age_groups")][order(race, female, age_groups)][,"prop":=round(N/sum(N)*100, 0)][]
 ```
 
-Break down number and proportions of persons every incarcerated at last tick by race, sex and age:
+How many persons have been ever incarcerated?
+
+To answer this question, we can group the last incarceration times by agent ID.
+If last incarceration time is -1, the person has never been incarcerated. 
+If last incarceration time is > -1, the person has been incarcerated at least once. 
+
+```{r}
+# Group data by agent ID and compute the last incarceration time
+last_incarceration_time <- agent_dt[, 
+                                    .(last_incarceration_time = max(last_incarceration_tick)), 
+                                    by = id]
+
+# Count the number of agents who have been incarcerated at least once
+n_ever_incarcerated <- sum(last_incarceration_time$last_incarceration_time != -1)
+
+# Compute the proportion of agents who have been incarcerated at least once
+prop_ever_incarcerated <- n_ever_incarcerated / nrow(last_incarceration_time)
+```
+
+Thus, `r n_ever_incarcerated` persons have been incarcerated at least once. The
+proportion of persons who have been ever incarcerated is `r prop_ever_incarcerated`.
+
+What is the duration of incarceration for persons who have been ever incarcerated? 
+Restricting our data to only persons who have been released from their last
+incarceration episode, we can estimate this as:
+
+```{r}
+# Filter the data to include only the observations for agents who have been ever incarcerated and released
+ever_incarcerated_released <-
+  agent_dt[last_release_tick > last_incarceration_tick,
+           .SD[1, ], # ensure times for each incarceration, release episode appear only once
+           by = .(id, last_incarceration_tick)]
+
+# Compute the length of incarceration time for each ever incarcerated and released agent
+ever_incarcerated_released[, incarceration_length := last_release_tick - last_incarceration_tick,
+                           by = id]
+
+# Compute the summary statistics of the lengths of incarceration time for the ever incarcerated and released agents
+incarceration_summary <-
+  ever_incarcerated_released[, .(
+    min_incarceration_length = min(incarceration_length),
+    median_incarceration_length = median(incarceration_length),
+    max_incarceration_length = max(incarceration_length)
+  ),
+  by = id]
+
+# Compute the distribution of incarceration times for all incarceration episodes followed by release
+summary(ever_incarcerated_released$incarceration_length)
+```
+
+Assess the total number of incarceration-release events and the number of unique
+agents who experienced them:
+
+```{r}
+length(ever_incarcerated_released$id)
+length(unique(ever_incarcerated_released$id))
+```
+
+
+Distribution of incarceration events:
+```{r}
+hist(ever_incarcerated_released$incarceration_length, 
+     breaks = seq(0, 3000, by = 30),
+     xlab = "Length of incarceration (days)",
+     ylab = "Number of individuals",
+     main = "Distribution of incarceration lengths")
+```
+
+Break down number and proportions of persons ever incarcerated at last tick by race, sex and age:
 
 ```{r}
 ever_inc_dt <- 
@@ -499,5 +578,70 @@ Alcohol Use State Distributions:
 ans <- agent_dt[tick == last_tick, .N, by=alc_use_status]
 prop <- ans$N/sum(ans$N)
 cbind(ans[,1], prop)
+```
+
+# Smoking and Alcohol Use among Incarcerated Persons vs Not-
+
+## Smoking
+
+Proportion of current smokers among persons who have been released 0 times.
+
+```{r}
+agent_dt[tick == last_tick, .N, by = n_releases]
+agent_dt[tick == last_tick, .N, by = smoking_status]
+
+current_smoking_by_release_dcast <- dcast(agent_dt[tick == last_tick], smoking_status ~ n_releases, value.var = "id", fun.aggregate = length)
+
+## Proportion of current smokers among persons who have been released 0 times:
+current_smoking_by_release_dcast[smoking_status == "Current", sum(`0`)] / sum(current_smoking_by_release_dcast$`0`)
+
+
+```
+
+
+Proportion of current smokers among persons who have been released at least once:
+
+```{r}
+n_smokers_release_once <- apply(current_smoking_by_release_dcast[,c(-1, -2)], 1, sum)
+n_smokers_release_once[1]/sum(n_smokers_release_once)
+```
+
+What proportion of current or former smokers are currently smoking in the
+group where n_releases = 0 vs. the group n_releases > 0?
+
+```{r}
+n_releases_0 <- current_smoking_by_release_dcast[,2]
+n_releases_ge1 <- current_smoking_by_release_dcast[,3:6]
+
+n_releases_0[1]/sum(n_releases_0[1:2])
+sum(n_releases_ge1[1,])/sum(n_releases_ge1[1:2,])
+
+```
+
+## Alcohol Use
+
+```{r}
+agent_dt[tick == last_tick, .N, by = n_releases][order(n_releases)]
+agent_dt[tick == last_tick, .N, by = alc_use_status][order(alc_use_status)]
+
+alc_use_by_release_dcast <- dcast(agent_dt[tick==last_tick,], 
+                                          alc_use_status ~ n_releases, 
+                                          value.var = "id", 
+                                          fun.aggregate = length)
+alc_use_by_release_dcast
+```
+
+What is the proportion of persons with alcohol use disorder in the
+`n_releases = 0` group?
+
+```{r}
+alc_use_by_release_dcast[4,2]/sum(alc_use_by_release_dcast[,2])
+```
+What is the proportion of persons with alcohol use disorder in the
+`n_releases > 0` group?
+
+```{r}
+alc_use_by_release_ge1 <- alc_use_by_release_dcast[,c(-1,-2)]
+sum(alc_use_by_release_ge1[,4])/sum(alc_use_by_release_ge1)
 ```
 
