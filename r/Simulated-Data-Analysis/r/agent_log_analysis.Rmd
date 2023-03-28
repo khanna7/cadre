@@ -404,6 +404,48 @@ n_ever_incarcerated <- sum(last_incarceration_time$last_incarceration_time != -1
 
 # Compute the proportion of agents who have been incarcerated at least once
 prop_ever_incarcerated <- n_ever_incarcerated / nrow(last_incarceration_time)
+
+
+# Agents who have been incarcerated at least once
+ever_incarcerated_times <- last_incarceration_time[last_incarceration_time > 1]
+dim(ever_incarcerated_times)
+
+# Extract demographic information for ever incarcerated agents
+ever_incarcerated_ids <-
+  unique(agent_dt[id %in% ever_incarcerated_times$id, id])
+ever_incarcerated_info <- agent_dt[id %in% ever_incarcerated_ids,
+                                   .SD[.N, list(
+                                     id,
+                                     age = last(age),
+                                     race = last(race),
+                                     female = last(female)
+                                   )],
+                                   by = id]
+
+# Compute distributions
+## mean age
+age_summary <- ever_incarcerated_info[, .(mean_age=mean(age),
+                                       min_age=min(age),
+                                       max_age=max(age)
+                                       )
+                                   ]
+sex_dist <- ever_incarcerated_info[, .N, by = female][,
+  .(Sex = c("Female", "Male"), 
+    Count = c(N[female == 1], N[female == 0]),
+    Proportion = round(Count / sum(Count), 2)
+   )
+  ]
+sex_dist[]
+
+
+race_dist <- ever_incarcerated_info[, .N, by = race][,
+  .(Race = race, 
+    Count = N,
+    Proportion = round(N / sum(N), 2)
+   )
+  ]
+race_dist[]
+
 ```
 
 Thus, `r n_ever_incarcerated` persons have been incarcerated at least once. The
@@ -444,7 +486,6 @@ agents who experienced them:
 length(ever_incarcerated_released$id)
 length(unique(ever_incarcerated_released$id))
 ```
-
 
 Distribution of incarceration events:
 ```{r}
