@@ -17,7 +17,7 @@ library(ggplot2)
 library(yaml)
 ```
 
-Read input parameters:
+Read input parameters:¬
 
 ```{r}
 input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
@@ -272,10 +272,31 @@ ggplot(alc_use_dt, aes(x = alc_use_status, y = percentage, fill = alc_use_status
 # Create a contingency table of smoking and alcohol use status
 smoking_alc_use_table <- dcast(agent_dt[tick == last_tick], smoking_status ~ alc_use_status, value.var = "id", fun.aggregate = length)
 smoking_alc_use_table <- smoking_alc_use_table[, .(smoking_status, `Lifetime Abstainer` = `0`, Occasional = `1`, Regular = `2`, Heavy = `3`)]
-smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status")
+smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status",
+                             variable.name = "alcohol_use")
+```
 
+```{r}
+smkg_alc_use_xtab <- dcast(smoking_alc_use_melt, smoking_status ~ alcohol_use, value.var = "value")
+smkg_alc_use_xtab
+
+smoking_alc_col_props <- prop.table(as.matrix(smkg_alc_use_xtab[,-1]), margin = 1)
+smoking_alc_row_props <- prop.table(as.matrix(smkg_alc_use_xtab[,-1]), margin = 2)
+
+smoking_alc_col_props <- cbind(smkg_alc_use_xtab[,1], round(smoking_alc_col_props, 3))
+smoking_alc_row_props <- cbind(smkg_alc_use_xtab[,1], round(smoking_alc_row_props, 3))
+
+print(smoking_alc_col_props)
+print(smoking_alc_row_props)
+
+rowSums(smoking_alc_col_props[,-1])
+colSums(smoking_alc_row_props[,-1])
+```
+ 
+
+```
 # Create a stacked bar chart of smoking and alcohol use status
-ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = variable)) +
+ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = alcohol_use)) +
   geom_bar(stat = "identity", color = "black") +
   labs(title = "Agent Smoking and Alcohol Use Status Distribution",
        x = "Smoking Status",
@@ -429,14 +450,13 @@ age_summary <- ever_incarcerated_info[, .(mean_age=mean(age),
                                        max_age=max(age)
                                        )
                                    ]
-sex_dist <- ever_incarcerated_info[, .N, by = female][,
-  .(Sex = c("Female", "Male"), 
-    Count = c(N[female == 1], N[female == 0]),
-    Proportion = round(Count / sum(Count), 2)
-   )
-  ]
-sex_dist[]
-
+sex_dist <-
+  ever_incarcerated_info[, .N, by = female][,  .(
+    Sex = c("Female", "Male"),
+    Count = c(N[female == 0], N[female == 1]),
+    "Proportion of ever incarcerated" = round(N / sum(N), 2)
+  )]
+print(sex_dist)
 
 race_dist <- ever_incarcerated_info[, .N, by = race][,
   .(Race = race, 
@@ -450,6 +470,42 @@ race_dist[]
 
 Thus, `r n_ever_incarcerated` persons have been incarcerated at least once. The
 proportion of persons who have been ever incarcerated is `r prop_ever_incarcerated`.
+
+Now let us compute the number of females and males whoa have ever been incarcerated,
+and the proportions by race (% of White, Black, ...)
+
+```{r}
+first_tick_race_sex <-
+  agent_dt[, .SD[1], by = id][, .(
+    ID = id,
+    Tick = tick,
+    Female = female,
+    Race = race
+  )]
+
+# Count number of females and males
+sex_count <- first_tick_race_sex[, .N, by = Female][,
+                                               .(Sex = c("Female", "Male"), 
+                                                 Count = c(N[Female == 1], N[Female == 0]))                                               ]
+print(sex_count)
+
+# Count number of individuals in each race
+race_count <- first_tick_race_sex[, .N, by = Race][,
+                                                   .(Race, Count = N)]
+print(race_count)
+```
+
+Thus, the distribution of ever incarcerated persons by sex is
+
+```{r}
+cbind(sex_count$Sex, round(as.numeric(sex_dist$Count/sex_count$Count), 3))
+```
+
+The distribution of ever incarcerated persons by race is:
+
+```{r}
+cbind(race_count$Race, round(as.numeric(race_dist$Count/race_count$Count), 3))
+```
 
 What is the duration of incarceration for persons who have been ever incarcerated? 
 Restricting our data to only persons who have been released from their last
