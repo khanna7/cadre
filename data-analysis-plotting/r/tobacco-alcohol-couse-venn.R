@@ -1,3 +1,5 @@
+rm(list=ls())
+
 # Load the eulerr package
 library(eulerr)
 library(magrittr)
@@ -28,6 +30,13 @@ data_vector <- c(
   "Alcohol&Tobacco" = count_both
 )
 
+
+# Calculate the percentages to be added to the text
+percentage_alcohol_only <- n_alcohol_only
+percentage_tobacco_only <- n_tobacco_only
+percentage_both <- n_both
+
+
 # Create the Euler diagram
 euler_plot <- euler(data_vector) %>%
   plot(
@@ -35,7 +44,21 @@ euler_plot <- euler(data_vector) %>%
     fills = c("red", "blue"),
     main = "",
     legend = FALSE
-  )
+  ) 
 
-# Display the Euler diagram
-euler_plot
+# Render the Euler diagram
+plot(euler_plot)
+
+# # Add percentages as text to the Venn diagram
+# text(x = euler_plot$diagram$coords[1, 1], y = euler_plot$diagram$coords[1, 2], labels = paste0(round(percentage_alcohol_only, 1), "%"), col = "black")
+# text(x = euler_plot$diagram$coords[2, 1], y = euler_plot$diagram$coords[2, 2], labels = paste0(round(percentage_tobacco_only, 1), "%"), col = "black")
+# text(x = mean(euler_plot$diagram$coords[, 1]), y = mean(euler_plot$diagram$coords[, 2]), labels = paste0(round(percentage_both, 1), "%"), col = "white")
+# 
+# # Calculate the percentage for neither alcohol nor tobacco
+# percentage_neither <- n_neither
+# 
+# # Add the "neither" percentage as text to the Venn diagram
+# # Find an appropriate position for the "neither" label outside the circles
+# neither_x <- max(euler_plot$diagram$coords[, 1]) + 0.25
+# neither_y <- max(euler_plot$diagram$coords[, 2]) + 0.25
+# text(x = neither_x, y = neither_y, labels = paste0("Neither: ", round(percentage_neither, 1), "%"), col = "black")
