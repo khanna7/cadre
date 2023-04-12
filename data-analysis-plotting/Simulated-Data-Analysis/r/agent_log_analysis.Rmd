@@ -27,7 +27,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("~/code/cadre/python/output/agent_log.csv")
+agent_dt <- fread("~/Desktop/agent_log_664.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 ```
@@ -681,37 +681,80 @@ cbind(ans[,1], prop)
 
 ## Smoking
 
-Proportion of current smokers among persons who have been released 0 times.
+Compare the proportion of the current smokers (to all persons) at the last tick 
+in the n_releases = 0 group vs the n_releases = 1 group.
 
 ```{r}
-agent_dt[tick == last_tick, .N, by = n_releases]
-agent_dt[tick == last_tick, .N, by = smoking_status]
+agent_dt[tick == last_tick, .N, by = n_releases][]
+agent_dt[tick == last_tick, .N, by = smoking_status][]
+agent_dt[tick == last_tick, .N, by = c("smoking_status", "n_releases")][]
 
-current_smoking_by_release_dcast <- dcast(agent_dt[tick == last_tick], smoking_status ~ n_releases, value.var = "id", fun.aggregate = length)
 
-## Proportion of current smokers among persons who have been released 0 times:
-current_smoking_by_release_dcast[smoking_status == "Current", sum(`0`)] / sum(current_smoking_by_release_dcast$`0`)
+# Filter data at the last_tick
+last_tick_data <- agent_dt[tick == last_tick]
+
+# Calculate the ratio for each group
+ratios <- last_tick_data[, .(
+  n_current_smokers = sum(smoking_status == "Current"),
+  n_total_persons = sum(smoking_status %in% c("Current", "Former", "Never"))
+), by = .(group = n_releases >= 1)]
+
+# Compute the ratio of current smokers to total smokers in each group
+ratios[, ratio := n_current_smokers / n_total_persons]
+
+# Print the results
+ratios
+
 
 
 ```
 
 
-Proportion of current smokers among persons who have been released at least once:
+The population size at each time tick is 
 
 ```{r}
-n_smokers_release_once <- apply(current_smoking_by_release_dcast[,c(-1, -2)], 1, sum)
-n_smokers_release_once[1]/sum(n_smokers_release_once)
+sum(agent_dt[tick == last_tick, .N, by = c("smoking_status", "n_releases")][["N"]])
 ```
 
-What proportion of current or former smokers are currently smoking in the
-group where n_releases = 0 vs. the group n_releases > 0?
+Now let us compute this comparison-of-ratios across all time steps, i.e.,
+mean across all time steps of the current smoking proportion in the 
+n_releases = 0 group vs. the n_releases >= 1 group. We add
+the standard deviation and the interquartile range as measures of variation
+across both groups.
 
 ```{r}
-n_releases_0 <- current_smoking_by_release_dcast[,2]
-n_releases_ge1 <- current_smoking_by_release_dcast[,3:6]
+# Calculate the ratio for each group and each tick
+ratios_by_tick <- agent_dt[, .(
+  n_current_smokers = sum(smoking_status == "Current"),
+  n_total_persons = sum(smoking_status %in% c("Current", "Former", "Never"))
+), by = .(tick, group = n_releases >= 1)]
 
-n_releases_0[1]/sum(n_releases_0[1:2])
-sum(n_releases_ge1[1,])/sum(n_releases_ge1[1:2,])
+# Compute the ratio of current smokers to total smokers in each group and each tick
+ratios_by_tick[, ratio := n_current_smokers / n_total_persons]
+
+# Calculate the mean ratio, standard deviation, and interquartile range across all time steps for each group
+summary_by_group <- ratios_by_tick[, .(
+  mean_ratio = mean(ratio, na.rm = TRUE),
+  sd_ratio = sd(ratio, na.rm = TRUE),
+  iqr_ratio = IQR(ratio, na.rm = TRUE)
+), by = group]
+
+# Print the results
+summary_by_group
+```
+
+Test if the means for the two groups are statistically different:
+
+```{r}
+# Extract the ratio data for each group
+group_0_ratios <- ratios_by_tick[group == FALSE, ratio]
+group_1_ratios <- ratios_by_tick[group == TRUE, ratio]
+
+# Perform the two-sample t-test
+t_test_result <- t.test(group_0_ratios, group_1_ratios)
+
+# Print the t-test result
+t_test_result
 
 ```
 
