@@ -17,6 +17,11 @@ class ErdosReyniNetwork:
     def calculate_edge_prob(self, n_agents, target_mean_degree):
         edge_prob = target_mean_degree / (n_agents-1)
         return edge_prob
+    
+    def mean_degree(self):
+        total_degrees = sum([degree for _, degree in self.network.graph.degree()])
+        num_nodes = self.get_num_agents()
+        return total_degrees / num_nodes
 
     def init_network(self, n_agents):
         network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob)
