@@ -5,11 +5,18 @@ from pycadre.person_creator import init_person_creator
 
 
 class ErdosReyniNetwork:
-    def __init__(self, comm, edge_prob):
+    def __init__(self, comm, n_agents, target_mean_degree):
         self.comm = comm
         self.context = ctx.SharedContext(self.comm)
         self.rank = self.comm.Get_rank()
-        self.edge_prob = edge_prob
+        #self.edge_prob = edge_prob
+        self.n_agents = n_agents
+        self.target_mean_degree = target_mean_degree
+        self.edge_prob = self.calculate_edge_prob(n_agents, target_mean_degree)
+
+    def calculate_edge_prob(self, n_agents, target_mean_degree):
+        edge_prob = target_mean_degree / (n_agents-1)
+        return edge_prob
 
     def init_network(self, n_agents):
         network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob)
