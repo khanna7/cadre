@@ -23,6 +23,10 @@ class TestNetwork(unittest.TestCase):
         # Calculate the mean degree
         mean_degree = network.mean_degree()
 
+        print()
+        print("Target mean degree is ..", target_mean_degree, "\n")
+        print("Generated mean degree is ..", mean_degree, "\n")
+
         # Test if the mean degree is approximately equal to the target_mean_degree
         self.assertAlmostEqual(mean_degree, target_mean_degree, delta=0.1)
         
@@ -37,4 +41,5 @@ class TestNetwork(unittest.TestCase):
             network.remove_agent(random.choice(all_agents))
             new_agent = person_creator.create_person()
             network.add(new_agent)
+
         self.assertAlmostEqual(network.get_num_edges(), (self.params_list['N_AGENTS']*self.params_list['TARGET_MEAN_DEGREE'])/2, delta=10)
