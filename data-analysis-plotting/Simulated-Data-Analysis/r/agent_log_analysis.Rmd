@@ -6,12 +6,14 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
+
 We confirm below various attributes of the agents that are logged.
 
 We will do this in `data.table` for speed. 
 
 ```{r}
 rm(list=ls())
+renv::load()
 library(data.table)
 library(ggplot2)
 library(yaml)
@@ -27,7 +29,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("~/code/cadre/python/output/agent_log.csv")
+agent_dt <- fread("~/code/cadre/python/output/agent_log_5.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 ```
@@ -708,10 +710,10 @@ group where n_releases = 0 vs. the group n_releases > 0?
 
 ```{r}
 n_releases_0 <- current_smoking_by_release_dcast[,2]
-n_releases_ge1 <- current_smoking_by_release_dcast[,3:6]
+#n_releases_ge1 <- current_smoking_by_release_dcast[,3:6]
 
 n_releases_0[1]/sum(n_releases_0[1:2])
-sum(n_releases_ge1[1,])/sum(n_releases_ge1[1:2,])
+#sum(n_releases_ge1[1,])/sum(n_releases_ge1[1:2,])
 
 ```
 
@@ -738,7 +740,7 @@ What is the proportion of persons with alcohol use disorder in the
 `n_releases > 0` group?
 
 ```{r}
-alc_use_by_release_ge1 <- alc_use_by_release_dcast[,c(-1,-2)]
-sum(alc_use_by_release_ge1[,4])/sum(alc_use_by_release_ge1)
+#alc_use_by_release_ge1 <- alc_use_by_release_dcast[,c(-1,-2)]
+#sum(alc_use_by_release_ge1[,4])/sum(alc_use_by_release_ge1)
 ```
 

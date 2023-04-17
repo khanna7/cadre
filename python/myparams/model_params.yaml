@@ -31,14 +31,14 @@ ALC_USE_PROPS:
 
 ALC_USE_STATES:
   # level up
-  TRANS_PROB_0_1: 0.018225
-  TRANS_PROB_1_2: 0.0132
-  TRANS_PROB_2_3: 0.0056
+  TRANS_PROB_0_1: 0
+  TRANS_PROB_1_2: 0.0072
+  TRANS_PROB_2_3: 0.05
   # LEVEL DOWN
-  TRANS_PROB_1_0: 0.002075
-  TRANS_PROB_2_1: 0.0729
-  TRANS_PROB_3_2: 0.0132
-# REF: https://drive.google.com/open?id=1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc&authuser=aditya_khanna%40brown.edu&usp=drive_fs
+  TRANS_PROB_1_0: 0
+  TRANS_PROB_2_1: 0.04
+  TRANS_PROB_3_2: 0.1178
+# REF: https://docs.google.com/document/d/1bCyglQwCkY6k9D5W28kTQLoE0ZnzGLzb4z-ME64PQ3s/edit#bookmark=id.ym6j6jyv731k
 
 # PROBABILITY_DAILY_INCARCERATION: 0.001223976
 # Derived from Macmadu 2021 
