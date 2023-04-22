@@ -76,10 +76,11 @@ SENTENCE_DURATION_EMP:
 # # REF: McMadu 2021 https://doi.org/10.1016/j.drugpo.2020.102841
 
 SMOKING_CATS: ["Current", "Former", "Never"]
-NUM_RELEASE_SMOKING_INCREASES: 1
+NUM_RELEASE_SMOKING_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 RELEASE_SMOKING_INCREASE:
   MALES: 1.7
   FEMALES: 1.61
+# Per National Survey of  American Life (Bailey 2015).
 
 SMOKING_PREV:
   WHITE_MALE_CURRENT: 0.119
@@ -115,9 +116,6 @@ SMOKING_PREV:
 # REF CMS: https://perma.cc/75Z8-NRR7
 # Calculations/conceptualization explained at https://docs.google.com/document/d/13sHUYZz7SCZ2T35BcfnmOJSGCJ8KGptzE-0DGxJNhcI/edit?usp=sharing
 # RATES FOR "OTHER" CATEGORY ARE AVERAGED ACROSS ALL THE OTHER RACE/ETHNICITIES
-
-SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS: 1.7
-# Per National Survey of  American Life, persons with incarceration history smoke at 1.7x the rate of persons without (Bailey 2015).
 
 SMOKING_TRANSITION_PROBS:
   WHITE_MALES:
