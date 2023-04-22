@@ -348,116 +348,79 @@ class Person(core.Agent):
     def assign_smoker_status(self):
         SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
         SMOKING_PREV = load_params.params_list["SMOKING_PREV"]
+        RACE_CATS = load_params.params_list["RACE_CATS"]
 
         #print("SMOKING_CATS", SMOKING_CATS)
         #print("SMOKING_PREV", SMOKING_PREV)
 
-        if self.n_releases == 0:
-            SMOKING_PREV_BY_RACE_AND_GENDER = {
-                "White": {
-                    0: (
-                        SMOKING_PREV["WHITE_MALE_CURRENT"],
-                        SMOKING_PREV["WHITE_MALE_FORMER"],
-                        SMOKING_PREV["WHITE_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["WHITE_FEMALE_CURRENT"],
-                        SMOKING_PREV["WHITE_FEMALE_FORMER"],
-                            SMOKING_PREV["WHITE_FEMALE_NEVER"]
-                    )
-                },
-                "Black": {
-                    0: (
-                        SMOKING_PREV["BLACK_MALE_CURRENT"],
-                        SMOKING_PREV["BLACK_MALE_FORMER"],
-                        SMOKING_PREV["BLACK_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["BLACK_FEMALE_CURRENT"],
-                        SMOKING_PREV["BLACK_FEMALE_FORMER"],
-                        SMOKING_PREV["BLACK_FEMALE_NEVER"]
-                    )
-                },
-                "Hispanic": {
-                    0: (
-                        SMOKING_PREV["HISPANIC_MALE_CURRENT"],
-                        SMOKING_PREV["HISPANIC_MALE_FORMER"],
-                        SMOKING_PREV["HISPANIC_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["HISPANIC_FEMALE_CURRENT"],
-                        SMOKING_PREV["HISPANIC_FEMALE_FORMER"],
-                        SMOKING_PREV["HISPANIC_FEMALE_NEVER"]
-                    )
-                },
-                "Asian": {
-                    0: (
-                        SMOKING_PREV["ASIAN_MALE_CURRENT"],
-                        SMOKING_PREV["ASIAN_MALE_FORMER"],
-                        SMOKING_PREV["ASIAN_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["ASIAN_FEMALE_CURRENT"],
-                        SMOKING_PREV["ASIAN_FEMALE_FORMER"],
-                        SMOKING_PREV["ASIAN_FEMALE_NEVER"]
-                    )
-                }
-            }
-
-        elif self.n_releases > 0:
-            SMOKING_PREV_BY_RACE_AND_GENDER = {
-                "White": {
-                    0: (
-                        SMOKING_PREV["WHITE_MALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["WHITE_MALE_CURRENT"]*1.7 + SMOKING_PREV["WHITE_MALE_NEVER"]),
-                        SMOKING_PREV["WHITE_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.61,
-                        1-(SMOKING_PREV["WHITE_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["WHITE_FEMALE_NEVER"]),
+        SMOKING_PREV_BY_RACE_AND_GENDER = {
+            "White": {
+                0: (
+                    SMOKING_PREV["WHITE_MALE_CURRENT"],
+                    SMOKING_PREV["WHITE_MALE_FORMER"],
+                    SMOKING_PREV["WHITE_MALE_NEVER"]
+                ),
+                1: (
+                    SMOKING_PREV["WHITE_FEMALE_CURRENT"],
+                    SMOKING_PREV["WHITE_FEMALE_FORMER"],
                         SMOKING_PREV["WHITE_FEMALE_NEVER"]
-                    )
-                },
-                "Black": {
-                    0: (
-                        SMOKING_PREV["BLACK_MALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["BLACK_MALE_CURRENT"]*1.7 + SMOKING_PREV["BLACK_MALE_NEVER"]),
-                        SMOKING_PREV["BLACK_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.61,
-                        1-(SMOKING_PREV["BLACK_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["BLACK_FEMALE_NEVER"]),
-                        SMOKING_PREV["BLACK_FEMALE_NEVER"]
-                    )
-                },
-                "Hispanic": {
-                    0: (
-                        SMOKING_PREV["HISPANIC_MALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["HISPANIC_MALE_CURRENT"]*1.7 + SMOKING_PREV["HISPANIC_MALE_NEVER"]),
-                        SMOKING_PREV["HISPANIC_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.61,
-                        1-(SMOKING_PREV["HISPANIC_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["HISPANIC_FEMALE_NEVER"]),
-                        SMOKING_PREV["HISPANIC_FEMALE_NEVER"]
-                    )
-                },
-                "Asian": {
-                    0: (
-                        SMOKING_PREV["ASIAN_MALE_CURRENT"]*1.7,
-                        1-(SMOKING_PREV["ASIAN_MALE_CURRENT"]*1.7 + SMOKING_PREV["ASIAN_MALE_NEVER"]),
-                        SMOKING_PREV["ASIAN_MALE_NEVER"]
-                    ),
-                    1: (
-                        SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.61,
-                        1-(SMOKING_PREV["ASIAN_FEMALE_CURRENT"]*1.61 + SMOKING_PREV["ASIAN_FEMALE_NEVER"]),
-                        SMOKING_PREV["ASIAN_FEMALE_NEVER"]
-                    )
-                }
+                )
+            },
+            "Black": {
+                0: (
+                    SMOKING_PREV["BLACK_MALE_CURRENT"],
+                    SMOKING_PREV["BLACK_MALE_FORMER"],
+                    SMOKING_PREV["BLACK_MALE_NEVER"]
+                ),
+                1: (
+                    SMOKING_PREV["BLACK_FEMALE_CURRENT"],
+                    SMOKING_PREV["BLACK_FEMALE_FORMER"],
+                    SMOKING_PREV["BLACK_FEMALE_NEVER"]
+                )
+            },
+            "Hispanic": {
+                0: (
+                    SMOKING_PREV["HISPANIC_MALE_CURRENT"],
+                    SMOKING_PREV["HISPANIC_MALE_FORMER"],
+                    SMOKING_PREV["HISPANIC_MALE_NEVER"]
+                ),
+                1: (
+                    SMOKING_PREV["HISPANIC_FEMALE_CURRENT"],
+                    SMOKING_PREV["HISPANIC_FEMALE_FORMER"],
+                    SMOKING_PREV["HISPANIC_FEMALE_NEVER"]
+                )
+            },
+            "Asian": {
+                0: (
+                    SMOKING_PREV["ASIAN_MALE_CURRENT"],
+                    SMOKING_PREV["ASIAN_MALE_FORMER"],
+                    SMOKING_PREV["ASIAN_MALE_NEVER"]
+                ),
+                1: (
+                    SMOKING_PREV["ASIAN_FEMALE_CURRENT"],
+                    SMOKING_PREV["ASIAN_FEMALE_FORMER"],
+                    SMOKING_PREV["ASIAN_FEMALE_NEVER"]
+                )
             }
+        }
+
+        smoking_increase_factor = [load_params.parameters.params['RELEASE_SMOKING_INCREASE']['MALES'], load_params.parameters.params['RELEASE_SMOKING_INCREASE']['FEMALES']]
+        num_smoking_increases = load_params.parameters.params['NUM_RELEASE_SMOKING_INCREASES']
+        if self.n_releases > 0:
+            n = max(self.n_releases, num_smoking_increases)
+            for race in RACE_CATS:
+                for sex in [0, 1]:
+                    current = pow(smoking_increase_factor[sex], n) * SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][0]
+                    SMOKING_PREV_BY_RACE_AND_GENDER[race][sex] = (current,
+                                                            1 - (current + SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]),
+                                                            SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]) 
 
         smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[self.race][self.female]
-        self.smoker = random.choice(SMOKING_CATS, p=smoking_prev)
+        if not hasattr(self, "smoker"):
+            self.smoker = random.choice(SMOKING_CATS, p=smoking_prev)
+        elif self.smoker != "Never":
+            prob_current = smoking_prev[0] / (smoking_prev[0] + smoking_prev[1])
+            self.smoker =  "Current" if (prob_current > random.random_sample()) else "Former"
 
     def update_alc_use_post_release(self):
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
