@@ -423,20 +423,20 @@ class Person(core.Agent):
             self.smoker =  "Current" if (prob_current > random.random_sample()) else "Former"
 
     def update_alc_use_post_release(self):
+        if self.alc_use_status == 0: return
+
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
         ALC_USE_PROPS_INIT = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
-        ALC_USE_PROPS_POSTRELEASE = ALC_USE_PROPS_INIT
+        ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
         ALC_USE_PROPS_POSTRELEASE[3] = 0.17
         ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
         ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
 
         if (self.n_releases > 0):
-            if (self.alc_use_status != 0):
-                alc_use_status_postrelease = random.choice(
-                    range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
-                )
-                print("alc_use_pr = ", alc_use_status_postrelease)
-                self.alc_use_status = alc_use_status_postrelease
+            alc_use_status_postrelease = random.choice(
+                range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
+            )
+            self.alc_use_status = alc_use_status_postrelease
 
 def create_person(nid, agent_type, rank, **kwargs):
     return Person(nid, agent_type, rank)
