@@ -27,9 +27,10 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("~/Desktop/agent_log_664.csv")
+agent_dt <- fread("~/code/cadre/python/output/agent_log_9.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
+print(last_tick)
 ```
 
 How many unique agents are in the dataset?
@@ -760,28 +761,125 @@ t_test_result
 
 ## Alcohol Use
 
-```{r}
-agent_dt[tick == last_tick, .N, by = n_releases][order(n_releases)]
-agent_dt[tick == last_tick, .N, by = alc_use_status][order(alc_use_status)]
+Compare the alcohol use rates in the: (1) entire agent population; 
+(2) agent population that has been never released;
+(3) agent population has been released at least once:
 
-alc_use_by_release_dcast <- dcast(agent_dt[tick==last_tick,], 
-                                          alc_use_status ~ n_releases, 
-                                          value.var = "id", 
-                                          fun.aggregate = length)
-alc_use_by_release_dcast
+```{r}
+# Entire agent population
+all_agents <- agent_dt
+
+# Agents who have never been released (n_releases == 0)
+never_released_agents <- agent_dt[n_releases == 0]
+
+# Agents who have been released at least once (n_releases >= 1)
+released_agents <- agent_dt[n_releases >= 1]
+
+
+# Function to calculate proportions
+calculate_proportions <- function(data) {
+  proportions <- prop.table(table(data$alc_use_status))
+  df <- data.frame(Category = names(proportions),
+                   Proportion = as.numeric(proportions))
+  df$Category <- factor(df$Category,
+                        levels = c(0, 1, 2, 3),
+                        labels = c("Lifetime Abstainer", "Occasional User", "Regular User", "Heavy User"))
+  return(df)
+}
+
+# Entire agent population
+all_agents_summary <- calculate_proportions(all_agents)
+
+# Agents who have never been released
+never_released_agents_summary <- calculate_proportions(never_released_agents)
+
+# Agents who have been released at least once
+released_agents_summary <- calculate_proportions(released_agents)
+
+# Display summaries
+print("Summary for Entire Agent Population")
+print(all_agents_summary)
+
+print("Summary for Agents Who Have Never Been Released")
+print(never_released_agents_summary)
+
+print("Summary for Agents Who Have Been Released at Least Once")
+print(released_agents_summary)
+```
+Once agents are released, the baseline state transition probabilities take effect,
+which force the alcohol use rates to equilibrate at the baseline state distribution of alcohol use. 
+This might be the reason why the heavy alcohol use rates do not differ between the groups
+that have never been released vs. the group that has been released at least once. 
+
+
+To account for this effect of baseline transition probabilities, 
+we will instead compare the alcohol use rates shortly after release,
+i.e., we will compute the alcohol use rates 
+for a certain period after the agents are released. 
+This may help uncover the immediate effect of release on alcohol use rates.
+
+```{r}
+# Define a one-year period after release
+fixed_time_after_release <- 1
+
+# Filter agents who were released at least once and within one year after release
+within_fixed_time_after_release_agents <- agent_dt[last_release_tick > 0 & tick <= last_release_tick + fixed_time_after_release]
+
+# Calculate proportions for agents within one year after release
+within_fixed_time_after_release_summary <- calculate_proportions(within_fixed_time_after_release_agents)
+
+# Display the summary
+print("Summary for Agents Within One Year After Release")
+print(within_fixed_time_after_release_summary)
+
+# Note for 
+```
+The proportion of heavy users one day after release is in the right range:
+approximately `r within_fixed_time_after_release_summary[within_fixed_time_after_release_summary$Category == "Heavy User", "Proportion"] * 100`%.
+But the proportion of lifetime abstainers at `r within_fixed_time_after_release_summary[within_fixed_time_after_release_summary$Category == "Lifetime Abstainer", "Proportion"] * 100`
+seems higher than it should be.
+
+Sensitivity Analysis of time since release:
+
+```{r}
+# Function to filter agents and calculate proportions for the given time period after release
+summary_after_release <- function(time_period) {
+  agents_within_time_period <- agent_dt[last_release_tick > 0 & tick <= last_release_tick + time_period]
+  proportions <- calculate_proportions(agents_within_time_period)
+  return(proportions)
+}
+
+# Time periods in ticks (days): 1 day, 1 week, 2 weeks, 1 month, 3 months, 6 months, 1 year
+time_periods <- c(1, 7, 14, 30, 90, 180, 365)
+
+# Calculate summaries for each time period
+summaries <- lapply(time_periods, function(x) summary_after_release(x))
+
+# Display summaries
+names(summaries) <- paste(time_periods, "days after release")
+summaries
+
 ```
 
-What is the proportion of persons with alcohol use disorder in the
-`n_releases = 0` group?
 
 ```{r}
-alc_use_by_release_dcast[4,2]/sum(alc_use_by_release_dcast[,2])
-```
-What is the proportion of persons with alcohol use disorder in the
-`n_releases > 0` group?
+time_points <- c(1, 7, 14, 30, 90, 180, 365)
+labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
 
-```{r}
-alc_use_by_release_ge1 <- alc_use_by_release_dcast[,c(-1,-2)]
-sum(alc_use_by_release_ge1[,4])/sum(alc_use_by_release_ge1)
+heavy_user_proportions <- sapply(summaries, function(x) x[x$Category == "Heavy User", "Proportion"])
+
+heavy_user_df <- data.frame(Time = time_points,
+                            Labels = labels,
+                            Proportion = heavy_user_proportions)
+
+ggplot(heavy_user_df, aes(x = Time, y = Proportion, group = 1)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = time_points, labels = labels) +
+  labs(title = "Heavy User Proportions After Release",
+       x = "Time After Release",
+       y = "Proportion of Heavy Users") +
+  theme_minimal()
+
 ```
 
