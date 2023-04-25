@@ -6,12 +6,14 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
+
 We confirm below various attributes of the agents that are logged.
 
 We will do this in `data.table` for speed. 
 
 ```{r}
 rm(list=ls())
+renv::load()
 library(data.table)
 library(ggplot2)
 library(yaml)
