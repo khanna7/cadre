@@ -1,5 +1,6 @@
 from statistics import mean as mean
 import unittest
+#from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from pycadre import cadre_model
@@ -416,7 +417,6 @@ class TestPerson(unittest.TestCase):
                 # and newly entering agents don't become incarerated because their attributes are not reset
                 self.assertEqual(person.current_incarceration_status, 1)
                 self.assertEqual(person.n_incarcerations, 2)
-
 
 if __name__ == "__main__":
     unittest.main()

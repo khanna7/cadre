@@ -86,27 +86,21 @@ class Person(core.Agent):
 
         # level up
         ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
-        TRANS_PROB_0_1 = ALC_USE_STATES["TRANS_PROB_0_1"]
         TRANS_PROB_1_2 = ALC_USE_STATES["TRANS_PROB_1_2"]
         TRANS_PROB_2_3 = ALC_USE_STATES["TRANS_PROB_2_3"]
         # LEVEL DOWN
-        TRANS_PROB_1_0 = ALC_USE_STATES["TRANS_PROB_1_0"]
         TRANS_PROB_2_1 = ALC_USE_STATES["TRANS_PROB_2_1"]
         TRANS_PROB_3_2 = ALC_USE_STATES["TRANS_PROB_3_2"]
 
         prob = random.uniform(0, 1)
+        #print("Generated prob in transition_alc_use:", prob)
+
         if self.alc_use_status == 0:
-            if prob <= TRANS_PROB_0_1:
-                self.alc_use_status += 1
-                self.n_alc_use_stat_trans += 1
+            pass
 
         elif self.alc_use_status == 1:
             if prob <= TRANS_PROB_1_2:
                 self.alc_use_status += 1
-                self.n_alc_use_stat_trans += 1
-
-            elif prob > 1 - TRANS_PROB_1_0:
-                self.alc_use_status -= 1
                 self.n_alc_use_stat_trans += 1
 
         elif self.alc_use_status == 2:
