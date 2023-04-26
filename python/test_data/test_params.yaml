@@ -1,13 +1,7 @@
 ---
 STOP_AT: 1
-<<<<<<< HEAD
 N_AGENTS: 10000
 EDGE_PROB: 0.001
-=======
-N_AGENTS: 1000
-#EDGE_PROB: 0.001
-TARGET_MEAN_DEGREE: 4 #SURVEY CTR ON AMERICAN LIFE: COX (2021)
->>>>>>> 98b859b (update alcohol transition parameters so transitions into and out of lifetime abstainer are not possible)
 #REF: Model Design
 
 MIN_AGE: 18
