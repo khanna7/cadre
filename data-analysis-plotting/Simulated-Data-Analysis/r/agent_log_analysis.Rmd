@@ -296,6 +296,105 @@ rowSums(smoking_alc_col_props[,-1])
 colSums(smoking_alc_row_props[,-1])
 ```
  
+## Conditional Probabilities on Co-Use
+
+P(Current Smoker |Heavy Drinker) = `r (as.numeric(smoking_alc_row_props["Current","Heavy"]))`  
+P(Current Smoker | Regular Drinker) = `r (as.numeric(smoking_alc_row_props["Current","Regular"]))`
+P(Current Smoker | Occasional Drinker)  = `r (as.numeric(smoking_alc_row_props["Current","Occasional"]))`
+
+Alcohol Use conditioned on Current Smoking:
+P(Heavy Drinker | Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Heavy"]))` 
+P(Regular Drinker| Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Regular"]))`  
+P(Occasional Drinker | Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Occasional"]))`  
+
+## Compare data on Co-Use to Falk et al. 
+
+## Marginal Distributions on Alcohol and Tobacco Use
+
+Start by computing the mean distributions of smoking and alcohol use statesa cross
+the simulation
+
+```{r}
+# Compute the proportion of each smoking status
+smoking_prop <- prop.table(table(agent_dt$smoking_status))
+
+# Compute the mean proportion of current, former, and never smokers
+mean_current_smokers <- mean(smoking_prop["Current"])
+mean_former_smokers <- mean(smoking_prop["Former"])
+mean_never_smokers <- mean(smoking_prop["Never"])
+
+# Print the mean smoking status distribution
+cat("Mean smoking status distribution:\n")
+cat("Current Smokers: ", mean_current_smokers, "\n")
+cat("Former Smokers: ", mean_former_smokers, "\n")
+cat("Never Smokers: ", mean_never_smokers, "\n")
+
+# Compute the proportion of each alcohol use status
+alc_prop <- prop.table(table(agent_dt$alc_use_status))
+
+# Compute the mean proportion of each alcohol use status
+mean_abstainers <- mean(alc_prop[1])
+mean_occasional <- mean(alc_prop[2])
+mean_regular <- mean(alc_prop[3])
+mean_heavy <- mean(alc_prop[4])
+
+# Print the mean alcohol use status distribution
+cat("Mean alcohol use status distribution:\n")
+cat("Abstainers: ", mean_abstainers, "\n")
+cat("Occasional Users: ", mean_occasional, "\n")
+cat("Regular Users: ", mean_regular, "\n")
+cat("Heavy Users: ", mean_heavy, "\n")
+
+```
+
+
+## Joint Distributions on Alcohol and Tobacco Use
+
+Joint probability of current smoking and alcohol use (i.e., not lifetime abstainer):
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+current_smokers_alcohol_users_dt <- agent_dt[agent_dt$smoking_status == "Current" & agent_dt$alc_use_status %in% c(1, 2, 3),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_current_smokers_alcohol_users <- nrow(current_smokers_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of current smokers and alcohol users: ", joint_prob_current_smokers_alcohol_users, "\n")
+
+```
+
+Joint probability of former or current smoking and alcohol use (i.e., not lifetime abstainer):
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+former_or_current_smokers_alcohol_users_dt <- agent_dt[agent_dt$smoking_status %in% c("Current", "Former") & agent_dt$alc_use_status %in% c(1, 2, 3),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_former_or_current_smokers_alcohol_users <- nrow(former_or_current_smokers_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of former or current smokers and alcohol users: ", joint_prob_former_or_current_smokers_alcohol_users, "\n")
+
+```
+
+Joint probability of never smoking and lifetime abstention from alcohol use:
+
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+no_smoking_or_alcohol_users_dt <- agent_dt[agent_dt$smoking_status %in% c("Never") & agent_dt$alc_use_status %in% c(0),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_no_smoking_or_alcohol_users <- nrow(no_smoking_or_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of never smoker and lifetime abstainer: ", 
+    joint_prob_no_smoking_or_alcohol_users, "\n")
+
+```
+```
+
 
 ```
 # Create a stacked bar chart of smoking and alcohol use status
