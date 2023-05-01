@@ -11,11 +11,11 @@ We confirm below various attributes of the agents that are logged.
 
 We will do this in `data.table` for speed. 
 
-```{r}
+```{r setup, include=FALSE}
 rm(list=ls())
 renv::load()
-library(data.table)
 library(ggplot2)
+library(data.table)
 library(yaml)
 ```
 
@@ -1037,9 +1037,37 @@ summary_after_release <- function(time_period) {
 }
 
 time_periods <- c(1, 7, 14, 30, 90, 180, 365)
+labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
 summaries_smoking <- lapply(time_periods, function(x) summary_after_release(x))
 
+
 summaries_smoking
+
+
+
+```
+Plot the rates of agents who are current smokers:
+
+```{r}
+class(summaries_smoking)
+
+current_smoker_proportions <- sapply(
+  summaries_smoking, 
+  function(x) x$proportions[x$proportions$Category == "Current", "Proportion"])
+
+current_smoker_df <- data.frame(Time = time_periods,
+                                Labels = labels,
+                                Proportion = current_smoker_proportions)
+
+ggplot(current_smoker_df, aes(x = Time, y = Proportion, group = 1)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = time_periods, labels = labels) +
+  labs(title = "Current Smoker Proportions After Release",
+       x = "Time After Release",
+       y = "Proportion of Current Smokers") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 
@@ -1160,10 +1188,11 @@ ggplot(heavy_user_df, aes(x = Time, y = Proportion, group = 1)) +
   geom_line() +
   geom_point() +
   scale_x_continuous(breaks = time_points, labels = labels) +
-  labs(title = "Heavy User Proportions After Release",
+  labs(title = "",
        x = "Time After Release",
-       y = "Proportion of Heavy Users") +
-  theme_minimal()
+       y = "Proportion of Agents using Alcohol Heavily") +
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
 
