@@ -751,6 +751,32 @@ So, the aging process seems to work as expected.
 
 # Incarceration Statistics
 
+Mean incarceration rate over time:
+
+```{r}
+selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+incarceration_summary <- agent_dt[tick %in% selected_ticks, 
+                                 .(n_incarcerated = sum(current_incarceration_status == 1),
+                                   n_agents = .N), 
+                                 by = tick]
+
+# Compute incarceration rate per 100,000 persons
+incarceration_summary[, rate_per_100k := n_incarcerated / n_agents * 100000]
+
+# Create the line plot
+ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Incarceration Rate (per 100,000 persons)")+
+  ylim(0, 350)
+
+
+```
+
+
 Number and proportion of incarcerated persons at last tick:
 
 ```{r}
