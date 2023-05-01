@@ -53,27 +53,35 @@ target_values <- data.frame(race = names(input_params$RACE_DISTRIBUTION),
                             target_pct = unlist(input_params$RACE_DISTRIBUTION))
 ```
 
+
+Plot race distribution over time:
+
 ```{r}
-# Calculate the percentages
-agent_dt_by_race[, .(count = .N), by = race][, percentage := round(count/sum(count) * 100, 2)]
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
 
-# Order the data by race
-agent_dt_by_race <- agent_dt_by_race[order(race)]
+# Calculate the proportion of each race at the specified time ticks
+race_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
+  White = sum(race == "White") / .N,
+  Black = sum(race == "Black") / .N,
+  Hispanic = sum(race == "Hispanic") / .N,
+  Asian = sum(race == "Asian") / .N
+), by = tick]
 
-# Create the bar chart
-ggplot(agent_dt_by_race, aes(x = race, y = per_cent, fill = race)) +
-  geom_bar(stat = "identity", color = "black") +
-  scale_fill_manual(values = c("#7bccc4", "#43a2ca", "#0868ac", "#f0f9e8")) +
-  labs(title = "Race Distribution",
-       x = "Race",
-       y = "Percentage",
-       fill = "Race")+
-  geom_segment(data = target_values, 
-               aes(x = race, xend = race, y = 0, yend = target_pct), 
-               color = "red", size = 1, linetype = "dashed") +
-  geom_text(data = target_values, 
-            aes(x = race, y = target_pct*97, label = paste0(round(target_pct*100, 1), "%")),
-            vjust = -0.5, size = 4, color = "red")
+# Convert the data from wide to long format
+race_proportions_long <- melt(race_proportions_by_tick, id.vars = "tick", variable.name = "race", value.name = "proportion")
+
+# Create a time series plot of race proportions
+# Create a time series plot of race proportions
+ggplot(race_proportions_long, aes(x = tick, y = proportion, color = race, group = race)) +
+  geom_line() +
+  labs(title = "Agent Race Proportions Over Time",
+       x = "Time",
+       y = "Proportion") +
+  scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.1))
 ```
 
 ```{r echo=TRUE}
@@ -119,6 +127,33 @@ ggplot(gender_pct, aes(x = ifelse(female == 0, "Male", "Female"), y = `%`, fill 
 
 ```
 
+Sex distributions over time:
+
+```{r}
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+# Calculate the proportion of males and females at the specified time ticks
+gender_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
+  male = sum(female == 0) / .N,
+  female = sum(female == 1) / .N
+), by = tick]
+
+# Convert the data from wide to long format
+gender_proportions_long <- melt(gender_proportions_by_tick, id.vars = "tick", variable.name = "gender", value.name = "proportion")
+
+# Create a time series plot of male and female proportions
+ggplot(gender_proportions_long, aes(x = tick, y = proportion, color = gender, group = gender)) +
+  geom_line() +
+  labs(title = "Agent Gender Proportions Over Time",
+       x = "Time",
+       y = "Proportion") +
+  scale_color_manual(values = c("#1b9e77", "#d95f02"), labels = c("Female", "Male")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  scale_y_continuous(limits = c(0.4, 0.6), breaks = seq(0.4, 0.6, by = 0.1))
+
+```
 
 
 ```{r}
@@ -445,6 +480,84 @@ cat("Regular Users: ", mean_regular, "\n")
 cat("Heavy Users: ", mean_heavy, "\n")
 
 ```
+Plot current smoking rate over time:
+
+```{r}
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+# Calculate the proportion of current, former, and never smokers at the specified time ticks
+smokers_by_tick <- agent_dt[tick %in% time_ticks, .(
+  current_smokers = sum(smoking_status == "Current") / .N,
+  former_smokers = sum(smoking_status == "Former") / .N,
+  never_smokers = sum(smoking_status == "Never") / .N
+), by = tick]
+
+# Reshape the data.table into a long format
+smokers_long <- melt(smokers_by_tick, id.vars = "tick", variable.name = "smoking_status", value.name = "proportion")
+
+# Update the smoking status labels
+smokers_long[, smoking_status := factor(smoking_status, 
+                                        levels = c("current_smokers", "former_smokers", "never_smokers"), 
+                                        labels = c("Current", "Former", "Never"))]
+
+# Plot the smoking rates for current, former, and never smokers at the specified time ticks
+# Plot the smoking rates for current, former, and never smokers at the specified time ticks
+ggplot(smokers_long, aes(x = tick, y = proportion, color = smoking_status, group = smoking_status)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Smoking States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 0.7), breaks = seq(0, 0.7, by = 0.1))
+
+
+
+```
+Plot alcohol use states over time:
+
+```{r}
+calculate_proportions_alcohol <- function(data) {
+  proportions <- prop.table(table(data$alc_use_status))
+  df <- data.frame(Category = as.factor(as.character(names(proportions))),
+                   Proportion = as.numeric(proportions)
+  )
+  df$Category <- factor(df$Category,
+                        levels = c("0", "1", "2", "3"),
+                        labels = c("Lifetime Abstainer", "Occasional User", "Regular User", "Heavy User"))
+  return(df)
+}
+
+
+selected_ticks <- seq(1, max(agent_dt$tick), by = 10)
+alcohol_summaries <- lapply(selected_ticks, function(x) {
+  agents_at_tick <- agent_dt[tick == x]
+  proportions <- calculate_proportions_alcohol(agents_at_tick)
+  return(list("proportions" = proportions, "tick" = x))
+})
+
+alcohol_proportions_df <- do.call(rbind, lapply(alcohol_summaries, function(x) {
+  df <- x$proportions
+  df$Tick <- x$tick
+  return(df)
+}))
+
+head(alcohol_proportions_df)
+
+ggplot(alcohol_proportions_df, aes(x = Tick, y = Proportion, color = Category, group = Category)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Alcohol Use States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  ylim(c(0,1))+
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
+
+```
 
 
 ## Joint Probability Computations of Alcohol and Tobacco Use
@@ -641,8 +754,23 @@ So, the aging process seems to work as expected.
 Number and proportion of incarcerated persons at last tick:
 
 ```{r}
-agent_dt[tick==last_tick, .N, by=c("current_incarceration_status")][,"prop":=round(N/sum(N)*100, 0)][]
+agent_dt[tick==last_tick, .N, by=c("current_incarceration_status")][,"prop":=round(N/sum(N)*100, 2)][]
 ```
+
+Mean number and proportion of incarcerated persons at each tick across the simulation:
+
+
+```{r}
+selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+
+incarceration_summary <- agent_dt[tick %in% selected_ticks, 
+                                 .(n_incarcerated = sum(current_incarceration_status == 1),
+                                   n_agents = .N), 
+                                 by = tick]
+```
+
+
 Break down number and proportions of incarcerated persons at last tick by race, sex and age:
 
 ```{r}
@@ -1063,7 +1191,7 @@ ggplot(current_smoker_df, aes(x = Time, y = Proportion, group = 1)) +
   geom_line() +
   geom_point() +
   scale_x_continuous(breaks = time_periods, labels = labels) +
-  labs(title = "Current Smoker Proportions After Release",
+  labs(title = "",
        x = "Time After Release",
        y = "Proportion of Current Smokers") +
   theme_minimal() +
