@@ -3,6 +3,7 @@ rm(list=ls())
 # Load the eulerr package
 library(eulerr)
 library(magrittr)
+library(grid)
 
 # Define the data: Falk 2006 (NESARC)
 
@@ -40,7 +41,7 @@ percentage_both <- n_both
 # Create the Euler diagram
 euler_plot <- euler(data_vector) %>%
   plot(
-    labels = c("Alcohol", "Tobacco"),
+    labels = c("", ""),
     fills = c("red", "blue"),
     main = "",
     legend = FALSE
@@ -49,16 +50,18 @@ euler_plot <- euler(data_vector) %>%
 # Render the Euler diagram
 plot(euler_plot)
 
-# # Add percentages as text to the Venn diagram
-# text(x = euler_plot$diagram$coords[1, 1], y = euler_plot$diagram$coords[1, 2], labels = paste0(round(percentage_alcohol_only, 1), "%"), col = "black")
-# text(x = euler_plot$diagram$coords[2, 1], y = euler_plot$diagram$coords[2, 2], labels = paste0(round(percentage_tobacco_only, 1), "%"), col = "black")
-# text(x = mean(euler_plot$diagram$coords[, 1]), y = mean(euler_plot$diagram$coords[, 2]), labels = paste0(round(percentage_both, 1), "%"), col = "white")
-# 
-# # Calculate the percentage for neither alcohol nor tobacco
-# percentage_neither <- n_neither
-# 
-# # Add the "neither" percentage as text to the Venn diagram
-# # Find an appropriate position for the "neither" label outside the circles
-# neither_x <- max(euler_plot$diagram$coords[, 1]) + 0.25
-# neither_y <- max(euler_plot$diagram$coords[, 2]) + 0.25
-# text(x = neither_x, y = neither_y, labels = paste0("Neither: ", round(percentage_neither, 1), "%"), col = "black")
+# Add the percentage text to the Euler diagram (manually adjust the x and y coordinates)
+grid.text(paste0("Alcohol: ", percentage_alcohol_only, "%"), x = 0.38, y = 0.5, 
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+grid.text(paste0("Tob:", percentage_tobacco_only, "%"), x = 0.76, y = 0.5,
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+grid.text(paste0("Both: ", percentage_both, "%"), x = 0.6, y = 0.5, 
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+
+# Add the percentage text for Neither
+grid.text(paste0("Neither: ", n_neither, "%"), x = 0.72, y = 0.8, 
+          default.units = "npc", gp = gpar(col = "black", fontsize = 10))
+
+
+
+
