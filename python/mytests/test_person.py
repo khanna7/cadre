@@ -222,9 +222,9 @@ class TestPerson(unittest.TestCase):
         sexes = []
 
         for person in [init_person_creator().create_person() for i in range(2000)]:
-            for i in range(25):
+            for j in range(25):
                 person.aging()
-                person.transition_smoking_status()
+                person.transition_smoking_status(j)
             smokers.append(person.smoker)
             races.append(person.race)
             sexes.append(person.female)

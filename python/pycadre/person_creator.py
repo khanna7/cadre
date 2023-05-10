@@ -16,7 +16,7 @@ class PersonCreator:
     def __init__(self):
         self.id = 0
 
-    def create_person(self, age=None, race=None, female=None, tick=None):
+    def create_person(self, age=None, race=None, female=None, tick=None, graph=None):
         MIN_AGE = load_params.params_list["MIN_AGE"]
         MAX_AGE = load_params.params_list["MAX_AGE"]
         RACE_CATS = load_params.params_list["RACE_CATS"]
@@ -43,6 +43,7 @@ class PersonCreator:
             race=race,
             female=female,
             tick=tick,
+            graph=graph
         )
         self.id += 1
         return person

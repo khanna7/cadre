@@ -21,6 +21,8 @@ RACE_DISTRIBUTION:
 
 FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 
+NUM_RELEASE_ALCOHOL_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
+
 ALC_USE_PROPS: 
   A: 0.083 #abstainer
   O: 0.729 #ocassional user

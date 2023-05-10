@@ -172,12 +172,12 @@ class Model:
             person.aging()
 
             person.transition_alc_use()
-            person.transition_smoking_status()
+            person.transition_smoking_status(tick)
             person.simulate_incarceration(
                 tick=tick,
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
-                ],
+                ]
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
@@ -216,7 +216,7 @@ class Model:
                 p.exit_at_tick = tick
                 self.log_agent(p, tick)
                 self.network.remove_agent(p)
-                new = self.person_creator.create_person(tick=tick)
+                new = self.person_creator.create_person(tick=tick, graph=self.network.network.graph)
                 self.network.add(new)
 
     def start(self):
