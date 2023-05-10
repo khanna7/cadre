@@ -526,7 +526,7 @@ calculate_proportions_alcohol <- function(data) {
   )
   df$Category <- factor(df$Category,
                         levels = c("0", "1", "2", "3"),
-                        labels = c("Lifetime Abstainer", "Occasional User", "Regular User", "Heavy User"))
+                        labels = c("Lifetime Abstention", "Occasional Use", "Regular Use", "Heavy Use"))
   return(df)
 }
 
@@ -545,6 +545,18 @@ alcohol_proportions_df <- do.call(rbind, lapply(alcohol_summaries, function(x) {
 }))
 
 head(alcohol_proportions_df)
+
+# Create the plot with the specified order of legend labels
+ggplot(alcohol_proportions_df, aes(x = Tick, y = Proportion, color = Category, group = Category)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Alcohol Use States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  ylim(c(0,1)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
 
 ggplot(alcohol_proportions_df, aes(x = Tick, y = Proportion, color = Category, group = Category)) +
   geom_line() +
