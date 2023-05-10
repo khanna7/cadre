@@ -988,7 +988,8 @@ agent_dt[tick == last_tick,
            "n_ever_incarcerated_agents"=sum(n_incarcerations > 0),
          .N)] 
 ```   
-# Incarceration Duration
+
+## Incarceration Duration
 
 Compute statistics on agents whose last release date is 
 after their last incarceration date.
