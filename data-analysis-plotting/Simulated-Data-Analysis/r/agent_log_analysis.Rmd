@@ -526,7 +526,7 @@ calculate_proportions_alcohol <- function(data) {
   )
   df$Category <- factor(df$Category,
                         levels = c("0", "1", "2", "3"),
-                        labels = c("Lifetime Abstention", "Occasional Use", "Regular Use", "Heavy Use"))
+                        labels = c("Lifetime Abstention", "Low Risk Use", "Heavy Use", "Alcohol Use Disorder (AUD)"))
   return(df)
 }
 
