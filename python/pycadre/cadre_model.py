@@ -216,7 +216,7 @@ class Model:
                 p.exit_at_tick = tick
                 self.log_agent(p, tick)
                 self.network.remove_agent(p)
-                new = self.person_creator.create_person(tick=tick, graph=self.network.network.graph)
+                new = self.person_creator.create_person(tick=tick)
                 self.network.add(new)
 
     def start(self):
