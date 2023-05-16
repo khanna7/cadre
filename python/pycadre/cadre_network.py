@@ -20,6 +20,7 @@ class ErdosReyniNetwork:
             person = init_person_creator().create_person(tick=0)
             persons.append(person)
             self.add_without_edges(person)
+            person.graph = self.network.graph
         for edge in network_init.edges:
             self.network.add_edge(persons[edge[0]], persons[edge[1]])
 
@@ -42,6 +43,9 @@ class ErdosReyniNetwork:
     def get_num_agents(self):
         return self.context.size()[-1]
 
+    def get_neighbors(self, node):
+        return list(self.network.graph.neighbors(node))
+        
     def get_edges(self):
         return self.network.graph.edges
 
