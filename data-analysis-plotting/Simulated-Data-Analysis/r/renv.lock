@@ -343,7 +343,6 @@
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-162",
-<<<<<<< HEAD
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0984ce8da8da9ead8643c5cbbb60f83e",
@@ -354,8 +353,6 @@
     "openssl": {
       "Package": "openssl",
       "Version": "2.0.5",
-=======
->>>>>>> network-reparameterization
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "0984ce8da8da9ead8643c5cbbb60f83e",
