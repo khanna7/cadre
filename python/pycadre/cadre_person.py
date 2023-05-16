@@ -236,7 +236,11 @@ class Person(core.Agent):
             self.sentence_duration = random.randint(1096, 2191)
 
     def simulate_release(self, tick):
-    # reset incarceration status
+        # Check if the agent is still in the graph
+        if not self.graph.has_node(self):
+            return
+    
+        # reset incarceration status
         self.current_incarceration_status = 0
         self.last_release_tick = tick
         self.incarceration_duration = -1
