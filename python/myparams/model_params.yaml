@@ -1,7 +1,8 @@
 ---
 STOP_AT: 10950
 N_AGENTS: 10000
-EDGE_PROB: 0.001
+#EDGE_PROB: 0.001
+TARGET_MEAN_DEGREE: 4 #SURVEY CTR ON AMERICAN LIFE: COX (2021)
 #REF: Model Design
 
 MIN_AGE: 18
@@ -46,6 +47,7 @@ ALC_USE_STATES:
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
 PROBABILITY_DAILY_INCARCERATION: 0.00000685
+# Approximately 250 per 100,000 https://doc.ri.gov/sites/g/files/xkgbur681/files/docs/FY19-Annual-Population-Report.pdf
 # See alternate deriviation at: https://docs.google.com/document/d/1qXm5yMeMbNMohJQAxr4JaFESKrrZswK1UTqHV4Fo-lc/edit?usp=sharing
 
 PROBABILITY_DAILY_RECIDIVISM: 
