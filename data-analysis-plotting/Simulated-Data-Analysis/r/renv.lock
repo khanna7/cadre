@@ -350,16 +350,6 @@
         "lattice"
       ]
     },
-    "openssl": {
-      "Package": "openssl",
-      "Version": "2.0.5",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0984ce8da8da9ead8643c5cbbb60f83e",
-      "Requirements": [
-        "lattice"
-      ]
-    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.9.0",
