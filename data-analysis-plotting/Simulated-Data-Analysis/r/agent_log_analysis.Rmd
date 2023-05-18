@@ -29,7 +29,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("~/code/cadre/python/output/agent_log_9.csv")
+agent_dt <- fread("~/code/cadre/python/output/agent_log_5.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
