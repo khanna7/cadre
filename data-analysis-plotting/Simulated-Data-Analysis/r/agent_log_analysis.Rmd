@@ -1145,7 +1145,6 @@ the standard deviation and the interquartile range as measures of variation
 across both groups.
 
 ```{r}
-<<<<<<< HEAD
 # Calculate the ratio for each group and each tick
 ratios_by_tick <- agent_dt[, .(
   n_current_smokers = sum(smoking_status == "Current"),
@@ -1172,13 +1171,6 @@ Test if the means for the two groups are statistically different:
 # Extract the ratio data for each group
 group_0_ratios <- ratios_by_tick[group == FALSE, ratio]
 group_1_ratios <- ratios_by_tick[group == TRUE, ratio]
-=======
-n_releases_0 <- current_smoking_by_release_dcast[,2]
-#n_releases_ge1 <- current_smoking_by_release_dcast[,3:6]
-
-n_releases_0[1]/sum(n_releases_0[1:2])
-#sum(n_releases_ge1[1,])/sum(n_releases_ge1[1:2,])
->>>>>>> network-reparameterization
 
 # Perform the two-sample t-test
 t_test_result <- t.test(group_0_ratios, group_1_ratios)
