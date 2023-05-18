@@ -1,5 +1,6 @@
 from statistics import mean as mean
 import unittest
+#from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from pycadre import cadre_model
@@ -14,6 +15,32 @@ class TestPerson(unittest.TestCase):
         self.params_list = pycadre.load_params.load_params(
             "../../cadre/python/test_data/test_params.yaml", ""
         )
+
+    def test_post_release_alc_use(self):
+        self.params_list['ALC_USE_PROPS']['A'] = 0.1
+        self.params_list['ALC_USE_PROPS']['O'] = 0.7
+        self.params_list['ALC_USE_PROPS']['R'] = 0.1
+        self.params_list['ALC_USE_PROPS']['D'] = 0.1
+        person_creator = init_person_creator()
+        p = person_creator.create_person()
+        p.n_releases = 1
+        p.alc_use_status = 0
+        for i in range(100):
+            p.update_alc_use_post_release()
+            self.assertEqual(0, p.alc_use_status)
+        p.alc_use_status = 1
+        hist = { 1: 0., 2: 0., 3: 0. }
+        n = 50000
+        for i in range(n):
+            p.update_alc_use_post_release()
+            hist[p.alc_use_status] += 1
+
+        expected = 0.17 / 0.9
+        result = hist[3] / n
+        self.assertAlmostEqual(expected, result, delta=0.01)
+        expected = (0.7 - (0.07 / 2)) / 0.9
+        result = hist[1] / n
+        self.assertAlmostEqual(expected, result, delta=0.01) 
 
     def test_age_assignment(self):
 
@@ -196,9 +223,9 @@ class TestPerson(unittest.TestCase):
         sexes = []
 
         for person in [init_person_creator().create_person() for i in range(2000)]:
-            for i in range(25):
+            for j in range(25):
                 person.aging()
-                person.transition_smoking_status()
+                person.transition_smoking_status(j)
             smokers.append(person.smoker)
             races.append(person.race)
             sexes.append(person.female)
@@ -390,7 +417,6 @@ class TestPerson(unittest.TestCase):
                 # and newly entering agents don't become incarerated because their attributes are not reset
                 self.assertEqual(person.current_incarceration_status, 1)
                 self.assertEqual(person.n_incarcerations, 2)
-
 
 if __name__ == "__main__":
     unittest.main()

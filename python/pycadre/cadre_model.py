@@ -45,7 +45,8 @@ class Model:
         self.person_creator = init_person_creator()
 
         # initialize network and add projection to context
-        self.network = ErdosReyniNetwork(comm, load_params.params_list["EDGE_PROB"])
+        self.network = ErdosReyniNetwork(comm, load_params.params_list["N_AGENTS"],
+                                         load_params.params_list["TARGET_MEAN_DEGREE"])
 
         self.network.init_network(
             load_params.params_list["N_AGENTS"],
@@ -172,12 +173,12 @@ class Model:
             person.aging()
 
             person.transition_alc_use()
-            person.transition_smoking_status()
+            person.transition_smoking_status(tick)
             person.simulate_incarceration(
                 tick=tick,
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
-                ],
+                ]
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1

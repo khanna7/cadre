@@ -1,6 +1,9 @@
+rm(list=ls())
+
 # Load the eulerr package
 library(eulerr)
 library(magrittr)
+library(grid)
 
 # Define the data: Falk 2006 (NESARC)
 
@@ -28,14 +31,37 @@ data_vector <- c(
   "Alcohol&Tobacco" = count_both
 )
 
+
+# Calculate the percentages to be added to the text
+percentage_alcohol_only <- n_alcohol_only
+percentage_tobacco_only <- n_tobacco_only
+percentage_both <- n_both
+
+
 # Create the Euler diagram
 euler_plot <- euler(data_vector) %>%
   plot(
-    labels = c("Alcohol", "Tobacco"),
+    labels = c("", ""),
     fills = c("red", "blue"),
     main = "",
     legend = FALSE
-  )
+  ) 
 
-# Display the Euler diagram
-euler_plot
+# Render the Euler diagram
+plot(euler_plot)
+
+# Add the percentage text to the Euler diagram (manually adjust the x and y coordinates)
+grid.text(paste0("Alcohol: ", percentage_alcohol_only, "%"), x = 0.38, y = 0.5, 
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+grid.text(paste0("Tob:", percentage_tobacco_only, "%"), x = 0.76, y = 0.5,
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+grid.text(paste0("Both: ", percentage_both, "%"), x = 0.6, y = 0.5, 
+          default.units = "npc", gp = gpar(col = "white", fontsize = 10))
+
+# Add the percentage text for Neither
+grid.text(paste0("Neither: ", n_neither, "%"), x = 0.72, y = 0.8, 
+          default.units = "npc", gp = gpar(col = "black", fontsize = 10))
+
+
+
+

@@ -6,30 +6,153 @@ output:
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
+
 We confirm below various attributes of the agents that are logged.
 
 We will do this in `data.table` for speed. 
 
-```{r}
+```{r setup, include=FALSE}
 rm(list=ls())
+renv::load()
+library(ggplot2)
 library(data.table)
+library(yaml)
 ```
+
+Read input parameters:¬
+
+```{r}
+input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
+```
+
 
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/gpfs/data/akhann16/akhann16/cadre_simulated_data/2023-01-15/agent_log_8.csv")
+agent_dt <- fread("~/code/cadre/python/output/agent_log_5.csv")
+str(agent_dt)
 last_tick <- max(agent_dt$tick)
+print(last_tick)
 ```
+
+How many unique agents are in the dataset?
+
+```{r}
+length(unique(agent_dt$id))
+range(unique(agent_dt$id))
+```
+
+There are `r length(unique(agent_dt$id))` unique agents in the dataset. Their IDs 
+range from `r min((unique(agent_dt$id)))` to `r max((unique(agent_dt$id)))`.
 
 # Demographics
 
 ```{r}
-agent_dt[tick == last_tick, .N, by=race][,"%":=round(N/sum(N)*100)][order(race)]
+agent_dt_by_race <- agent_dt[tick == last_tick, .N, by=race][,"per_cent":=round(N/sum(N)*100)][order(race)]
+target_values <- data.frame(race = names(input_params$RACE_DISTRIBUTION), 
+                            target_pct = unlist(input_params$RACE_DISTRIBUTION))
 ```
+
+
+Plot race distribution over time:
+
+```{r}
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+# Calculate the proportion of each race at the specified time ticks
+race_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
+  White = sum(race == "White") / .N,
+  Black = sum(race == "Black") / .N,
+  Hispanic = sum(race == "Hispanic") / .N,
+  Asian = sum(race == "Asian") / .N
+), by = tick]
+
+# Convert the data from wide to long format
+race_proportions_long <- melt(race_proportions_by_tick, id.vars = "tick", variable.name = "race", value.name = "proportion")
+
+# Create a time series plot of race proportions
+# Create a time series plot of race proportions
+ggplot(race_proportions_long, aes(x = tick, y = proportion, color = race, group = race)) +
+  geom_line() +
+  labs(title = "Agent Race Proportions Over Time",
+       x = "Time (Days)",
+       y = "Race Distributions") +
+  scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.1))
+```
+
 ```{r echo=TRUE}
 agent_dt[tick==last_tick, .N, by=female][,"%":=N/sum(N)][order(female)]
-#[order(race)]
+female_target <- input_params$FEMALE_PROP
+
+gender_pct <- agent_dt[tick == last_tick, .N, by = female][, "%":= N/sum(N)][order(female)]
+```
+```{r}
+# calculate percentages
+gender_pct <- agent_dt[tick == last_tick, .N, by = female][, "%":= N/sum(N)][order(female)]
+
+# read in YAML file with target value
+female_target <- input_params$FEMALE_PROP
+
+# calculate target percentages for each gender
+female_target_pct <- female_target
+male_target_pct <- 1 - female_target
+
+# calculate actual percentages for each gender
+female_actual_pct <- gender_pct[female == 1, `%`]
+male_actual_pct <- gender_pct[female == 0, `%`]
+
+
+# create plot
+ggplot(gender_pct, aes(x = ifelse(female == 0, "Male", "Female"), y = `%`, fill = ifelse(female == 0, "Male", "Female"))) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#1b9e77", "#d95f02")) +
+  annotate("text", x = 1, y = female_actual_pct, 
+           label = paste0("Female Target = ", round(female_actual_pct*100, 1), "%"), 
+           color = "#1b9e77", size = 4, vjust = 0) +
+  annotate("text", x = 2, y = male_actual_pct, 
+           label = paste0("Male Target = ", round(male_actual_pct*100, 1), "%"), 
+           color = "#d95f02", size = 4, vjust = 0) +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Sex Distributions",
+       fill = "") +
+  theme_minimal()
+
+
+
+
+```
+
+Sex distributions over time:
+
+```{r}
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+# Calculate the proportion of males and females at the specified time ticks
+gender_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
+  male = sum(female == 0) / .N,
+  female = sum(female == 1) / .N
+), by = tick]
+
+# Convert the data from wide to long format
+gender_proportions_long <- melt(gender_proportions_by_tick, id.vars = "tick", variable.name = "gender", value.name = "proportion")
+
+# Create a time series plot of male and female proportions
+ggplot(gender_proportions_long, aes(x = tick, y = proportion, color = gender, group = gender)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Sex Distributions") +
+  scale_color_manual(values = c("#1b9e77", "#d95f02"), labels = c("Female", "Male")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  scale_y_continuous(limits = c(0.4, 0.6), breaks = seq(0.4, 0.6, by = 0.1))
+
 ```
 
 
@@ -73,6 +196,23 @@ nrow(agent_dt[tick==last_tick])
 agent_dt[tick==last_tick, median(age)]
 ```
 
+```{r}
+
+# Create age groups
+agent_dt_by_age_group <- agent_dt[tick==last_tick, .N, by = .(age_group = cut(age, breaks = c(18, 25, 35, 45, 55, 65, 75, 80, 84)))]
+
+# Create bar chart
+ggplot(agent_dt_by_age_group, aes(x = age_group, y = N, fill = age_group)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf")) +
+  labs(title = "Agent Age Distribution",
+       x = "Age Group",
+       y = "Count",
+       fill = "Age Group") +
+  theme_minimal()
+
+```
+
 # Baseline Smoking Behaviors
 
 
@@ -106,6 +246,21 @@ smkg_prev_black_men_target
 
 ```
 
+```{r}
+# Count the number and percentage of each smoking status
+smoking_dt <- agent_dt[tick == last_tick, .N, by = smoking_status][, `:=` (percentage = round(N/sum(N)*100, 2))]
+# Create the bar chart
+ggplot(smoking_dt, aes(x = smoking_status, y = percentage, fill = smoking_status)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("#fec44f", "#43a2ca", "#7bccc4")) +
+  labs(title = "Agent Smoking Status Distribution",
+       x = "Smoking Status",
+       y = "Percentage",
+       fill = "Smoking Status") +
+  theme_minimal()
+
+```
+
 # Baseline Alcohol Use
 
 ```{r}
@@ -122,6 +277,434 @@ alc_use_targets <- c(alc_use_props$A, alc_use_props$O, alc_use_props$R, alc_use_
 cbind(alc_use_last_tick[["%"]], alc_use_targets)
 ```
 
+```{r}
+# Calculate the percentages for alcohol use status
+alc_use_dt <- agent_dt[tick == last_tick, .N, by = alc_use_status][, `:=` (percentage = round(N/sum(N)*100, 2))]
+# Order the data table by alcohol use status
+setorder(alc_use_dt, alc_use_status)
+# Rename the alcohol use status codes to descriptive labels
+alc_use_dt[, alc_use_status := factor(alc_use_status, levels = c(0, 1, 2, 3), 
+                                      labels = c("Lifetime Abstainer", 
+                                                 "Ocassional", 
+                                                 "Regular", 
+                                                 "Heavy"))]
+
+ggplot(alc_use_dt, aes(x = alc_use_status, y = percentage, fill = alc_use_status)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Alcohol Use Status Distribution",
+       x = "Use Frequency",
+       y = "Percentage",
+       fill = "Alcohol Use Status") +
+  theme_minimal() +
+  guides(fill = "none") +
+  geom_text(aes(label = paste0(as.numeric(input_params$ALC_USE_PROPS)*100, "%")), 
+            position = position_stack(vjust = 1.02))+
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10))
+
+
+```
+
+# Smoking and Alcohol Co-Use
+
+
+ 
+## Conditional Probabilities on Co-Use
+
+### Approach 1
+
+Write functions to compute co-use probabilities at any  time step:
+
+```{r}
+
+
+# Functions for computing probabilities at a specific tick
+compute_p_smoker_given_alc_user <- function(tick_data) {
+  alc_users <- tick_data[tick_data$alc_use_status != 0,]
+  n_smokers_and_alc_users <-
+    sum(alc_users$smoking_status == "Current")
+  p_smoker_given_alc_user <-
+    n_smokers_and_alc_users / nrow(alc_users)
+  return(p_smoker_given_alc_user)
+}
+
+compute_p_alc_user_given_smoker <- function(tick_data) {
+  smokers <- tick_data[tick_data$smoking_status == "Current",]
+  n_smokers_and_alc_users <- sum(smokers$alc_use_status != 0)
+  p_alc_user_given_smoker <-
+    n_smokers_and_alc_users / nrow(smokers)
+  return(p_alc_user_given_smoker)
+}
+
+compute_p_abstainer_given_never_smoker <- function(tick_data) {
+  never_smokers <- tick_data[tick_data$smoking_status == "Never",]
+  n_abstainers_and_never_smokers <-
+    sum(never_smokers$alc_use_status == 0)
+  p_abstainer_given_never_smoker <-
+    n_abstainers_and_never_smokers / nrow(never_smokers)
+  return(p_abstainer_given_never_smoker)
+}
+
+compute_p_never_smoker_given_abstainer <- function(tick_data) {
+  abstainers <- tick_data[tick_data$alc_use_status == 0,]
+  n_abstainers_and_never_smokers <-
+    sum(abstainers$smoking_status == "Never")
+  p_never_smoker_given_abstainer <-
+    n_abstainers_and_never_smokers / nrow(abstainers)
+  return(p_never_smoker_given_abstainer)
+}
+
+compute_p_current_or_former_smoker_given_alc_user <-
+  function(tick_data) {
+    alc_users <- tick_data[tick_data$alc_use_status != 0,]
+    n_current_or_former_smokers_and_alc_users <-
+      sum(alc_users$smoking_status %in% c("Current", "Former"))
+    p_current_or_former_smoker_given_alc_user <-
+      n_current_or_former_smokers_and_alc_users / nrow(alc_users)
+    return(p_current_or_former_smoker_given_alc_user)
+  }
+
+compute_p_alc_user_given_current_or_former_smoker <-
+  function(tick_data) {
+    current_or_former_smokers <-
+      tick_data[tick_data$smoking_status %in% c("Current", "Former"),]
+    n_current_or_former_smokers_and_alc_users <-
+      sum(current_or_former_smokers$alc_use_status != 0)
+    p_alc_user_given_current_or_former_smoker <-
+      n_current_or_former_smokers_and_alc_users / nrow(current_or_former_smokers)
+    return(p_alc_user_given_current_or_former_smoker)
+  }
+
+```
+
+Apply these functions to the first and last tick data:
+
+```{r}
+first_tick_data <- agent_dt[agent_dt$tick == 1,]
+last_tick_data <- agent_dt[agent_dt$tick == max(tick)]
+```
+
+```{r}
+compute_p_smoker_given_alc_user(first_tick_data)
+compute_p_alc_user_given_smoker(first_tick_data)
+compute_p_abstainer_given_never_smoker(first_tick_data)
+compute_p_never_smoker_given_abstainer(first_tick_data)
+compute_p_current_or_former_smoker_given_alc_user(first_tick_data)
+compute_p_alc_user_given_current_or_former_smoker(first_tick_data)
+```
+
+
+
+```{r}
+compute_p_smoker_given_alc_user(last_tick_data)
+compute_p_alc_user_given_smoker(last_tick_data)
+compute_p_abstainer_given_never_smoker(last_tick_data)
+compute_p_never_smoker_given_abstainer(last_tick_data)
+compute_p_current_or_former_smoker_given_alc_user(last_tick_data)
+compute_p_alc_user_given_current_or_former_smoker(last_tick_data)
+```
+
+
+```{r}
+# Create a contingency table of smoking and alcohol use status
+smoking_alc_use_table <- dcast(agent_dt[tick == last_tick], smoking_status ~ alc_use_status, value.var = "id", fun.aggregate = length)
+smoking_alc_use_table <- smoking_alc_use_table[, .(smoking_status, `Lifetime Abstainer` = `0`, Occasional = `1`, Regular = `2`, Heavy = `3`)]
+smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status",
+                             variable.name = "alcohol_use")
+```
+
+### Approach II
+
+Create a contingency table at the last tick:
+
+```{r}
+smkg_alc_use_xtab <- dcast(smoking_alc_use_melt, smoking_status ~ alcohol_use, value.var = "value")
+smkg_alc_use_xtab
+
+smoking_alc_col_props <- prop.table(as.matrix(smkg_alc_use_xtab[,-1]), margin = 1)
+smoking_alc_row_props <- prop.table(as.matrix(smkg_alc_use_xtab[,-1]), margin = 2)
+
+smoking_alc_col_props <- cbind(smkg_alc_use_xtab[,1], round(smoking_alc_col_props, 3))
+smoking_alc_row_props <- cbind(smkg_alc_use_xtab[,1], round(smoking_alc_row_props, 3))
+
+print(smoking_alc_col_props)
+print(smoking_alc_row_props)
+
+rowSums(smoking_alc_col_props[,-1])
+colSums(smoking_alc_row_props[,-1])
+```
+
+P(Current Smoker |Heavy Drinker) = `r (as.numeric(smoking_alc_row_props["Current","Heavy"]))`  
+P(Current Smoker | Regular Drinker) = `r (as.numeric(smoking_alc_row_props["Current","Regular"]))`
+P(Current Smoker | Occasional Drinker)  = `r (as.numeric(smoking_alc_row_props["Current","Occasional"]))`
+
+Alcohol Use conditioned on Current Smoking:
+P(Heavy Drinker | Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Heavy"]))` 
+P(Regular Drinker| Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Regular"]))`  
+P(Occasional Drinker | Current Smoker) = `r (as.numeric(smoking_alc_col_props["Current","Occasional"]))`  
+
+
+## Marginal Distributions on Alcohol and Tobacco Use
+
+Start by computing the mean distributions of smoking and alcohol use statesa cross
+the simulation
+
+```{r}
+# Compute the proportion of each smoking status
+smoking_prop <- prop.table(table(agent_dt$smoking_status))
+
+# Compute the mean proportion of current, former, and never smokers
+mean_current_smokers <- mean(smoking_prop["Current"])
+mean_former_smokers <- mean(smoking_prop["Former"])
+mean_never_smokers <- mean(smoking_prop["Never"])
+
+# Print the mean smoking status distribution
+cat("Mean smoking status distribution:\n")
+cat("Current Smokers: ", mean_current_smokers, "\n")
+cat("Former Smokers: ", mean_former_smokers, "\n")
+cat("Never Smokers: ", mean_never_smokers, "\n")
+
+# Compute the proportion of each alcohol use status
+alc_prop <- prop.table(table(agent_dt$alc_use_status))
+
+# Compute the mean proportion of each alcohol use status
+mean_abstainers <- mean(alc_prop[1])
+mean_occasional <- mean(alc_prop[2])
+mean_regular <- mean(alc_prop[3])
+mean_heavy <- mean(alc_prop[4])
+
+# Print the mean alcohol use status distribution
+cat("Mean alcohol use status distribution:\n")
+cat("Abstainers: ", mean_abstainers, "\n")
+cat("Occasional Users: ", mean_occasional, "\n")
+cat("Regular Users: ", mean_regular, "\n")
+cat("Heavy Users: ", mean_heavy, "\n")
+
+```
+Plot current smoking rate over time:
+
+```{r}
+# Define the time ticks you want to analyze
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+# Calculate the proportion of current, former, and never smokers at the specified time ticks
+smokers_by_tick <- agent_dt[tick %in% time_ticks, .(
+  current_smokers = sum(smoking_status == "Current") / .N,
+  former_smokers = sum(smoking_status == "Former") / .N,
+  never_smokers = sum(smoking_status == "Never") / .N
+), by = tick]
+
+# Reshape the data.table into a long format
+smokers_long <- melt(smokers_by_tick, id.vars = "tick", variable.name = "smoking_status", value.name = "proportion")
+
+# Update the smoking status labels
+smokers_long[, smoking_status := factor(smoking_status, 
+                                        levels = c("current_smokers", "former_smokers", "never_smokers"), 
+                                        labels = c("Current", "Former", "Never"))]
+
+# Plot the smoking rates for current, former, and never smokers at the specified time ticks
+# Plot the smoking rates for current, former, and never smokers at the specified time ticks
+ggplot(smokers_long, aes(x = tick, y = proportion, color = smoking_status, group = smoking_status)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Smoking States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 0.7), breaks = seq(0, 0.7, by = 0.1))
+
+
+
+```
+Plot alcohol use states over time:
+
+```{r}
+calculate_proportions_alcohol <- function(data) {
+  proportions <- prop.table(table(data$alc_use_status))
+  df <- data.frame(Category = as.factor(as.character(names(proportions))),
+                   Proportion = as.numeric(proportions)
+  )
+  df$Category <- factor(df$Category,
+                        levels = c("0", "1", "2", "3"),
+                        labels = c("Lifetime Abstention", "Low Risk Use", "Heavy Use", "Alcohol Use Disorder (AUD)"))
+  return(df)
+}
+
+
+selected_ticks <- seq(1, max(agent_dt$tick), by = 10)
+alcohol_summaries <- lapply(selected_ticks, function(x) {
+  agents_at_tick <- agent_dt[tick == x]
+  proportions <- calculate_proportions_alcohol(agents_at_tick)
+  return(list("proportions" = proportions, "tick" = x))
+})
+
+alcohol_proportions_df <- do.call(rbind, lapply(alcohol_summaries, function(x) {
+  df <- x$proportions
+  df$Tick <- x$tick
+  return(df)
+}))
+
+head(alcohol_proportions_df)
+
+# Create the plot with the specified order of legend labels
+ggplot(alcohol_proportions_df, aes(x = Tick, y = Proportion, color = Category, group = Category)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Alcohol Use States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  ylim(c(0,1)) +
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
+
+ggplot(alcohol_proportions_df, aes(x = Tick, y = Proportion, color = Category, group = Category)) +
+  geom_line() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Distribution of Alcohol Use States") +
+  scale_color_brewer(palette = "Set1") +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  ylim(c(0,1))+
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
+
+```
+
+
+## Joint Probability Computations of Alcohol and Tobacco Use
+
+Joint probability of current smoking and alcohol use (i.e., not lifetime abstainer):
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+current_smokers_alcohol_users_dt <- agent_dt[agent_dt$smoking_status == "Current" & agent_dt$alc_use_status %in% c(1, 2, 3),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_current_smokers_alcohol_users <- nrow(current_smokers_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of current smokers and alcohol users: ", joint_prob_current_smokers_alcohol_users, "\n")
+
+```
+
+Joint probability of former or current/former smoking and alcohol use (i.e., not lifetime abstainer):
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+former_or_current_smokers_alcohol_users_dt <- agent_dt[agent_dt$smoking_status %in% c("Current", "Former") & agent_dt$alc_use_status %in% c(1, 2, 3),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_former_or_current_smokers_alcohol_users <- nrow(former_or_current_smokers_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of former or current smokers and alcohol users: ", joint_prob_former_or_current_smokers_alcohol_users, "\n")
+
+```
+
+Joint probability of never smoking and lifetime abstention from alcohol use:
+
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+no_smoking_or_alcohol_users_dt <- agent_dt[agent_dt$smoking_status %in% c("Never") & agent_dt$alc_use_status %in% c(0),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_no_smoking_or_alcohol_users <- nrow(no_smoking_or_alcohol_users_dt) / nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of never smoker and lifetime alcohol abstainer: ", 
+    joint_prob_no_smoking_or_alcohol_users, "\n")
+
+```
+
+
+Joint probability of never/former smoking and lifetime abstention from alcohol use:
+
+```{r}
+# Filter the dataset to include only current smokers who are also alcohol users
+former_or_never_smoking_and_no_alcohol_users_dt <- agent_dt[agent_dt$smoking_status %in% 
+                                                              c("Never", "Former") &
+                                                              agent_dt$alc_use_status %in% c(0),]
+
+# Compute the proportion of individuals who are both current smokers and alcohol users
+joint_prob_former_or_never_smoking_and_no_alcohol_users <- nrow(former_or_never_smoking_and_no_alcohol_users_dt) /
+  nrow(agent_dt)
+
+# Print the joint probability of current smokers and alcohol users
+cat("Joint probability of former/never smoker and lifetime alcohol abstainer: ", 
+    joint_prob_former_or_never_smoking_and_no_alcohol_users, "\n")
+
+```
+
+Joint probability of current/former smoking and lifetime abstention from
+alcohol use:
+
+
+```{r}
+# Filter the dataset to include only current/former smokers who are lifetime abstainers from alcohol
+current_former_smokers_lifetime_abstainers_dt <- agent_dt[agent_dt$smoking_status %in% c("Current", "Former") & agent_dt$alc_use_status == 0,]
+
+# Compute the proportion of individuals who are both current/former smokers and lifetime abstainers from alcohol
+joint_prob_current_former_smokers_lifetime_abstainers <- nrow(current_former_smokers_lifetime_abstainers_dt) / nrow(agent_dt)
+
+# Print the joint probability of current/former smokers and lifetime abstainers from alcohol use
+cat("Joint probability of current/former smokers and lifetime abstainers from alcohol use: ", joint_prob_current_former_smokers_lifetime_abstainers, "\n")
+```
+
+
+Joint probability of never smoking and using alcohol:
+
+```{r}
+# Filter the dataset to include only alcohol users who have never smoked
+alcohol_users_never_smokers_dt <- agent_dt[agent_dt$alc_use_status %in% c(1, 2, 3) & agent_dt$smoking_status == "Never",]
+
+# Compute the proportion of individuals who are alcohol users but never smokers
+joint_prob_alcohol_users_never_smokers <- nrow(alcohol_users_never_smokers_dt) / nrow(agent_dt)
+
+# Print the joint probability of alcohol users but never smokers
+cat("Joint probability of alcohol users but never smokers: ", joint_prob_alcohol_users_never_smokers, "\n")
+
+```
+
+
+
+Compare the conditional, marginal, and joint probability distributions to the
+Falk et al. (or other empirical) data.
+
+
+```{r}
+# Create a stacked bar chart of smoking and alcohol use status
+ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = alcohol_use)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Smoking and Alcohol Use Status Distribution",
+       x = "Smoking Status",
+       y = "Count",
+       fill = "Alcohol Use Status") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")) +
+  guides(fill = "none")
+```
+
+
+```{r}
+# Create a contingency table of smoking and alcohol use status
+smoking_alc_use_table <- dcast(agent_dt[tick == last_tick], smoking_status ~ alc_use_status, value.var = "id", fun.aggregate = length)
+smoking_alc_use_table <- smoking_alc_use_table[, .(smoking_status, `Lifetime Abstainer` = `0`, Occasional = `1`, Regular = `2`, Heavy = `3`)]
+smoking_alc_use_melt <- melt(smoking_alc_use_table, id.vars = "smoking_status")
+
+# Create a stacked bar chart of smoking and alcohol use status
+ggplot(smoking_alc_use_melt, aes(x = smoking_status, y = value, fill = variable)) +
+  geom_bar(stat = "identity", color = "black") +
+  labs(title = "Agent Smoking and Alcohol Use Status Distribution",
+       x = "Smoking Status",
+       y = "Count") +
+  scale_fill_manual(values = c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c"), 
+                    labels = c("Lifetime Abstainer", "Occasional", "Regular", "Heavy"),
+                    name = "Alcohol Use Status") +
+  theme_minimal()
+
+```
 # Age Assignment at Entry
 
 We check below the ages of new agents, 
@@ -180,11 +763,52 @@ So, the aging process seems to work as expected.
 
 # Incarceration Statistics
 
+Mean incarceration rate over time:
+
+```{r}
+selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+incarceration_summary <- agent_dt[tick %in% selected_ticks, 
+                                 .(n_incarcerated = sum(current_incarceration_status == 1),
+                                   n_agents = .N), 
+                                 by = tick]
+
+# Compute incarceration rate per 100,000 persons
+incarceration_summary[, rate_per_100k := n_incarcerated / n_agents * 100000]
+
+# Create the line plot
+ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Incarceration Rate (per 100,000 persons)")+
+  ylim(0, 350)
+
+
+```
+
+
 Number and proportion of incarcerated persons at last tick:
 
 ```{r}
-agent_dt[tick==last_tick, .N, by=c("current_incarceration_status")][,"prop":=round(N/sum(N)*100, 0)][]
+agent_dt[tick==last_tick, .N, by=c("current_incarceration_status")][,"prop":=round(N/sum(N)*100, 2)][]
 ```
+
+Mean number and proportion of incarcerated persons at each tick across the simulation:
+
+
+```{r}
+selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
+
+
+incarceration_summary <- agent_dt[tick %in% selected_ticks, 
+                                 .(n_incarcerated = sum(current_incarceration_status == 1),
+                                   n_agents = .N), 
+                                 by = tick]
+```
+
+
 Break down number and proportions of incarcerated persons at last tick by race, sex and age:
 
 ```{r}
@@ -205,7 +829,151 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
          by=c("race", "female", "age_groups")][order(race, female, age_groups)][,"prop":=round(N/sum(N)*100, 0)][]
 ```
 
-Break down number and proportions of persons every incarcerated at last tick by race, sex and age:
+How many persons have been ever incarcerated?
+
+To answer this question, we can group the last incarceration times by agent ID.
+If last incarceration time is -1, the person has never been incarcerated. 
+If last incarceration time is > -1, the person has been incarcerated at least once. 
+
+```{r}
+# Group data by agent ID and compute the last incarceration time
+last_incarceration_time <- agent_dt[, 
+                                    .(last_incarceration_time = max(last_incarceration_tick)), 
+                                    by = id]
+
+# Count the number of agents who have been incarcerated at least once
+n_ever_incarcerated <- sum(last_incarceration_time$last_incarceration_time != -1)
+
+# Compute the proportion of agents who have been incarcerated at least once
+prop_ever_incarcerated <- n_ever_incarcerated / nrow(last_incarceration_time)
+
+
+# Agents who have been incarcerated at least once
+ever_incarcerated_times <- last_incarceration_time[last_incarceration_time > 1]
+dim(ever_incarcerated_times)
+
+# Extract demographic information for ever incarcerated agents
+ever_incarcerated_ids <-
+  unique(agent_dt[id %in% ever_incarcerated_times$id, id])
+ever_incarcerated_info <- agent_dt[id %in% ever_incarcerated_ids,
+                                   .SD[.N, list(
+                                     id,
+                                     age = last(age),
+                                     race = last(race),
+                                     female = last(female)
+                                   )],
+                                   by = id]
+
+# Compute distributions
+## mean age
+age_summary <- ever_incarcerated_info[, .(mean_age=mean(age),
+                                       min_age=min(age),
+                                       max_age=max(age)
+                                       )
+                                   ]
+sex_dist <-
+  ever_incarcerated_info[, .N, by = female][,  .(
+    Sex = c("Female", "Male"),
+    Count = c(N[female == 0], N[female == 1]),
+    "Proportion of ever incarcerated" = round(N / sum(N), 2)
+  )]
+print(sex_dist)
+
+race_dist <- ever_incarcerated_info[, .N, by = race][,
+  .(Race = race, 
+    Count = N,
+    Proportion = round(N / sum(N), 2)
+   )
+  ]
+race_dist[]
+
+```
+
+Thus, `r n_ever_incarcerated` persons have been incarcerated at least once. The
+proportion of persons who have been ever incarcerated is `r prop_ever_incarcerated`.
+
+Now let us compute the number of females and males whoa have ever been incarcerated,
+and the proportions by race (% of White, Black, ...)
+
+```{r}
+first_tick_race_sex <-
+  agent_dt[, .SD[1], by = id][, .(
+    ID = id,
+    Tick = tick,
+    Female = female,
+    Race = race
+  )]
+
+# Count number of females and males
+sex_count <- first_tick_race_sex[, .N, by = Female][,
+                                               .(Sex = c("Female", "Male"), 
+                                                 Count = c(N[Female == 1], N[Female == 0]))                                               ]
+print(sex_count)
+
+# Count number of individuals in each race
+race_count <- first_tick_race_sex[, .N, by = Race][,
+                                                   .(Race, Count = N)]
+print(race_count)
+```
+
+Thus, the distribution of ever incarcerated persons by sex is
+
+```{r}
+cbind(sex_count$Sex, round(as.numeric(sex_dist$Count/sex_count$Count), 3))
+```
+
+The distribution of ever incarcerated persons by race is:
+
+```{r}
+cbind(race_count$Race, round(as.numeric(race_dist$Count/race_count$Count), 3))
+```
+
+What is the duration of incarceration for persons who have been ever incarcerated? 
+Restricting our data to only persons who have been released from their last
+incarceration episode, we can estimate this as:
+
+```{r}
+# Filter the data to include only the observations for agents who have been ever incarcerated and released
+ever_incarcerated_released <-
+  agent_dt[last_release_tick > last_incarceration_tick,
+           .SD[1, ], # ensure times for each incarceration, release episode appear only once
+           by = .(id, last_incarceration_tick)]
+
+# Compute the length of incarceration time for each ever incarcerated and released agent
+ever_incarcerated_released[, incarceration_length := last_release_tick - last_incarceration_tick,
+                           by = id]
+
+# Compute the summary statistics of the lengths of incarceration time for the ever incarcerated and released agents
+incarceration_summary <-
+  ever_incarcerated_released[, .(
+    min_incarceration_length = min(incarceration_length),
+    median_incarceration_length = median(incarceration_length),
+    max_incarceration_length = max(incarceration_length)
+  ),
+  by = id]
+
+# Compute the distribution of incarceration times for all incarceration episodes followed by release
+summary(ever_incarcerated_released$incarceration_length)
+```
+
+Assess the total number of incarceration-release events and the number of unique
+agents who experienced them:
+
+```{r}
+length(ever_incarcerated_released$id)
+length(unique(ever_incarcerated_released$id))
+```
+
+Distribution of incarceration events:
+```{r}
+hist(ever_incarcerated_released$incarceration_length, 
+     breaks = seq(0, 3000, by = 30),
+     xlab = "Length of incarceration (days)",
+     ylab = "Number of individuals",
+     main = "Distribution of incarceration lengths")
+```
+
+Break down number and proportions of persons ever incarcerated at last tick by race, sex and age:
 
 ```{r}
 ever_inc_dt <- 
@@ -232,7 +1000,8 @@ agent_dt[tick == last_tick,
            "n_ever_incarcerated_agents"=sum(n_incarcerations > 0),
          .N)] 
 ```   
-# Incarceration Duration
+
+## Incarceration Duration
 
 Compute statistics on agents whose last release date is 
 after their last incarceration date.
@@ -328,5 +1097,269 @@ Alcohol Use State Distributions:
 ans <- agent_dt[tick == last_tick, .N, by=alc_use_status]
 prop <- ans$N/sum(ans$N)
 cbind(ans[,1], prop)
+```
+
+# Smoking and Alcohol Use among Incarcerated Persons vs Not-
+
+## Smoking
+
+Compare the proportion of the current smokers (to all persons) at the last tick 
+in the n_releases = 0 group vs the n_releases = 1 group.
+
+```{r}
+agent_dt[tick == last_tick, .N, by = n_releases][]
+agent_dt[tick == last_tick, .N, by = smoking_status][]
+agent_dt[tick == last_tick, .N, by = c("smoking_status", "n_releases")][]
+
+
+# Filter data at the last_tick
+last_tick_data <- agent_dt[tick == last_tick]
+
+# Calculate the ratio for each group
+ratios <- last_tick_data[, .(
+  n_current_smokers = sum(smoking_status == "Current"),
+  n_total_persons = sum(smoking_status %in% c("Current", "Former", "Never"))
+), by = .(group = n_releases >= 1)]
+
+# Compute the ratio of current smokers to total smokers in each group
+ratios[, ratio := n_current_smokers / n_total_persons]
+
+# Print the results
+ratios
+
+
+
+```
+
+
+The population size at each time tick is 
+
+```{r}
+sum(agent_dt[tick == last_tick, .N, by = c("smoking_status", "n_releases")][["N"]])
+```
+
+Now let us compute this comparison-of-ratios across all time steps, i.e.,
+mean across all time steps of the current smoking proportion in the 
+n_releases = 0 group vs. the n_releases >= 1 group. We add
+the standard deviation and the interquartile range as measures of variation
+across both groups.
+
+```{r}
+# Calculate the ratio for each group and each tick
+ratios_by_tick <- agent_dt[, .(
+  n_current_smokers = sum(smoking_status == "Current"),
+  n_total_persons = sum(smoking_status %in% c("Current", "Former", "Never"))
+), by = .(tick, group = n_releases >= 1)]
+
+# Compute the ratio of current smokers to total smokers in each group and each tick
+ratios_by_tick[, ratio := n_current_smokers / n_total_persons]
+
+# Calculate the mean ratio, standard deviation, and interquartile range across all time steps for each group
+summary_by_group <- ratios_by_tick[, .(
+  mean_ratio = mean(ratio, na.rm = TRUE),
+  sd_ratio = sd(ratio, na.rm = TRUE),
+  iqr_ratio = IQR(ratio, na.rm = TRUE)
+), by = group]
+
+# Print the results
+summary_by_group
+```
+
+Test if the means for the two groups are statistically different:
+
+```{r}
+# Extract the ratio data for each group
+group_0_ratios <- ratios_by_tick[group == FALSE, ratio]
+group_1_ratios <- ratios_by_tick[group == TRUE, ratio]
+
+# Perform the two-sample t-test
+t_test_result <- t.test(group_0_ratios, group_1_ratios)
+
+# Print the t-test result
+t_test_result
+
+```
+
+### Compute change in current smoking rate over time since release
+
+
+```{r}
+calculate_proportions_smoking <- function(data) {
+  proportions <- prop.table(table(data$smoking_status))
+  df <- data.frame(Category = names(proportions),
+                   Proportion = as.numeric(proportions))
+  df$Category <- factor(df$Category,
+                        levels = c("Never", "Former", "Current"),
+                        labels = c("Never", "Former", "Current"))
+  return(df)
+}
+
+summary_after_release <- function(time_period) {
+  agents_within_time_period <- agent_dt[last_release_tick > 0 &
+                                          tick - last_release_tick <= time_period]
+
+  proportions <- calculate_proportions_smoking(agents_within_time_period)
+  agent_count <- nrow(agents_within_time_period)
+  return(list("proportions" = proportions, "agent_count" = agent_count))
+}
+
+time_periods <- c(1, 7, 14, 30, 90, 180, 365)
+labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
+summaries_smoking <- lapply(time_periods, function(x) summary_after_release(x))
+
+
+summaries_smoking
+
+
+
+```
+Plot the rates of agents who are current smokers:
+
+```{r}
+class(summaries_smoking)
+
+current_smoker_proportions <- sapply(
+  summaries_smoking, 
+  function(x) x$proportions[x$proportions$Category == "Current", "Proportion"])
+
+current_smoker_df <- data.frame(Time = time_periods,
+                                Labels = labels,
+                                Proportion = current_smoker_proportions)
+
+ggplot(current_smoker_df, aes(x = Time, y = Proportion, group = 1)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = time_periods, labels = labels) +
+  labs(title = "",
+       x = "Time After Release",
+       y = "Proportion of Current Smokers") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+## Alcohol Use
+
+Compare the alcohol use rates in the: (1) entire agent population; 
+(2) agent population that has been never released;
+(3) agent population has been released at least once:
+
+```{r}
+# Entire agent population
+all_agents <- agent_dt
+
+# Agents who have never been released (n_releases == 0)
+never_released_agents <- agent_dt[n_releases == 0]
+
+# Agents who have been released at least once (n_releases >= 1)
+released_agents <- agent_dt[n_releases >= 1]
+
+
+# Function to calculate proportions
+calculate_proportions <- function(data) {
+  proportions <- prop.table(table(data$alc_use_status))
+  df <- data.frame(Category = names(proportions),
+                   Proportion = as.numeric(proportions))
+  df$Category <- factor(df$Category,
+                        levels = c(0, 1, 2, 3),
+                        labels = c("Lifetime Abstainer", "Occasional User", "Regular User", "Heavy User"))
+  return(df)
+}
+
+# Entire agent population
+all_agents_summary <- calculate_proportions(all_agents)
+
+# Agents who have never been released
+never_released_agents_summary <- calculate_proportions(never_released_agents)
+
+# Agents who have been released at least once
+released_agents_summary <- calculate_proportions(released_agents)
+
+# Display summaries
+print("Summary for Entire Agent Population")
+print(all_agents_summary)
+
+print("Summary for Agents Who Have Never Been Released")
+print(never_released_agents_summary)
+
+print("Summary for Agents Who Have Been Released at Least Once")
+print(released_agents_summary)
+```
+Once agents are released, the baseline state transition probabilities take effect,
+which force the alcohol use rates to equilibrate at the baseline state distribution of alcohol use. 
+This might be the reason why the heavy alcohol use rates do not differ between the groups
+that have never been released vs. the group that has been released at least once. 
+
+
+To account for this effect of baseline transition probabilities, 
+we will instead compare the alcohol use rates shortly after release,
+i.e., we will compute the alcohol use rates 
+for a certain period after the agents are released. 
+This may help uncover the immediate effect of release on alcohol use rates.
+
+```{r}
+# Define a one-year period after release
+fixed_time_after_release <- 1
+
+# Filter agents who were released at least once and within one year after release
+within_fixed_time_after_release_agents <- agent_dt[last_release_tick > 0 & tick <= last_release_tick + fixed_time_after_release]
+
+# Calculate proportions for agents within one year after release
+within_fixed_time_after_release_summary <- calculate_proportions(within_fixed_time_after_release_agents)
+
+# Display the summary
+print("Summary for Agents Within One Year After Release")
+print(within_fixed_time_after_release_summary)
+
+# Note for 
+```
+The proportion of heavy users one day after release is in the right range:
+approximately `r within_fixed_time_after_release_summary[within_fixed_time_after_release_summary$Category == "Heavy User", "Proportion"] * 100`%.
+But the proportion of lifetime abstainers at `r within_fixed_time_after_release_summary[within_fixed_time_after_release_summary$Category == "Lifetime Abstainer", "Proportion"] * 100`
+seems higher than it should be.
+
+Sensitivity Analysis of time since release:
+
+```{r}
+# Function to filter agents and calculate proportions for the given time period after release
+summary_after_release <- function(time_period) {
+  agents_within_time_period <- agent_dt[last_release_tick > 0 & tick <= last_release_tick + time_period]
+  proportions <- calculate_proportions(agents_within_time_period)
+  return(proportions)
+}
+
+# Time periods in ticks (days): 1 day, 1 week, 2 weeks, 1 month, 3 months, 6 months, 1 year
+time_periods <- c(1, 7, 14, 30, 90, 180, 365)
+
+# Calculate summaries for each time period
+summaries <- lapply(time_periods, function(x) summary_after_release(x))
+
+# Display summaries
+names(summaries) <- paste(time_periods, "days after release")
+summaries
+
+```
+
+
+```{r}
+time_points <- c(1, 7, 14, 30, 90, 180, 365)
+labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
+
+heavy_user_proportions <- sapply(summaries, function(x) x[x$Category == "Heavy User", "Proportion"])
+
+heavy_user_df <- data.frame(Time = time_points,
+                            Labels = labels,
+                            Proportion = heavy_user_proportions)
+
+ggplot(heavy_user_df, aes(x = Time, y = Proportion, group = 1)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = time_points, labels = labels) +
+  labs(title = "",
+       x = "Time After Release",
+       y = "Proportion of Agents with AUD") +
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 ```
 

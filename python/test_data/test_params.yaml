@@ -1,11 +1,12 @@
 ---
 STOP_AT: 1
-N_AGENTS: 10000
-EDGE_PROB: 0.001
+N_AGENTS: 1000
+#EDGE_PROB: 0.001
+TARGET_MEAN_DEGREE: 4 #SURVEY CTR ON AMERICAN LIFE: COX (2021)
 #REF: Model Design
 
 MIN_AGE: 18
-MAX_AGE: 64
+MAX_AGE: 84
 #REF: Model Design
 
 TICK_TO_YEAR_RATIO: 365 #xx ticks make a year
@@ -30,14 +31,14 @@ ALC_USE_PROPS:
 
 ALC_USE_STATES:
   # level up
-  TRANS_PROB_0_1: 0.018225
-  TRANS_PROB_1_2: 0.0132
-  TRANS_PROB_2_3: 0.0056
+  TRANS_PROB_0_1: 0
+  TRANS_PROB_1_2: 0.0072
+  TRANS_PROB_2_3: 0.05
   # LEVEL DOWN
-  TRANS_PROB_1_0: 0.002075
-  TRANS_PROB_2_1: 0.0729
-  TRANS_PROB_3_2: 0.0132
-# REF: https://drive.google.com/open?id=1bnFgEiRK4vFikyscSvq8-W7vRoMZecoc&authuser=aditya_khanna%40brown.edu&usp=drive_fs
+  TRANS_PROB_1_0: 0
+  TRANS_PROB_2_1: 0.04
+  TRANS_PROB_3_2: 0.1178
+# REF: https://docs.google.com/document/d/1bCyglQwCkY6k9D5W28kTQLoE0ZnzGLzb4z-ME64PQ3s/edit#bookmark=id.ym6j6jyv731k
 
 PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical
 #PROBABILITY_DAILY_INCARCERATION: 0.001223976
@@ -73,7 +74,12 @@ SENTENCE_DURATION_EMP:
     4: 0.03 # 3-6 years
 # # REF: McMadu 2021 https://doi.org/10.1016/j.drugpo.2020.102841
 
-SMOKING_CATS: ["Current", "Former", "Never"] 
+SMOKING_CATS: ["Current", "Former", "Never"]
+NUM_RELEASE_SMOKING_INCREASES: 1
+RELEASE_SMOKING_INCREASE:
+  MALES: 1.7
+  FEMALES: 1.61
+
 SMOKING_PREV:
   WHITE_MALE_CURRENT: 0.119
   WHITE_MALE_FORMER: 0.598
@@ -108,6 +114,9 @@ SMOKING_PREV:
 # REF CMS: https://perma.cc/75Z8-NRR7
 # Calculations/conceptualization explained at https://docs.google.com/document/d/13sHUYZz7SCZ2T35BcfnmOJSGCJ8KGptzE-0DGxJNhcI/edit?usp=sharing
 # RATES FOR "OTHER" CATEGORY ARE AVERAGED ACROSS ALL THE OTHER RACE/ETHNICITIES
+
+SMOKING_PREVALENCE_MULTIPLIER_RELEASED_PERSONS: 1.7
+# Per National Survey of  American Life, persons with incarceration history smoke at 1.7x the rate of persons without (Bailey 2015).
 
 SMOKING_TRANSITION_PROBS:
   WHITE_MALES:
