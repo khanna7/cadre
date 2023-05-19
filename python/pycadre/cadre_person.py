@@ -237,7 +237,7 @@ class Person(core.Agent):
 
     def simulate_release(self, tick):
         # Check if the agent is still in the graph
-        if not self.graph.has_node(self):
+        if self.graph is not None:
             return
     
         # reset incarceration status
