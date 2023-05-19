@@ -237,21 +237,20 @@ class Person(core.Agent):
 
     def simulate_release(self, tick):
         # Check if the agent is still in the graph
-        if not self.graph.has_node(self):
-            return
-    
-        # reset incarceration status
-        self.current_incarceration_status = 0
-        self.last_release_tick = tick
-        self.incarceration_duration = -1
-        self.n_releases += 1
-        #self.previous_smoking_status = self.smoker
-        self.assign_smoker_status() 
-        self.update_alc_use_post_release()
+        
+        if self.graph is not None and self.graph.has_node(self):
+            # reset incarceration status
+            self.current_incarceration_status = 0
+            self.last_release_tick = tick
+            self.incarceration_duration = -1
+            self.n_releases += 1
+            #self.previous_smoking_status = self.smoker
+            self.assign_smoker_status() 
+            self.update_alc_use_post_release()
 
-        # update smoking status for released agents
-        # if self.smoker != "Never":
-        # self.update_smoker_status() 
+            # update smoking status for released agents
+            # if self.smoker != "Never":
+            # self.update_smoker_status() 
             
 
     def simulate_recidivism(
