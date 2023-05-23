@@ -123,31 +123,31 @@ SMOKING_PREV:
 
 SMOKING_TRANSITION_PROBS:
   WHITE_MALES:
-                RELAPSE: 0.014            
-                CESSATION: 0.07035294
+                RELAPSE: 0.0014            
+                CESSATION: 0.007035294
   WHITE_FEMALES:
-                RELAPSE: 0.016            
-                CESSATION: 0.05230769
+                RELAPSE: 0.0016            
+                CESSATION: 0.005230769
   BLACK_MALES:                      
-                RELAPSE: 0.016            
-                CESSATION: 0.03691707
+                RELAPSE: 0.0016            
+                CESSATION: 0.003691707
   BLACK_FEMALES:
-                RELAPSE: 0.016            
-                CESSATION: 0.04106195
+                RELAPSE: 0.0016            
+                CESSATION: 0.004106195
   HISPANIC_MALES:                   
-                RELAPSE: 0.016            
-                CESSATION: 0.06198425
+                RELAPSE: 0.0016            
+                CESSATION: 0.006198425
   HISPANIC_FEMALES:                 
-                RELAPSE: 0.016            
-                CESSATION: 0.05357576
+                RELAPSE: 0.0016            
+                CESSATION: 0.005357576
   ASIAN_MALES:                      
-                RELAPSE: 0.015            
-                CESSATION: 0.10713043
+                RELAPSE: 0.0015            
+                CESSATION: 0.010713043
   ASIAN_FEMALES:                   
-                RELAPSE: 0.015            
-                CESSATION: 0.06671053
+                RELAPSE: 0.0015            
+                CESSATION: 0.006671053
   # REF: https://github.com/khanna-lab/cadre/blob/ak-tinkering/r/Technical-Appendix/smoking-transition-matrix.Rmd
-
+  # lowered these by a factor of 10 for slower transition rates
 
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
