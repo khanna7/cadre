@@ -1254,11 +1254,11 @@ general_population <- data.frame(
 
 # Create the plot
 p <- ggplot() +
-  geom_line(data = current_smoker_df, aes(x = Time, y = Proportion, color = "Released")) +
-  geom_line(data = general_population, aes(x = Time, y = Proportion, color = "General")) +
-  scale_color_manual(values = c("Released" = "blue", "General" = "red")) +
+  geom_line(data = current_smoker_df, aes(x = Time, y = Proportion, color = "Previously Incarcerated")) +
+  geom_line(data = general_population, aes(x = Time, y = Proportion, color = "Overall")) +
+  scale_color_manual(values = c("Previously Incarcerated" = "blue", "Overall" = "red")) +
   scale_x_continuous(breaks = time_periods, labels = labels) +
-  scale_y_continuous(breaks = seq(0, 1, 0.2), limits = c(0, 1)) +
+  scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.5)) +
   labs(
     title = "",
     x = "Time After Release",
@@ -1389,11 +1389,50 @@ ggplot(heavy_user_df, aes(x = Time, y = Proportion, group = 1)) +
   geom_line() +
   geom_point() +
   scale_x_continuous(breaks = time_points, labels = labels) +
+  scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.5)) +
   labs(title = "",
        x = "Time After Release",
        y = "Proportion of Agents with AUD") +
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+```
+
+Compare AUD rates among previously incarcerated persons with the general population:
+
+```{r}
+# Extract rows for 'Alcohol Use Disorder (AUD)' only
+general_AUD_df <- alcohol_proportions_df[alcohol_proportions_df$Category == 'Alcohol Use Disorder (AUD)', ]
+
+# Map the 'Tick' column to the same scale as the original 'heavy_user_df' dataframe
+general_AUD_df <- general_AUD_df %>%
+  mutate(Time = floor(Tick/30)) %>%
+  group_by(Time) %>%
+  summarise(Proportion = mean(Proportion))
+# Compute average of AUD rates for the last 10 ticks
+last_AUD_rate <- mean(general_AUD_df$Proportion[(nrow(general_AUD_df) - 9):nrow(general_AUD_df)])
+
+# Create a new dataframe with these rates for the time points
+last_AUD_df <- data.frame(Time = max(heavy_user_df$Time):365,
+                          Proportion = rep(last_AUD_rate, 365 - max(heavy_user_df$Time) + 1))
+
+# Append this dataframe to the general_AUD_df dataframe
+general_AUD_df <- rbind(general_AUD_df, last_AUD_df)
+
+# Plotting both datasets
+p <- ggplot() +
+  geom_line(data = heavy_user_df, aes(x = Time, y = Proportion, color = "Previously Incarcerated")) +
+  geom_line(data = general_AUD_df, aes(x = Time, y = Proportion, color = "Overall")) +
+  scale_color_manual(values = c("Previously Incarcerated" = "blue", "Overall" = "red")) +
+  scale_x_continuous(breaks = time_points, labels = labels) +
+  scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.5)) +
+  labs(title = "",
+       x = "Time After Release",
+       y = "Proportion of Agents with AUD",
+       color = "Group") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+p
 ```
 
