@@ -6,32 +6,143 @@ output: html_notebook
 ```{r}
 rm(list=ls())
 library(data.table)
+library(here)
+library(DiagrammeR)
+library(yaml)
+library(ggplot2)
+here::here("~/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r")
 ```
 
 ```{r}
-network_dt <- fread("/Users/adityakhanna/Google Drive/My Drive/code/cadre/python/output/network_log_2.csv")
-str(network_dt)
+input_params <- read_yaml("../../../python/myparams/model_params.yaml") #input params
+network_dt <- fread("../../../python/output/network_log_11.csv") #simulated network data
+agent_dt <- fread("../../../python/output/agent_log_11.csv") #simulated network data
+last_tick <- max(network_dt$tick) 
 ```
-```{r}
-last_tick <- max(network_dt$tick)
-```
+ 
 
-
-```{r}
-network_dt[tick == last_tick]
-dim(network_dt[tick == last_tick])
-
-network_dt_tick18250 <- network_dt[tick == last_tick, .SD, .SDcols=c("p1", "p2")]
-network_dt_500r <- network_dt_tick18250[1:500,]
-dim(network_dt_500r)
-fwrite(network_dt_500r, "/Users/adityakhanna/network_dt_500r.csv")
-```
-Mean degree
+Let's focus on the last tick for which we have agent and network data:
 
 ```{r}
-tot_n_edges <- nrow(network_dt[tick == last_tick])
-n_agents <- 1e4
+last_tick_network_dt <- network_dt[tick==last_tick,]
+last_tick_agent_dt <- agent_dt[tick == last_tick,]
+print(last_tick_network_dt)
+print(last_tick_agent_dt)
+```
+```{r}
+# Identify the IDs of the recently released agents
+recently_released_agents <- last_tick_agent_dt$id[last_tick_agent_dt$last_release_tick > (last_tick - 365)]
 
-tot_n_edges*2/n_agents
+# Get the network data for the recently released agents
+network_recently_released <- last_tick_network_dt[(last_tick_network_dt$p1 %in% recently_released_agents) | 
+                                                    (last_tick_network_dt$p2 %in% recently_released_agents),]
+
+# Get the first-degree network (neighbors) for each agent
+first_degree_neighbors <- unique(c(network_recently_released$p1, network_recently_released$p2))
+
+# Get agent data for the first-degree neighbors
+first_degree_neighbors_agent_data <- last_tick_agent_dt[last_tick_agent_dt$id %in% first_degree_neighbors,]
+
+# Create an edge data frame from your network data
+edf <- data.frame(from = network_recently_released$p1, 
+                  to = network_recently_released$p2)
+
+# Create a node data frame with your agent data
+ndf <- data.frame(id = first_degree_neighbors_agent_data$id, 
+                  smoking_status = first_degree_neighbors_agent_data$smoking_status,
+                  alc_use_status = first_degree_neighbors_agent_data$alc_use_status)
+
+# Create a graph with DiagrammeR
+graph <- create_graph(nodes_df = ndf, 
+                      edges_df = edf,
+                      directed = FALSE)
+
+# Customize the node color based on smoking_status and alc_use_status
+graph <- set_node_attrs(graph, "color", ifelse(ndf$smoking_status == "Current", "red", ifelse(ndf$alc_use_status == 3, "blue", "gray")))
+
+# Render the graph
+render_graph(graph)
+
+```
+
+```{r}
+# Identify the IDs of the recently released agents
+recently_released_agents <- last_tick_agent_dt$id[last_tick_agent_dt$last_release_tick > (last_tick - 365)]
+
+# Get the network data for the recently released agents
+network_recently_released <- last_tick_network_dt[(last_tick_network_dt$p1 %in% recently_released_agents) | 
+                                                    (last_tick_network_dt$p2 %in% recently_released_agents),]
+
+# Get the first-degree network (neighbors) for each agent
+first_degree_neighbors <- unique(c(network_recently_released$p1, network_recently_released$p2))
+
+# Get agent data for the first-degree neighbors
+first_degree_neighbors_agent_data <- last_tick_agent_dt[last_tick_agent_dt$id %in% first_degree_neighbors,]
+
+# Create an edge data frame from your network data
+edf <- data.frame(from = network_recently_released$p1, 
+                  to = network_recently_released$p2)
+
+# Create a node data frame with your agent data
+ndf <- data.frame(id = first_degree_neighbors_agent_data$id, 
+                  smoking_status = first_degree_neighbors_agent_data$smoking_status,
+                  alc_use_status = first_degree_neighbors_agent_data$alc_use_status,
+                  recently_released = ifelse(first_degree_neighbors_agent_data$id %in% recently_released_agents, "yes", "no"))
+
+# Create a graph with DiagrammeR
+graph <- create_graph(nodes_df = ndf, 
+                      edges_df = edf,
+                      directed = FALSE)
+
+# Customize the node fillcolor based on smoking_status, alc_use_status and recently_released
+graph <- set_node_attrs(graph, "fillcolor", ifelse(ndf$smoking_status == "Current", "red", 
+                                                   ifelse(ndf$alc_use_status == 3, "blue", 
+                                                          ifelse(ndf$recently_released == "yes", "black", "white"))))
+
+# Customize the node color based on smoking_status, alc_use_status and recently_released
+graph <- set_node_attrs(graph, "color", ifelse(ndf$smoking_status == "Current", "red", 
+                                               ifelse(ndf$alc_use_status == 3, "blue", 
+                                                      ifelse(ndf$recently_released == "yes", "black", "gray"))))
+
+# Customize the node shape based on recently_released
+graph <- set_node_attrs(graph, "shape", ifelse(ndf$recently_released == "yes", "square", "circle"))
+
+# Remove labels from nodes to make them stand out more
+graph <- set_node_attrs(graph, "label", "")
+
+# Render the graph
+render_graph(graph)
+
+# Create a legend
+legend <- rbind(data.frame(group = "Recently Released", shape = "square", color = "black"),
+                data.frame(group = "Currently Smoking", shape = "circle", color = "red"),
+                data.frame(group = "AUD", shape = "circle", color = "blue"))
+
+```
+
+```{r}
+# Create a legend
+legend <- data.frame(group = c("Recently Released", "Currently Smoking", "AUD"),
+                     color = c("black", "red", "blue"),
+                     shape = c("square", "circle", "circle"))
+
+# The ggplot call
+p <- ggplot() +
+  geom_point(data = legend, 
+             aes(x = 1, y = group, color = color, fill = color, shape = shape), 
+             size = 5) +
+  geom_text(data = legend, 
+            aes(x = 1.3, y = group, label = group), 
+            hjust = 0) +
+  scale_color_identity() +
+  scale_fill_identity() +
+  scale_shape_manual(values=c("square"=22, "circle"=21)) +
+  theme_void() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(1, 2))  # Adjust as necessary to ensure labels fit
+
+# Print the plot
+print(p)
+
 ```
 
