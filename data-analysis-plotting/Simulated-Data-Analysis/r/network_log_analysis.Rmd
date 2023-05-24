@@ -112,7 +112,7 @@ p <- ggplot() +
   coord_cartesian(xlim = c(1, 2))  # Adjust as necessary to ensure labels fit
 
 # Print the plot
-print(p)
+p
 
 ```
 
