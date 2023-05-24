@@ -131,5 +131,58 @@ p
 
 ```
 
+Alternate legend:
+
+```{r}
+# Create a legend
+legend <- data.frame(
+  group = c("Recently Released", "Network Member"),
+  shape = c("square", "circle"),
+  fillcolor = c("black", "white"),
+  color = c("black", "black")
+)
+
+# Map the attributes for smoking and alcohol use to the legend
+smoking_legend <- data.frame(
+  group = c("Current Smoking"),
+  shape = c("circle"),
+  fillcolor = c("blue"),
+  color = c("blue")
+)
+
+alc_legend <- data.frame(
+  group = c("Alcohol Use Disorder"),
+  shape = c("circle"),
+  fillcolor = c("red"),
+  color = c("red")
+)
+
+# Combine the legend data frames
+legend <- rbind(legend, smoking_legend, alc_legend)
+
+# The ggplot call
+legend_p_2 <- ggplot() +
+  geom_point(data = legend, 
+             aes(x = 1, y = group, fill = fillcolor, color = color, shape = shape), 
+             size = 5) +
+  geom_text(data = legend, 
+            aes(x = 1.1, y = group, label = group), 
+            hjust = 0) +
+  scale_fill_identity() +
+  scale_color_identity() +
+  scale_shape_manual(values = c("square" = 22, "circle" = 21)) +
+  theme_void() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(1, 2))  # Adjust as necessary to ensure labels fit
+
+# Print the plot
+legend_p_2
+
+```
+
+```{r}
+legend_p_2
+```
+
 
 
