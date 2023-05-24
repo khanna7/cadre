@@ -80,6 +80,16 @@ graph <- set_node_attrs(graph, "shape", ifelse(ndf$recently_released == "yes", "
 # Remove labels from nodes to make them stand out more
 graph <- set_node_attrs(graph, "label", "")
 
+# Customize the edge color and line type
+graph <- set_edge_attrs(graph, "color", "black")  # Change the edge color to gray
+graph <- set_edge_attrs(graph, "style", "solid")  # Change the edge line type to dashed
+
+# Customize the edge thickness
+graph <- set_edge_attrs(graph, "penwidth", 2)  # Increase the edge thickness
+
+# Customize the outline color of all nodes
+graph <- set_node_attrs(graph, "color", "darkgray") 
+
 # Render the graph
 render_graph(graph)
 
