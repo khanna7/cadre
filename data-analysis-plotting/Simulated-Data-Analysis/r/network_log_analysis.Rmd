@@ -100,6 +100,54 @@ legend <- rbind(data.frame(group = "Recently Released", shape = "square", color 
 
 ```
 
+Prevalence of Current Smoking and AUD among network members:
+
+```{r}
+# Number of agents with Current Smoking status
+num_current_smoking <- sum(first_degree_neighbors_agent_data$smoking_status == "Current")
+
+# Number of agents with AUD
+num_aud <- sum(first_degree_neighbors_agent_data$alc_use_status == 3)
+
+# Total number of agents in the network
+total_agents <- nrow(first_degree_neighbors_agent_data)
+
+# Calculate prevalence
+prevalence_smoking <- num_current_smoking / total_agents
+prevalence_aud <- num_aud / total_agents
+
+# Print the results
+cat("Prevalence of Current Smoking in networks of recently released agents: ", prevalence_smoking, "\n")
+cat("Prevalence of AUD in networks of recently released agents: ", prevalence_aud, "\n")
+
+```
+
+Prevalence of Cyrrent Smoking and AUD among this set of egos:
+
+```{r}
+# Define selected_agents_df, which contains the data for the selected agents
+recently_released_agents_df <- last_tick_agent_dt[last_tick_agent_dt$id %in% recently_released_agents,]
+
+# Number of selected agents who are current smokers
+num_ego_current_smoking <- sum(recently_released_agents_df$smoking_status == "Current")
+
+# Number of selected agents with AUD
+num_ego_aud <- sum(recently_released_agents_df$alc_use_status == 3)
+
+# Total number of selected agents
+total_ego_agents <- length(recently_released_agents)
+
+# Calculate prevalence
+prevalence_ego_smoking <- num_ego_current_smoking / total_ego_agents
+prevalence_ego_aud <- num_ego_aud / total_ego_agents
+
+# Print the results
+cat("Prevalence of Current Smoking among recently released agents: ", prevalence_ego_smoking, "\n")
+cat("Prevalence of AUD among recently released agents: ", prevalence_ego_aud, "\n")
+
+```
+
+
 ```{r}
 # Create a legend
 legend <- rbind(
@@ -172,7 +220,8 @@ legend_p_2 <- ggplot() +
   scale_color_identity() +
   scale_shape_manual(values = c("square" = 22, "circle" = 21)) +
   theme_void() +
-  theme(legend.position = "none") +
+  theme(
+    legend.position = "none") +
   coord_cartesian(xlim = c(1, 2))  # Adjust as necessary to ensure labels fit
 
 # Print the plot
@@ -184,5 +233,135 @@ legend_p_2
 legend_p_2
 ```
 
+Horizontal legend alignment:
 
+```{r}
+# Create a legend
+legend <- data.frame(
+  group = c("Recently Released", "Network Member", "Current Smoking", "Alcohol Use Disorder"),
+  shape = c("square", "circle", "circle", "circle"),
+  fillcolor = c("black", "white", "blue", "red"),
+  color = c("black", "black", "blue", "red")
+)
+
+# The ggplot call
+horizontal_legend_p <- ggplot() +
+  geom_point(data = legend, 
+             aes(x = group, y = 1, fill = fillcolor, color = color, shape = shape), 
+             size = 5) +
+  geom_text(data = legend, 
+            aes(x = group, y = 1.1, label = group), 
+            vjust = -0.5, angle = 45, hjust = 1) +
+  scale_fill_identity() +
+  scale_color_identity() +
+  scale_shape_manual(values = c("square" = 22, "circle" = 21)) +
+  theme_void() +
+  theme(
+    legend.position = "none"
+  ) +
+  coord_cartesian(ylim = c(0.8, 2))  # Adjust as necessary to ensure labels fit
+
+# Print the plot
+horizontal_legend_p
+
+```
+
+Plot AUD and Current Smking in the networks of a same number of agents who have never been incarcerated:
+
+```{r}
+# Set seed for reproducibility
+set.seed(Sys.time())
+
+# Identify the IDs of the agents who have never been incarcerated
+never_incarcerated_agents <- last_tick_agent_dt$id[last_tick_agent_dt$n_incarcerations == 0]
+
+# Randomly select 36 agents who have never been incarcerated
+selected_agents <- sample(never_incarcerated_agents, 
+                          size = length(recently_released_agents))
+
+# Get the network data for the selected agents
+network_selected_agents <- last_tick_network_dt[(last_tick_network_dt$p1 %in% selected_agents) | 
+                                                (last_tick_network_dt$p2 %in% selected_agents),]
+
+# Get the first-degree network (neighbors) for each agent
+first_degree_neighbors <- unique(c(network_selected_agents$p1, network_selected_agents$p2))
+
+# Get agent data for the first-degree neighbors
+first_degree_neighbors_agent_data <- last_tick_agent_dt[last_tick_agent_dt$id %in% first_degree_neighbors,]
+
+# Create an edge data frame from your network data
+edf <- data.frame(from = network_selected_agents$p1, 
+                  to = network_selected_agents$p2)
+
+# Create a node data frame with your agent data
+ndf <- data.frame(id = first_degree_neighbors_agent_data$id, 
+                  smoking_status = first_degree_neighbors_agent_data$smoking_status,
+                  alc_use_status = first_degree_neighbors_agent_data$alc_use_status)
+
+# Create a graph with DiagrammeR
+graph <- create_graph(nodes_df = ndf, 
+                      edges_df = edf,
+                      directed = FALSE)
+
+# Customize the node fillcolor based on smoking_status and alc_use_status
+graph <- set_node_attrs(graph, "fillcolor", ifelse(ndf$smoking_status == "Current", "red", 
+                                                   ifelse(ndf$alc_use_status == 3, "blue", "white")))
+
+# Customize the node color based on smoking_status and alc_use_status
+graph <- set_node_attrs(graph, "color", ifelse(ndf$smoking_status == "Current", "red", 
+                                               ifelse(ndf$alc_use_status == 3, "blue", "gray")))
+
+# Remove labels from nodes to make them stand out more
+graph <- set_node_attrs(graph, "label", "")
+
+# Render the graph
+render_graph(graph)
+
+```
+
+Numerical prevalence of AUD and Current Smoking in this network:
+```{r}
+# Number of agents with Current Smoking status
+num_current_smoking <- sum(first_degree_neighbors_agent_data$smoking_status == "Current")
+
+# Number of agents with AUD
+num_aud <- sum(first_degree_neighbors_agent_data$alc_use_status == 3)
+
+# Total number of agents in the network
+total_agents <- nrow(first_degree_neighbors_agent_data)
+
+# Calculate prevalence
+prevalence_smoking <- num_current_smoking / total_agents
+prevalence_aud <- num_aud / total_agents
+
+# Print the results
+cat("Prevalence of Current Smoking: ", prevalence_smoking, "\n")
+cat("Prevalence of AUD: ", prevalence_aud, "\n")
+
+```
+
+Smoking and AUD among the egos:
+
+```{r}
+# Define selected_agents_df, which contains the data for the selected agents
+selected_agents_df <- last_tick_agent_dt[last_tick_agent_dt$id %in% selected_agents,]
+
+# Number of selected agents who are current smokers
+num_ego_current_smoking <- sum(selected_agents_df$smoking_status == "Current")
+
+# Number of selected agents with AUD
+num_ego_aud <- sum(selected_agents_df$alc_use_status == 3)
+
+# Total number of selected agents
+total_ego_agents <- length(selected_agents)
+
+# Calculate prevalence
+prevalence_ego_smoking <- num_ego_current_smoking / total_ego_agents
+prevalence_ego_aud <- num_ego_aud / total_ego_agents
+
+# Print the results
+cat("Prevalence of Current Smoking among selected agents: ", prevalence_ego_smoking, "\n")
+cat("Prevalence of AUD among selected agents: ", prevalence_ego_aud, "\n")
+
+```
 
