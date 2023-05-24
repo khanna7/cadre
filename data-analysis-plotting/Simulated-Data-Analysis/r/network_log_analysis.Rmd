@@ -92,9 +92,14 @@ legend <- rbind(data.frame(group = "Recently Released", shape = "square", color 
 
 ```{r}
 # Create a legend
-legend <- data.frame(group = c("Recently Released", "Currently Smoking", "AUD"),
-                     color = c("black", "red", "blue"),
-                     shape = c("square", "circle", "circle"))
+legend <- rbind(
+  data.frame(group = "Recently Released", shape = "square", color = "black"),
+  data.frame(group = "Recently Released & Currently Smoking", shape = "square", color = "red"),
+  data.frame(group = "Recently Released & AUD", shape = "square", color = "blue"),
+  data.frame(group = "Currently Smoking", shape = "circle", color = "red"),
+  data.frame(group = "AUD", shape = "circle", color = "blue")
+)
+
 
 # The ggplot call
 p <- ggplot() +
@@ -102,7 +107,7 @@ p <- ggplot() +
              aes(x = 1, y = group, color = color, fill = color, shape = shape), 
              size = 5) +
   geom_text(data = legend, 
-            aes(x = 1.3, y = group, label = group), 
+            aes(x = 1.1, y = group, label = group), 
             hjust = 0) +
   scale_color_identity() +
   scale_fill_identity() +
