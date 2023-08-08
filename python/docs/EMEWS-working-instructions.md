@@ -1,10 +1,18 @@
 # EMEWS Instructions from PYCADRE model
 
+## Installing EMEWS:
+See [here](https://emews.github.io).
+
 ## Reference for general repast4py model from Nick
 
 [Here](https://github.com/khanna-lab/cadre/blob/master/python/docs/emews_instructions.md)
 
 ## My Working Setup
+
+- The EMEWS root has been moved in the project [directory](https://github.com/khanna-lab/cadre/tree/network-analysis/emews).
+
+- The module set-up is explained [here](https://github.com/khanna-lab/cadre/blob/network-analysis/python/docs/mpi-and-virtualenvs.md).
+
 ### Filetree
 
 The EMEWS project root contains the following files:
@@ -38,7 +46,7 @@ drwxr-xr-x 2 akhann16 akhann16 4096 Jan 24 14:07 cfgs
 lrwxrwxrwx 1 akhann16 akhann16   71 Jan 27 14:38 turbine-output -> /gpfs/home/akhann16/code/cadre/python/docs/emews_test/experiments/testY
 ```
 
-The `turbine-output -> /gpfs/home/akhann16/code/cadre/python/docs/emews_test/experiments/testY`provides the path to the location of the simulated data folder. This should be checked for the `instance` directories, and for any errors in the `instance` directories.
+The `turbine-output -> /oscar/home/akhann16/code/cadre/emews/experiments/testY` provides the path to the location of the simulated data folder. This should be checked for the `instance` directories, and for any errors in the `instance` directories.
 
 ### Set up files
 

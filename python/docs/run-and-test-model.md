@@ -18,7 +18,7 @@ From the `python` directory, execute:
 
 ### Specify parameters through command line 
 ```
-python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}'
+python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}' (## Note `python3 ...` does not work!!!)
 ```
 
 ### Testing: Specific Method
