@@ -1,5 +1,8 @@
 # EMEWS Instructions from PYCADRE model
 
+## Installing EMEWS:
+See [here](https://emews.github.io).
+
 ## Reference for general repast4py model from Nick
 
 [Here](https://github.com/khanna-lab/cadre/blob/master/python/docs/emews_instructions.md)
