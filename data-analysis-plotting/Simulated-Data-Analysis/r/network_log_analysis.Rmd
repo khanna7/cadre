@@ -335,8 +335,10 @@ prevalence_smoking <- num_current_smoking / total_agents
 prevalence_aud <- num_aud / total_agents
 
 # Print the results
-cat("Prevalence of Current Smoking: ", prevalence_smoking, "\n")
-cat("Prevalence of AUD: ", prevalence_aud, "\n")
+cat("Prevalence of Current Smoking in the networks of randomly 
+    selected never incarcerated persons: ", prevalence_smoking, "\n")
+cat("Prevalence of AUD in the networks of randomly 
+    selected never incarcerated persons: ", prevalence_aud, "\n")
 
 ```
 
