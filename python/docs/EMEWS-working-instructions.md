@@ -5,6 +5,9 @@
 [Here](https://github.com/khanna-lab/cadre/blob/master/python/docs/emews_instructions.md)
 
 ## My Working Setup
+
+The EMEWS root has been moved in the project [directory](https://github.com/khanna-lab/cadre/tree/network-analysis/emews). 
+
 ### Filetree
 
 The EMEWS project root contains the following files:
