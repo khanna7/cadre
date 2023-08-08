@@ -6,7 +6,9 @@
 
 ## My Working Setup
 
-The EMEWS root has been moved in the project [directory](https://github.com/khanna-lab/cadre/tree/network-analysis/emews). 
+- The EMEWS root has been moved in the project [directory](https://github.com/khanna-lab/cadre/tree/network-analysis/emews).
+
+- The module set-up is explained [here](https://github.com/khanna-lab/cadre/blob/network-analysis/python/docs/mpi-and-virtualenvs.md).
 
 ### Filetree
 
