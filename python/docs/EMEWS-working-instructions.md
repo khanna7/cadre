@@ -43,7 +43,7 @@ drwxr-xr-x 2 akhann16 akhann16 4096 Jan 24 14:07 cfgs
 lrwxrwxrwx 1 akhann16 akhann16   71 Jan 27 14:38 turbine-output -> /gpfs/home/akhann16/code/cadre/python/docs/emews_test/experiments/testY
 ```
 
-The `turbine-output -> /gpfs/home/akhann16/code/cadre/python/docs/emews_test/experiments/testY`provides the path to the location of the simulated data folder. This should be checked for the `instance` directories, and for any errors in the `instance` directories.
+The `turbine-output -> /oscar/home/akhann16/code/cadre/emews/experiments/testY` provides the path to the location of the simulated data folder. This should be checked for the `instance` directories, and for any errors in the `instance` directories.
 
 ### Set up files
 
