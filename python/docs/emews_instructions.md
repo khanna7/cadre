@@ -44,7 +44,7 @@ CFG_PARAM_FILE=/gpfs/data/akhann16/ncollie1/src/r4py_examples/zombies/zombie_mod
 ```bash
 source envs/oscar_env.sh
 cd swift
-./run_pytest.sh <exp_id> cfgs/pytest.cfg
+./run_pytest.sh <exp_id> cfgs/pycadre.cfg
 ```
 
 Note that you only need to do the "source" once per login, and 
