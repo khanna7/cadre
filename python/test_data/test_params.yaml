@@ -145,6 +145,32 @@ SMOKING_TRANSITION_PROBS:
                 CESSATION: 0.06671053
   # REF: https://github.com/khanna-lab/cadre/blob/ak-tinkering/r/Technical-Appendix/smoking-transition-matrix.Rmd
 
+SMOKING_NETWORK_EFFECTS:
+  ONSET:
+    FIRST_DEGREE: 1.61
+    SECOND_DEGREE: 1.29
+    THIRD_DEGREE:  1.11
+  DISCONTINUATION:
+    FIRST_DEGREE: 1.36
+# REF: Christakis NA, N Engl J Med. 2008;358(21):2249-2258.
+
+ALCOHOL_NETWORK_EFFECTS:
+  ONSET:
+    FIRST_DEGREE: 1.50
+    SECOND_DEGREE: 1.36
+    THIRD_DEGREE:  1.15
+  DISCONTINUATION:
+    FIRST_DEGREE: 1.29
+    SECOND_DEGREE: 1.21
+    THIRD_DEGREE: 1.05
+#REF: Rosenquist JN, Ann Intern Med. 2010;152(7):426-433, W141.
+
+MAX_N_NEIGHBORS_EFFECT:
+  SMOKING: 3
+  ALCOHOL: 3
+# HOW MANY NETWORK MEMBERS INFLUENCE SOMEONE'S SMOKING OR DRINKING
+# ASSUMPTION - NO DATA ON THIS
+
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
 network_log_file: 'output/network_log.csv'
