@@ -85,14 +85,15 @@ class Person(core.Agent):
             return self
 
     def get_regular_to_heavy_alc_use_transition_network_influence(self):
-        per_neighbor_factor = 1.5
+        per_neighbor_factor = load_params.params_list["ALCOHOL_NETWORK_EFFECTS"]["ONSET"]["FIRST_DEGREE"]
+        max_n_neighbors = load_params.params_list["MAX_N_NEIGHBORS_EFFECT"]["ALCOHOL"]
         increase = 1
         if self.graph is not None:
             nheavy = 0
             for n in self.graph.neighbors(self):
                 if n.alc_use_status == 3:
                     nheavy += 1
-            nincreases = min(nheavy, 3)
+            nincreases = min(nheavy, max_n_neighbors)
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
     
@@ -142,14 +143,15 @@ class Person(core.Agent):
         return increase
 
     def get_former_to_current_smoking_transition_network_influence(self):
-        per_neighbor_factor = 1.61
+        per_neighbor_factor = load_params.params_list["SMOKING_NETWORK_EFFECTS"]["ONSET"]["FIRST_DEGREE"]
+        max_n_neighbors = load_params.params_list["MAX_N_NEIGHBORS_EFFECT"]["ALCOHOL"]
         increase = 1
         if self.graph is not None:
             nsmokers = 0
             for n in self.graph.neighbors(self):
                 if n.smoker == "Current":
                     nsmokers += 1
-            nincreases = min(nsmokers, 3)
+            nincreases = min(nsmokers, max_n_neighbors)
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
     
