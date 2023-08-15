@@ -1,7 +1,9 @@
 # EMEWS Instructions from PYCADRE model
 
 ## Installing EMEWS:
-See [here](https://emews.github.io).
+- See [here](https://emews.github.io) for general instructions from the EMEWS dev team.  
+
+- See instructions [here](https://github.com/khanna-lab/alc-smoking-transition-use/blob/main/misc/oscar_setup.md) from Noah on installing EMEWS on OSCAR.
 
 ## Reference for general repast4py model from Nick
 
