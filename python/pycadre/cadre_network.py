@@ -1,6 +1,5 @@
 import networkx as nx
-import numpy as np
-from repast4py import network, context as ctx
+from repast4py import network, context as ctx, random
 from pycadre.person_creator import init_person_creator
 
 
@@ -69,5 +68,5 @@ class ErdosReyniNetwork:
         for agent in all_agents:
             if agent is new_agent:
                 continue
-            if np.random.binomial(1, self.edge_prob):
+            if random.default_rng.binomial(1, self.edge_prob):
                 self.add_edge(new_agent, agent)

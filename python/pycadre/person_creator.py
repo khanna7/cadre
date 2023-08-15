@@ -1,6 +1,6 @@
 from pycadre import cadre_person
 import pycadre.load_params as load_params
-from numpy import random
+from repast4py import random
 
 person_creator = None
 
@@ -26,12 +26,13 @@ class PersonCreator:
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
         ALC_USE_PROPS = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
 
-        my_age = max(MIN_AGE, age) if age is not None else random.uniform(MIN_AGE, MAX_AGE)
+
+        my_age = max(MIN_AGE, age) if age is not None else random.default_rng.uniform(MIN_AGE, MAX_AGE)
         race = (
-            race if race is not None else random.choice(RACE_CATS, p=RACE_DISTRIBUTION)
+            race if race is not None else random.default_rng.choice(RACE_CATS, p=RACE_DISTRIBUTION)
         )
-        female = female if female is not None else random.binomial(1, FEMALE_PROP)
-        alc_use_status = random.choice(
+        female = female if female is not None else random.default_rng.binomial(1, FEMALE_PROP)
+        alc_use_status = random.default_rng.choice(
             range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS
         )
         person = cadre_person.Person(
