@@ -1,10 +1,12 @@
 import yaml
 import json
+import os
 
 # Read the YAML data
-with open('/oscar/home/akhann16/code/cadre/python/myparams/model_params.yaml', 'r') as f:
+yaml_path = os.path.join(os.sep, 'oscar', 'home', 'akhann16', 'code', 'cadre', 'python', 'myparams', 'model_params.yaml')
+with open(yaml_path, 'r') as f:
     base_data = yaml.safe_load(f)
-
+    
 # Define the variations for UPF
   ## stop_at_values = [100, 200, 300]
   ## n_agents_values = [500, 1000]
