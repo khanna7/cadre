@@ -23,7 +23,7 @@ class ErdosReyniNetwork:
         return total_degrees / num_nodes
 
     def init_network(self, n_agents):
-        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob)
+        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob, seed=random.default_rng)
         self.network = network.UndirectedSharedNetwork("erdos_renyi_network", self.comm)
         self.context.add_projection(self.network)
         persons = []
