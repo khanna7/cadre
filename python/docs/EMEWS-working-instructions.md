@@ -34,6 +34,11 @@ cd swift
 
 💡 If swift-t cannot be found, it probably means `oscar_env.sh` has not been sourced.
 
+💡💡 Do not submit the jobs in an interactive session on Oscar. Submit them through the login node. Jobs submitting through an interactive session produce strange errors:
+
+```srun: fatal: SLURM_MEM_PER_CPU, SLURM_MEM_PER_GPU, and SLURM_MEM_PER_NODE are mutually exclusive.```
+
+
 
 
 Only one "source" per login is needed. Replace testY with an experiment id (e.g., "t1").
