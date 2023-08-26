@@ -142,6 +142,19 @@ class Person(core.Agent):
                     break
         return increase
 
+    def get_cessation_smoking_transition_network_influence(self, tick):
+        cessation_influence_effect_duration = load_params.params_list["SMOKING_NETWORK_EFFECTS"]["DISCONTINUATION"]["FIRST_DEGREE"]["DURATION"]
+        cessation_influence_effect = load_params.params_list["SMOKING_NETWORK_EFFECTS"]["DISCONTINUATION"]["FIRST_DEGREE"]["EFFECT"]
+        increase = 1
+        if self.graph != None:
+            for n in self.graph.neighbors(self):
+                if n.smoker == "Former" and tick - n.last_smkg_trans_tick < cessation_influence_effect_duration:
+                    increase = cessation_influence_effect
+                    # increase if there's at least one recent quitter
+                    # TODO make this dependant on the number of quitters and add higher degree
+                    break
+        return increase
+
     def get_former_to_current_smoking_transition_network_influence(self):
         per_neighbor_factor = load_params.params_list["SMOKING_NETWORK_EFFECTS"]["ONSET"]["FIRST_DEGREE"]
         max_n_neighbors = load_params.params_list["MAX_N_NEIGHBORS_EFFECT"]["ALCOHOL"]
@@ -167,7 +180,8 @@ class Person(core.Agent):
         # cessation for current smokers
         if self.smoker == "Current":
             key = probs_key()
-            if prob <= SMOKING_TRANSITION_PROBS[key]["CESSATION"]:
+            increase = self.get_cessation_smoking_transition_network_influence(tick)
+            if prob <= increase * SMOKING_TRANSITION_PROBS[key]["CESSATION"]:
                 self.smoker = "Former"
                 self.n_smkg_stat_trans += 1
                 self.last_smkg_trans_tick = tick
