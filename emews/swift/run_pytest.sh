@@ -90,7 +90,7 @@ fi
 # so, uncomment this export.
 # export TURBINE_LAUNCHER=srun
 # export TURBINE_SBATCH_ARGS="--exclusive"
-export TURBINE_SBATCH_ARGS="--exclusive --mail-user=$MAIL_USER --mail-type=$MAIL_TYPE"
+export TURBINE_SBATCH_ARGS="--mail-user=$MAIL_USER --mail-type=$MAIL_TYPE"
 # export TURBINE_LAUNCH_OPTIONS="--mpi=pmix"
 
 # TODO: Add any script variables that you want to log as
