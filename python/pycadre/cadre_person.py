@@ -1,8 +1,6 @@
 from functools import partial
 from unicodedata import name
-from repast4py import core, schedule
-
-from numpy import random
+from repast4py import core, schedule, random
 import pycadre.load_params as load_params
 import csv
 
@@ -107,7 +105,7 @@ class Person(core.Agent):
         TRANS_PROB_2_1 = ALC_USE_STATES["TRANS_PROB_2_1"]
         TRANS_PROB_3_2 = ALC_USE_STATES["TRANS_PROB_3_2"]
 
-        prob = random.uniform(0, 1)
+        prob = random.default_rng.uniform(0, 1)
         #print("Generated prob in transition_alc_use:", prob)
 
         if self.alc_use_status == 0:
@@ -159,7 +157,7 @@ class Person(core.Agent):
     def transition_smoking_status(self, tick):
         SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
      
-        prob = random.uniform(0, 1)
+        prob = random.default_rng.uniform(0, 1)
 
         def probs_key():
             return self.race.upper() + "_" + ("FEMALES" if self.female else "MALES")
@@ -182,7 +180,7 @@ class Person(core.Agent):
                 self.last_smkg_trans_tick = tick
 
     def simulate_incarceration(self, tick, probability_daily_incarceration):
-        prob = random.uniform(0, 1)
+        prob = random.default_rng.uniform(0, 1)
 
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
@@ -214,28 +212,28 @@ class Person(core.Agent):
 
         if self.female == 1:
             if self.current_incarceration_status == 1:
-                self.dur_cat = random.choice(
+                self.dur_cat = random.default_rng.choice(
                     FEMALE_SDEMP_DURATIONS, p=FEMALE_SDEMP_PROPS
                 )
 
         elif self.female == 0:
             if self.current_incarceration_status == 1:
-                self.dur_cat = random.choice(MALE_SDEMP_DURATIONS, p=MALE_SDEMP_PROPS)
+                self.dur_cat = random.default_rng.choice(MALE_SDEMP_DURATIONS, p=MALE_SDEMP_PROPS)
 
     def assign_sentence_duration(self):
 
         if self.dur_cat == 0:
-            self.sentence_duration = random.randint(
+            self.sentence_duration = random.default_rng.integers(
                 7, 29
             )  # IN DAILY UNITS, CHANGE IF UNITS CHANGE
         elif self.dur_cat == 1:
-            self.sentence_duration = random.randint(29, 183)
+            self.sentence_duration = random.default_rng.integers(29, 183)
         elif self.dur_cat == 2:
-            self.sentence_duration = random.randint(183, 366)
+            self.sentence_duration = random.default_rng.integers(183, 366)
         elif self.dur_cat == 3:
-            self.sentence_duration = random.randint(366, 1096)
+            self.sentence_duration = random.default_rng.integers(366, 1096)
         elif self.dur_cat == 4:
-            self.sentence_duration = random.randint(1096, 2191)
+            self.sentence_duration = random.default_rng.integers(1096, 2191)
 
     def simulate_release(self, tick):
         # Check if the agent is still in the graph
@@ -265,7 +263,7 @@ class Person(core.Agent):
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
             "RECIDIVISM_UPDATED_PROB_LIMIT"
         ]
-        prob = random.uniform(0, 1)
+        prob = random.default_rng.uniform(0, 1)
         time_since_release = tick - self.last_release_tick
 
         if self.current_incarceration_status == 0:
@@ -367,10 +365,10 @@ class Person(core.Agent):
 
         smoking_prev = SMOKING_PREV_BY_RACE_AND_GENDER[self.race][self.female]
         if not hasattr(self, "smoker"):
-            self.smoker = random.choice(SMOKING_CATS, p=smoking_prev)
+            self.smoker = random.default_rng.choice(SMOKING_CATS, p=smoking_prev)
         elif self.smoker != "Never":
             prob_current = smoking_prev[0] / (smoking_prev[0] + smoking_prev[1])
-            self.smoker =  "Current" if (prob_current > random.random_sample()) else "Former"
+            self.smoker =  "Current" if (prob_current > random.default_rng.random()) else "Former"
 
     def update_alc_use_post_release(self):
         if self.alc_use_status == 0: return
@@ -383,7 +381,7 @@ class Person(core.Agent):
         ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
 
         if (self.n_releases > 0):
-            alc_use_status_postrelease = random.choice(
+            alc_use_status_postrelease = random.default_rng.choice(
                 range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
             )
             self.alc_use_status = alc_use_status_postrelease

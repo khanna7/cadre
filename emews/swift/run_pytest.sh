@@ -28,6 +28,8 @@ echo "PPN:                   $CFG_PPN"
 echo "QUEUE:                 $CFG_QUEUE"
 # echo "PROJECT:               $CFG_PROJECT"
 echo "UPF FILE:              $CFG_UPF"
+echo "MAIL USER:             $CFG_MAIL_USER"
+echo "MAIL TYPE:             $CFG_MAIL_TYPE"
 echo "--------------------------"
 
 export PROCS=$CFG_PROCS
@@ -35,8 +37,11 @@ export QUEUE=$CFG_QUEUE
 # export PROJECT=$CFG_PROJECT
 export WALLTIME=$CFG_WALLTIME
 export PPN=$CFG_PPN
+export MAIL_USER=$CFG_MAIL_USER
+export MAIL_TYPE=$CFG_MAIL_TYPE
 export TURBINE_JOBNAME="${EXPID}_job"
 export TURBINE_MPI_THREAD=1 
+
 
 mkdir -p $TURBINE_OUTPUT
 cp $CFG_FILE $TURBINE_OUTPUT/cfg.cfg
@@ -85,6 +90,7 @@ fi
 # so, uncomment this export.
 # export TURBINE_LAUNCHER=srun
 # export TURBINE_SBATCH_ARGS="--exclusive"
+export TURBINE_SBATCH_ARGS="--mail-user=$MAIL_USER --mail-type=$MAIL_TYPE"
 # export TURBINE_LAUNCH_OPTIONS="--mpi=pmix"
 
 # TODO: Add any script variables that you want to log as

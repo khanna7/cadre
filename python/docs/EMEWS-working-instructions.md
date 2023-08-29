@@ -1,7 +1,9 @@
 # EMEWS Instructions from PYCADRE model
 
 ## Installing EMEWS:
-See [here](https://emews.github.io).
+- See [here](https://emews.github.io) for general instructions from the EMEWS dev team.  
+
+- See instructions [here](https://github.com/khanna-lab/alc-smoking-transition-use/blob/main/misc/oscar_setup.md) from Noah on installing EMEWS on OSCAR.
 
 ## Reference for general repast4py model from Nick
 
@@ -31,6 +33,11 @@ cd swift
 
 
 💡 If swift-t cannot be found, it probably means `oscar_env.sh` has not been sourced.
+
+💡💡 Do not submit the jobs in an interactive session on Oscar. Submit them through the login node. Jobs submitting through an interactive session produce strange errors:
+
+```srun: fatal: SLURM_MEM_PER_CPU, SLURM_MEM_PER_GPU, and SLURM_MEM_PER_NODE are mutually exclusive.```
+
 
 
 

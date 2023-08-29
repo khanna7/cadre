@@ -1,6 +1,5 @@
 import networkx as nx
-import numpy as np
-from repast4py import network, context as ctx
+from repast4py import network, context as ctx, random
 from pycadre.person_creator import init_person_creator
 
 
@@ -24,7 +23,7 @@ class ErdosReyniNetwork:
         return total_degrees / num_nodes
 
     def init_network(self, n_agents):
-        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob)
+        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob, seed=random.default_rng)
         self.network = network.UndirectedSharedNetwork("erdos_renyi_network", self.comm)
         self.context.add_projection(self.network)
         persons = []
@@ -69,5 +68,5 @@ class ErdosReyniNetwork:
         for agent in all_agents:
             if agent is new_agent:
                 continue
-            if np.random.binomial(1, self.edge_prob):
+            if random.default_rng.binomial(1, self.edge_prob):
                 self.add_edge(new_agent, agent)
