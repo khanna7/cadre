@@ -1,4 +1,7 @@
 from typing import Dict
+import yaml
+from repast4py.util import find_free_filename
+
 import pycadre.load_params as load_params
 from pycadre.cadre_network import ErdosReyniNetwork
 from pycadre.person_creator import init_person_creator
@@ -41,6 +44,8 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
+
+        self.dump_parameters()
 
         self.person_creator = init_person_creator()
 
@@ -143,6 +148,11 @@ class Model:
         for person in self.network.get_agents():
             self.log_agent(person, tick)
         self.agent_logger.write()
+    
+    def dump_parameters(self):
+        params_file = find_free_filename('output/parameters.txt')
+        with open(params_file, 'w') as p:
+            p.write(yaml.dump(load_params.params_list))
 
     def log_network(self):
         tick = self.runner.schedule.tick
