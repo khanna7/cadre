@@ -166,10 +166,6 @@ class Model:
         with open(params_file, 'w') as p:
             p.write(yaml.dump(load_params.params_list))
 
-        
-        params_file = find_free_filename('output/parameters.txt')
-        with open(params_file, 'w') as p:
-            p.write(yaml.dump(load_params.params_list))
 
     def log_network(self):
         tick = self.runner.schedule.tick
