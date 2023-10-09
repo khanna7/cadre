@@ -1,11 +1,14 @@
 from typing import Dict
+import yaml
+from repast4py.util import find_free_filename
+
 import pycadre.load_params as load_params
 from pycadre.cadre_network import ErdosReyniNetwork
 from pycadre.person_creator import init_person_creator
 from repast4py import logging, schedule
 from mpi4py import MPI
 from dataclasses import dataclass
-
+import os, re
 
 @dataclass
 class CountsLog:
@@ -41,6 +44,8 @@ class Model:
         self.runner.schedule_repeating_event(1, 10, self.log_network)
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
+
+        self.dump_parameters()
 
         self.person_creator = init_person_creator()
 
@@ -143,7 +148,43 @@ class Model:
         for person in self.network.get_agents():
             self.log_agent(person, tick)
         self.agent_logger.write()
+    
 
+    def get_instance_number(self):
+        """
+        Extracts the instance number from the current working directory path.
+
+        Returns:
+        - int: Extracted instance number or raises an error if the pattern isn't found.
+        """
+        cwd = os.getcwd()
+        match = re.search(r'instance_(\d+)', cwd)
+        if not match:
+            raise ValueError(f"Cannot extract instance number from current working directory: {cwd}")
+        return int(match.group(1))
+
+    def dump_parameters(self):
+        # Fetch TURBINE_OUTPUT from environment
+        turbine_output = os.environ.get('TURBINE_OUTPUT')
+        if not turbine_output:
+            raise ValueError("TURBINE_OUTPUT environment variable is not set.")
+
+        # Fetch the current instance number
+        instance_number = self.get_instance_number()
+        
+        # Construct the path for the parameters file within the instance directory
+        instance_dir = os.path.join(turbine_output, f"instance_{instance_number}")
+        params_dir = os.path.join(instance_dir, 'output')
+        os.makedirs(params_dir, exist_ok=True)  # Ensure directory exists
+
+        # Use the function to find a free filename
+        params_file = find_free_filename(os.path.join(params_dir, 'parameters.txt'))
+
+        # Write the parameters
+        with open(params_file, 'w') as p:
+            p.write(yaml.dump(load_params.params_list))
+
+    
     def log_network(self):
         tick = self.runner.schedule.tick
 
