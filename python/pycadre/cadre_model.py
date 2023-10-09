@@ -8,7 +8,7 @@ from pycadre.person_creator import init_person_creator
 from repast4py import logging, schedule
 from mpi4py import MPI
 from dataclasses import dataclass
-
+import os
 
 @dataclass
 class CountsLog:
@@ -150,6 +150,23 @@ class Model:
         self.agent_logger.write()
     
     def dump_parameters(self):
+        # fetch TURBINE_OUTPUT from environment
+        turbine_output = os.environ.get('TURBINE_OUTPUT')
+        if not turbine_output:
+            raise ValueError("TURBINE_OUTPUT environment variable is not set.")
+
+        # Construct the path for the parameters file within the TURBINE_OUTPUT directory
+        params_dir = os.path.join(turbine_output, 'output')
+        os.makedirs(params_dir, exist_ok=True)  # Ensure directory exists
+
+        # Use the function to find a free filename (if that's what you still want to use)
+        params_file = find_free_filename(os.path.join(params_dir, 'parameters.txt'))
+
+        # Write the parameters
+        with open(params_file, 'w') as p:
+            p.write(yaml.dump(load_params.params_list))
+
+        
         params_file = find_free_filename('output/parameters.txt')
         with open(params_file, 'w') as p:
             p.write(yaml.dump(load_params.params_list))
