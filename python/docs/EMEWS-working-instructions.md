@@ -25,12 +25,16 @@ The EMEWS project root contains the following files:
 
 ### To run the model using EMEWS
 
+From `/oscar/home/akhann16/code/cadre/emews`, first
 ```
 source envs/oscar_env.sh
+```
+
+then:
+```
 cd swift
 ./run_pytest.sh testY cfgs/pycadre.cfg
 ```
-
 
 💡 If swift-t cannot be found, it probably means `oscar_env.sh` has not been sourced.
 
