@@ -59,6 +59,10 @@ class Model:
         )
 
         self.rank = comm.Get_rank()
+        
+        # Set the base output directory
+        self.output_directory = self.get_output_directory()
+        self.update_output_paths()
 
         # initialize the agent logging
         tabular_logging_cols = [
@@ -266,6 +270,30 @@ class Model:
                 self.network.remove_agent(p)
                 new = self.person_creator.create_person(tick=tick)
                 self.network.add(new)
+    
+    def get_output_directory(self):
+        # Fetch TURBINE_OUTPUT from environment
+        turbine_output = os.environ.get('TURBINE_OUTPUT')
+
+        if not turbine_output:
+            # Format the current date and time into a string
+            datetime_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+            turbine_output = os.path.join(os.getcwd(), f'output_{datetime_str}')
+            print(f"Running in standalone mode. Using output directory: {turbine_output}")
+
+        # If running within EMEWS, get the current instance number
+        if 'instance_' in os.getcwd():
+            instance_number = self.get_instance_number()
+            return os.path.join(turbine_output, f"instance_{instance_number}")
+        else:  # Standalone mode
+            return turbine_output
+
+    def update_output_paths(self):
+        # Since load_params.params_list contains keys like 'agent_log_file', 'network_log_file', etc.
+        # We update their paths to ensure they are saved in the same directory as the parameters
+        load_params.params_list['agent_log_file'] = os.path.join(self.output_directory, 'agent_log.csv')
+        load_params.params_list['network_log_file'] = os.path.join(self.output_directory, 'network_log.csv')
+        load_params.params_list['counts_log_file'] = os.path.join(self.output_directory, 'counts_log.csv')
 
     def start(self):
         self.runner.execute()
