@@ -33,6 +33,7 @@ class Model:
         params: the simulation input parameters
 
     """
+    output_directory = None #class-level attribute for storing outputs
 
     def __init__(self, comm: MPI.Intracomm, params: Dict):
         # create the schedule
@@ -168,33 +169,6 @@ class Model:
             raise ValueError(f"Cannot extract instance number from current working directory: {cwd}")
         return int(match.group(1))
 
-    def dump_parameters(self):
-        # Set TURBINE_OUTPUT to date and time in string format
-        turbine_output = os.environ.get('TURBINE_OUTPUT')
-        
-        if not turbine_output:
-            # format date time into a string
-            datetime_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-            turbine_output = os.path.join(os.getcwd(), f'output_{datetime_str}')
-            print(f"Running in standalone mode. Using output directory: {turbine_output}")
-
-        # If running within EMEWS, get the current instance number
-        if 'instance_' in os.getcwd():
-            instance_number = self.get_instance_number()
-            instance_dir = os.path.join(turbine_output, f"instance_{instance_number}")
-        else:
-            instance_dir = turbine_output
-        
-        params_dir = os.path.join(instance_dir, 'output')
-        os.makedirs(params_dir, exist_ok=True)  # Ensure directory exists
-
-        # Use the function to find a free filename
-        params_file = find_free_filename(os.path.join(params_dir, 'parameters.txt'))
-
-        # Write the parameters
-        with open(params_file, 'w') as p:
-            p.write(yaml.dump(load_params.params_list))
-
     def log_network(self):
         tick = self.runner.schedule.tick
 
@@ -270,25 +244,58 @@ class Model:
                 self.network.remove_agent(p)
                 new = self.person_creator.create_person(tick=tick)
                 self.network.add(new)
-    
+  
+
     def get_output_directory(self):
-        # Fetch TURBINE_OUTPUT from environment
+        """
+        Get the appropriate output directory based on if Turbine is being used.
+        """
+        if self.output_directory:
+            return self.output_directory  # If already defined, just return it
+        
         turbine_output = os.environ.get('TURBINE_OUTPUT')
 
-        if not turbine_output:
-            # Format the current date and time into a string
+        if turbine_output:
+            # If running within EMEWS (Turbine)
+            if 'instance_' in os.getcwd():
+                instance_number = self.get_instance_number()
+                self.output_directory = os.path.join(turbine_output, f"instance_{instance_number}", 'output')
+            else:
+                self.output_directory = os.path.join(turbine_output, 'output')
+        else:
+            # Running in standalone mode
             datetime_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-            turbine_output = os.path.join(os.getcwd(), f'output_{datetime_str}')
-            print(f"Running in standalone mode. Using output directory: {turbine_output}")
+            self.output_directory = os.path.join(os.getcwd(), f'output_{datetime_str}')
+            print(f"Running in standalone mode. Using output directory: {self.output_directory}")
 
-        # If running within EMEWS, get the current instance number
-        if 'instance_' in os.getcwd():
-            instance_number = self.get_instance_number()
-            return os.path.join(turbine_output, f"instance_{instance_number}")
-        else:  # Standalone mode
-            return turbine_output
+        return self.output_directory
+
+  
+    def dump_parameters(self):
+        # Get the output directory using the method we previously defined
+        output_directory = self.get_output_directory()
+        
+        # Create the output directory if it doesn't exist
+        os.makedirs(output_directory, exist_ok=True)
+        
+        # Construct path for the parameters file within the output directory
+        params_file = find_free_filename(os.path.join(output_directory, 'parameters.txt'))
+
+        # Write the parameters
+        with open(params_file, 'w') as p:
+            p.write(yaml.dump(load_params.params_list))
 
     def update_output_paths(self):
+        
+        # Get the correct output directory
+        output_directory = self.get_output_directory()
+
+        # Update paths for the log files
+        load_params.params_list['agent_log_file'] = os.path.join(output_directory, 'agent_log.csv')
+        load_params.params_list['network_log_file'] = os.path.join(output_directory, 'network_log.csv')
+        load_params.params_list['counts_log_file'] = os.path.join(output_directory, 'counts_log.csv')
+
+        
         # Since load_params.params_list contains keys like 'agent_log_file', 'network_log_file', etc.
         # We update their paths to ensure they are saved in the same directory as the parameters
         load_params.params_list['agent_log_file'] = os.path.join(self.output_directory, 'agent_log.csv')
