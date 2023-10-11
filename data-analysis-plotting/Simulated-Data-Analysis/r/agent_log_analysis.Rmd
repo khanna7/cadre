@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Agent Input analysis"
 output:
   html_document:
     df_print: paged
@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("~/code/cadre/emews/experiments/data-125-inst/instance_1/output/agent_log.csv")
+agent_dt <- fread("/oscar/data/akhann16/akhann16/cadre_simulated_data/emews_experiments/test-alt-loc/instance_1/output/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
