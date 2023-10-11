@@ -166,14 +166,18 @@ class Model:
     def dump_parameters(self):
         # Fetch TURBINE_OUTPUT from environment
         turbine_output = os.environ.get('TURBINE_OUTPUT')
-        if not turbine_output:
-            raise ValueError("TURBINE_OUTPUT environment variable is not set.")
-
-        # Fetch the current instance number
-        instance_number = self.get_instance_number()
         
-        # Construct the path for the parameters file within the instance directory
-        instance_dir = os.path.join(turbine_output, f"instance_{instance_number}")
+        if not turbine_output:
+            turbine_output = os.path.join(os.getcwd(), 'standalone_output')
+            print(f"Running in standalone mode. Using output directory: {turbine_output}")
+
+        # If running within EMEWS, get the current instance number
+        if 'instance_' in os.getcwd():
+            instance_number = self.get_instance_number()
+            instance_dir = os.path.join(turbine_output, f"instance_{instance_number}")
+        else:
+            instance_dir = turbine_output
+        
         params_dir = os.path.join(instance_dir, 'output')
         os.makedirs(params_dir, exist_ok=True)  # Ensure directory exists
 
@@ -184,7 +188,6 @@ class Model:
         with open(params_file, 'w') as p:
             p.write(yaml.dump(load_params.params_list))
 
-    
     def log_network(self):
         tick = self.runner.schedule.tick
 
