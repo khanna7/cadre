@@ -9,6 +9,7 @@ from repast4py import logging, schedule
 from mpi4py import MPI
 from dataclasses import dataclass
 import os, re
+from datetime import datetime
 
 @dataclass
 class CountsLog:
@@ -164,11 +165,13 @@ class Model:
         return int(match.group(1))
 
     def dump_parameters(self):
-        # Fetch TURBINE_OUTPUT from environment
+        # Set TURBINE_OUTPUT to date and time in string format
         turbine_output = os.environ.get('TURBINE_OUTPUT')
         
         if not turbine_output:
-            turbine_output = os.path.join(os.getcwd(), 'standalone_output')
+            # format date time into a string
+            datetime_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+            turbine_output = os.path.join(os.getcwd(), f'output_{datetime_str}')
             print(f"Running in standalone mode. Using output directory: {turbine_output}")
 
         # If running within EMEWS, get the current instance number
