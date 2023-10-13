@@ -22,7 +22,7 @@ library(dplyr)
 
 ```{r}
 agent_dt <- 
-  fread("/oscar/data/akhann16/akhann16/cadre_simulated_data/emews_experiments/test-alt-loc/instance_1/output/agent_log.csv")
+  fread("/users/akhann16/code/cadre/python/output_20231011_095510/agent_log.csv")
 str(agent_dt)
 glimpse(agent_dt)
 last_tick <- max(agent_dt$tick)

@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/oscar/data/akhann16/akhann16/cadre_simulated_data/emews_experiments/test-alt-loc/instance_1/output/agent_log.csv")
+agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231011_095510/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -219,6 +219,17 @@ ggplot(agent_dt_by_age_group, aes(x = age_group, y = N, fill = age_group)) +
 
 At the first tick:
 
+Overall smoking rate:
+
+```{r}
+overall_smkg_rate_first_tick <- 
+  agent_dt[tick==1, .N,
+           by=c("smoking_status")][,"prop":=round(N/sum(N), 3)][]
+
+print(overall_smkg_rate_first_tick)
+```
+
+
 ```{r}
 agent_dt[tick==1 & race == "Black" & female == 0, .N, by=c("smoking_status")][]
 
@@ -239,6 +250,56 @@ smkg_prev_black_men_target
 ```
 
 At the last tick:
+
+Over time:
+
+```{r}
+# Define the time ticks 
+time_ticks <- c(seq(1, last_tick, by = 10), last_tick) #to ensure last tick is included
+
+# Calculate the proportion of each smoking status at the specified time ticks
+smkg_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
+  Former = sum(smoking_status == "Former") / .N,
+  Never = sum(smoking_status == "Never") / .N,
+  Current = sum(smoking_status == "Current") / .N
+), by = tick]
+
+# Convert the data from wide to long format
+smkg_proportions_long <- melt(smkg_proportions_by_tick, id.vars = "tick", variable.name = "smoking_status", value.name = "proportion")
+
+# Create a time series plot of smoking status proportions
+ggplot(smkg_proportions_long, aes(x = tick, y = proportion, color = smoking_status, group = smoking_status)) +
+  geom_line() +
+  labs(title = "Smoking State Distributions Over Time",
+       x = "Time (Ticks)",
+       y = "Smoking State Distributions") +
+  scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())+
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
+
+```
+
+Plot the smoking state distributions over time:
+
+```{r}
+# Calculate the smoking rate distribution for each tick
+smkg_rate_by_tick <- agent_dt[, .N, by = .(tick, smoking_status)
+                             ][, prop := N / sum(N), by = tick
+                               ][, .(tick, smoking_status, prop)]
+
+# Plot using ggplot2
+ggplot(smkg_rate_by_tick, 
+       aes(x = tick, y = prop, color = smoking_status)) +
+  geom_line() +
+  labs(title = "Smoking State Distributions Over Time",
+       x = "Tick",
+       y = "Proportion",
+       color = "Smoking Status") +
+  theme_minimal()
+```
+
+
 ```{r}
 smkg_blackmen_last_tick <- agent_dt[tick==last_tick & race == "Black" & female == 0, .N, by=c("smoking_status")][,"prop":=round(N/sum(N), 3)][]
 smkg_blackmen_last_tick
