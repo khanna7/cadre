@@ -1,0 +1,114 @@
+---
+title: "Agent Outome Analysis"
+output:
+  html_document:
+    df_print: paged
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+
+We confirm below various attributes of the agents that are logged.
+
+We will do this in `data.table` for speed. 
+
+```{r setup, include=FALSE}
+rm(list=ls())
+renv::load()
+library(ggplot2)
+library(data.table)
+library(yaml)
+library(dplyr)
+```
+
+```{r}
+agent_dt <- 
+  fread("/users/akhann16/code/cadre/python/output_20231011_095510/agent_log.csv")
+str(agent_dt)
+glimpse(agent_dt)
+last_tick <- max(agent_dt$tick)
+print(last_tick)
+```
+
+## Outcome Variables
+
+### Smoking States as a Function of Time Since Release
+
+We want to compute the distribution of smoking states among the set of
+agents who have been released for 1 day, and at most 1 week, 
+2 weeks, 1 month, 6 months, 
+and 1 year. 
+
+
+- Distribution of persons who have been released 1 day:  
+
+```{r}
+# Create a new column indicating if an agent was released the previous day
+agent_dt[, released_1_day_ago := (tick - last_release_tick == 1)]
+
+# For each tick, summarize the distribution of smoking states for agents released the previous day
+distribution_1_day <- agent_dt[released_1_day_ago == TRUE, 
+                               .(count = .N), 
+                               by = .(tick, smoking_status)]
+
+
+# Calculate the total count for each smoking status
+total_counts <- distribution_1_day[, .(total_count = sum(count)), by = smoking_status]
+
+# Calculate the overall total
+overall_total <- sum(total_counts$total_count)
+
+# Calculate the percentage for each smoking status
+total_counts[, percentage := (total_count / overall_total) * 100]
+
+# View the percentages
+total_counts[, .(smoking_status, percentage)]
+
+```
+
+- Distribution of persons who have been released at most 6 months: 
+
+```{r}
+# Create a new column indicating if an agent was released 6 months or less ago
+agent_dt[, released_6_months_or_less := (tick - last_release_tick <= 180) & (last_release_tick != -1)]
+
+# Sum the count of agents who have been released 6 months or less ago
+count_6_months_or_less <- agent_dt[released_6_months_or_less == TRUE, .N]
+
+# Filter the data for agents who were released 6 months or less ago and group by their smoking status
+smoking_distribution_6_months_or_less <- 
+  agent_dt[released_6_months_or_less == TRUE, .N, by = smoking_status]
+
+# Rename the count column
+setnames(smoking_distribution_6_months_or_less, "N", "count")
+
+# Calculate the percentage for each smoking status within this subset
+smoking_distribution_6_months_or_less[, percentage := (count / sum(count)) * 100]
+
+# View the result
+smoking_distribution_6_months_or_less
+```
+
+- Distribution of persons who have been released at most 1 year:
+
+```{r}
+# Create a new column indicating if an agent was released 6 months or less ago
+agent_dt[, released_1_year_or_less := (tick - last_release_tick <= 365) & 
+           (last_release_tick != -1)]
+
+# Sum the count of agents who have been released 6 months or less ago
+count_1_year_or_less <- agent_dt[released_1_year_or_less == TRUE, .N]
+
+# Filter the data for agents who were released 6 months or less ago and group by their smoking status
+smoking_distribution_1_year_or_less <- 
+  agent_dt[released_1_year_or_less == TRUE, .N, by = smoking_status]
+
+# Rename the count column
+setnames(smoking_distribution_1_year_or_less, "N", "count")
+
+# Calculate the percentage for each smoking status within this subset
+smoking_distribution_1_year_or_less[, percentage := (count / sum(count)) * 100]
+
+# View the result
+smoking_distribution_1_year_or_less[]
+```
+
