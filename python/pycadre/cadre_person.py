@@ -182,10 +182,20 @@ class Person(core.Agent):
     def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_counts):
         prob = random.default_rng.uniform(0, 1)
 
+        INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"]
+        converted_race_sex_inc_probs = {key: value * probability_daily_incarceration for key, value in INC_RACE_SEX_PROP.items()}
+        print(converted_race_sex_inc_probs)
+
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
-                if prob < probability_daily_incarceration:
-                    self.update_attributes_at_incarceration_tick(tick)
+                sex = "FEMALE" if self.female == 1 else "MALE"
+                race_sex_key = f"{self.race}_{self.female}"
+                
+                if race_sex_key in converted_race_sex_inc_probs:
+                    specific_prob = converted_race_sex_inc_probs[race_sex_key]
+
+                    if prob < specific_prob:
+                        self.update_attributes_at_incarceration_tick(tick)
 
     def update_attributes_at_incarceration_tick(self, tick):
         self.current_incarceration_status = 1
