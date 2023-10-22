@@ -205,7 +205,6 @@ class Model:
         hispanic_female_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 1])
         asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
 
-
         print("White male count:", white_male_count)
         print("Black male count:", black_male_count)
         print("Hispanic male count:", hispanic_male_count)
@@ -215,6 +214,18 @@ class Model:
         print("Black female count:", black_female_count)
         print("Hispanic female count:", hispanic_female_count)
         print("Asian female count:", asian_female_count)
+
+        race_sex_pop_counts = {
+            'white_male': white_male_count,
+            'black_male': black_male_count,
+            'hispanic_male': hispanic_male_count,
+            'asian_male': asian_male_count,
+            'white_female': white_female_count,
+            'black_female': black_female_count,
+            'hispanic_female': hispanic_female_count,
+            'asian_female': asian_female_count
+            }
+
 
 
         for person in self.network.get_agents():
@@ -226,7 +237,8 @@ class Model:
                 tick=tick,
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
-                ]
+                ],
+                race_sex_pop_counts = race_sex_pop_counts
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
@@ -241,6 +253,7 @@ class Model:
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
+                race_sex_pop_counts = race_sex_pop_counts
             )
 
             incaceration_states.append(person.current_incarceration_status)

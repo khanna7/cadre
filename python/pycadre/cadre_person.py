@@ -179,7 +179,7 @@ class Person(core.Agent):
                 self.n_smkg_stat_trans += 1
                 self.last_smkg_trans_tick = tick
 
-    def simulate_incarceration(self, tick, probability_daily_incarceration):
+    def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_counts):
         prob = random.default_rng.uniform(0, 1)
 
         if self.current_incarceration_status == 0:
@@ -259,6 +259,7 @@ class Person(core.Agent):
         probability_daily_recidivism_females,
         probability_daily_recidivism_males,
         probability_daily_incarceration,
+        race_sex_pop_counts 
     ):
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
             "RECIDIVISM_UPDATED_PROB_LIMIT"
