@@ -194,6 +194,29 @@ class Model:
 
         self.data_set.log(tick)
 
+        all_agents = self.network.get_agents()
+        white_male_count = sum([1 for agent in all_agents if agent.race == "White" and agent.female == 0])
+        black_male_count = sum([1 for agent in all_agents if agent.race == "Black" and agent.female == 0])
+        hispanic_male_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 0])
+        asian_male_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 0])
+
+        white_female_count = sum([1 for agent in all_agents if agent.race == "White" and agent.female == 1])
+        black_female_count = sum([1 for agent in all_agents if agent.race == "Black" and agent.female == 1])
+        hispanic_female_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 1])
+        asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
+
+
+        print("White male count:", white_male_count)
+        print("Black male count:", black_male_count)
+        print("Hispanic male count:", hispanic_male_count)
+        print("Asian male count:", asian_male_count)
+
+        print("White female count:", white_female_count)
+        print("Black female count:", black_female_count)
+        print("Hispanic female count:", hispanic_female_count)
+        print("Asian female count:", asian_female_count)
+
+
         for person in self.network.get_agents():
             person.aging()
 
