@@ -195,11 +195,11 @@ class Person(core.Agent):
                 converted_race_sex_inc_probs[key] = 0  
 
 
-            print(f" At tick: {tick}")
-            print(f"For {key}:")
-            print(f"INCARCERATION_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
-            print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
-            print(f"Converted probability for {key}: {converted_race_sex_inc_probs[key]}", "\n")
+            # print(f" At tick: {tick}")
+            # print(f"For {key}:")
+            # print(f"INCARCERATION_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
+            # print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
+            # print(f"Converted probability for {key}: {converted_race_sex_inc_probs[key]}", "\n")
 
         if self.current_incarceration_status == 0:
             if (self.n_incarcerations == 0) or (self.n_incarcerations > 0 and past_recidivism_limit):
@@ -212,8 +212,8 @@ class Person(core.Agent):
                     specific_prob = converted_race_sex_inc_probs[race_sex_key]
 
                     if prob < specific_prob:
-                        print("Agent incarcerated")
-                        print(converted_race_sex_inc_probs.values())
+                        # print("Agent incarcerated")
+                        # print(converted_race_sex_inc_probs.values())
                         self.update_attributes_at_incarceration_tick(tick)
                         
                 
@@ -324,7 +324,7 @@ class Person(core.Agent):
 
         INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"] #use same values as INC_RACE_SEX_PROP
         converted_race_sex_recidivism_probs = {}
-        print(INC_RACE_SEX_PROP)
+        #print(INC_RACE_SEX_PROP)
 
         
         time_since_release = tick - self.last_release_tick
@@ -340,11 +340,11 @@ class Person(core.Agent):
                 #print(f"Converted prob for {key}: {converted_race_sex_recidivism_probs}")
                 
                 # Printing the values for debugging
-                print(f" At tick: {tick}")
-                print(f"For {key}:")
-                print(f"RECIDIVISM_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
-                print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
-                print(f"Converted probability for {key}: {converted_race_sex_recidivism_probs[key]}", "\n", "\n")
+                #print(f" At tick: {tick}")
+                #print(f"For {key}:")
+                #print(f"RECIDIVISM_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
+                #print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
+                #print(f"Converted probability for {key}: {converted_race_sex_recidivism_probs[key]}", "\n", "\n")
             else:
                 converted_race_sex_recidivism_probs[key] = 0
                 
