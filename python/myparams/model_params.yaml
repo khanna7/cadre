@@ -51,8 +51,8 @@ PROBABILITY_DAILY_INCARCERATION: 0.00000685
 # See alternate deriviation at: https://docs.google.com/document/d/1qXm5yMeMbNMohJQAxr4JaFESKrrZswK1UTqHV4Fo-lc/edit?usp=sharing
 
 PROBABILITY_DAILY_RECIDIVISM: 
-  FEMALES: 2.055e-05
-  MALES: 2.055e-05
+  FEMALES: 0.00010275
+  MALES: 0.00010275
 # REF: Derived from BJS and FBI's UCR data
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
