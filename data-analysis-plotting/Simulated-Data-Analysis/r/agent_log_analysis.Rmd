@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-  agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231023_084630/agent_log.csv")
+agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231023_160834/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -973,7 +973,7 @@ age_summary <- ever_incarcerated_info[, .(mean_age=mean(age),
                                    ]
 sex_dist <-
   ever_incarcerated_info[, .N, by = female][,  .(
-    Sex = c("Female", "Male"),
+    Sex = c("Male", "Female"),
     Count = c(N[female == 0], N[female == 1]),
     "Proportion of ever incarcerated" = round(N / sum(N), 2)
   )]
