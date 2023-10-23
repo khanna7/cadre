@@ -276,34 +276,82 @@ class Person(core.Agent):
             # self.update_smoker_status() 
             
 
+    # def simulate_recidivism(
+    #     self,
+    #     tick,
+    #     probability_daily_recidivism_females,
+    #     probability_daily_recidivism_males,
+    #     probability_daily_incarceration,
+    #     race_sex_pop_props
+    # ):
+    #     RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
+    #         "RECIDIVISM_UPDATED_PROB_LIMIT"
+    #     ]
+
+    #     prob = random.default_rng.uniform(0, 1)
+    #     time_since_release = tick - self.last_release_tick
+
+    #     if self.current_incarceration_status == 0:
+
+    #         if self.n_incarcerations > 0:
+    #             if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
+    #                 # recidivism probability only applies for a certain num of days after release
+    #                 if self.female == 1:
+    #                     if prob < probability_daily_recidivism_females:
+    #                         self.update_attributes_at_incarceration_tick(tick=tick)
+
+    #                 elif self.female == 0:
+    #                     if prob < probability_daily_recidivism_males:
+    #                         self.update_attributes_at_incarceration_tick(tick=tick)
+
     def simulate_recidivism(
         self,
         tick,
         probability_daily_recidivism_females,
         probability_daily_recidivism_males,
-        probability_daily_incarceration,
         race_sex_pop_props
     ):
+    
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
             "RECIDIVISM_UPDATED_PROB_LIMIT"
         ]
 
+        #print("Keys in race_sex_pop_props:", race_sex_pop_props.keys())
+
+        RECIDIVISM_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"] #use same values as INC_RACE_SEX_PROP
+        #print("Keys in RECIDIVISM_RACE_SEX_PROP:", RECIDIVISM_RACE_SEX_PROP.keys())
+
         prob = random.default_rng.uniform(0, 1)
         time_since_release = tick - self.last_release_tick
 
-        if self.current_incarceration_status == 0:
 
-            if self.n_incarcerations > 0:
-                if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
-                    # recidivism probability only applies for a certain num of days after release
-                    if self.female == 1:
-                        if prob < probability_daily_recidivism_females:
-                            self.update_attributes_at_incarceration_tick(tick=tick)
+        converted_race_sex_recidivism_probs = {}
+        for key in race_sex_pop_props:
+            if race_sex_pop_props[key] != 0:
+                if "FEMALE" in key:
+                    base_prob = probability_daily_recidivism_females
+                else:
+                    base_prob = probability_daily_recidivism_males
 
-                    elif self.female == 0:
-                        if prob < probability_daily_recidivism_males:
-                            self.update_attributes_at_incarceration_tick(tick=tick)
-        
+                converted_race_sex_recidivism_probs[key] = base_prob * (RECIDIVISM_RACE_SEX_PROP[key] / race_sex_pop_props[key])
+
+                #print(f"Converted prob for {key}: {converted_race_sex_recidivism_probs}")
+            else:
+                converted_race_sex_recidivism_probs[key] = 0
+
+        if self.current_incarceration_status == 0 and self.n_incarcerations > 0:
+            if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
+                # Adjusting recidivism probability based on race and sex
+                sex = "FEMALE" if self.female == 1 else "MALE"
+                race_sex_key = f"{self.race.upper()}_{sex.upper()}"
+                #print("Agent's race_sex_key:", race_sex_key)
+                specific_prob = converted_race_sex_recidivism_probs.get(race_sex_key, 0)
+                #print(f"Specific probability for {race_sex_key}: {specific_prob}")
+                    
+                if prob < specific_prob:
+                    self.update_attributes_at_incarceration_tick(tick=tick)
+                    print("Agent experiences recidivism")
+    
     def assign_smoker_status(self):
         SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
         SMOKING_PREV = load_params.params_list["SMOKING_PREV"]

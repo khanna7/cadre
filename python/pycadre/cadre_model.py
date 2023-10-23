@@ -240,9 +240,6 @@ class Model:
                 probability_daily_recidivism_males=load_params.params_list[
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["MALES"],
-                probability_daily_incarceration=load_params.params_list[
-                    "PROBABILITY_DAILY_INCARCERATION"
-                ],
                 race_sex_pop_props = race_sex_pop_props
             )
 
