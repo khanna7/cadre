@@ -179,22 +179,32 @@ class Person(core.Agent):
                 self.n_smkg_stat_trans += 1
                 self.last_smkg_trans_tick = tick
 
-    def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_counts):
+    def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_props):
         prob = random.default_rng.uniform(0, 1)
 
         INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"]
-        converted_race_sex_inc_probs = {key: value * probability_daily_incarceration for key, value in INC_RACE_SEX_PROP.items()}
-        print(converted_race_sex_inc_probs)
+        
+        converted_race_sex_inc_probs = {}
+
+        for key in race_sex_pop_props:
+            if race_sex_pop_props[key] != 0:
+                converted_race_sex_inc_probs[key] = probability_daily_incarceration * (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key])
+            else:
+                converted_race_sex_inc_probs[key] = 0  
+
 
         if self.current_incarceration_status == 0:
             if self.n_incarcerations == 0:
                 sex = "FEMALE" if self.female == 1 else "MALE"
-                race_sex_key = f"{self.race}_{self.female}"
-                
+                race_sex_key = f"{self.race.upper()}_{sex.upper()}"
+
                 if race_sex_key in converted_race_sex_inc_probs:
+                    #print("Yes it is")
                     specific_prob = converted_race_sex_inc_probs[race_sex_key]
 
                     if prob < specific_prob:
+                        print("Agent incarcerated")
+                        print(converted_race_sex_inc_probs.values())
                         self.update_attributes_at_incarceration_tick(tick)
 
     def update_attributes_at_incarceration_tick(self, tick):
@@ -269,11 +279,12 @@ class Person(core.Agent):
         probability_daily_recidivism_females,
         probability_daily_recidivism_males,
         probability_daily_incarceration,
-        race_sex_pop_counts 
+        race_sex_pop_props
     ):
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
             "RECIDIVISM_UPDATED_PROB_LIMIT"
         ]
+
         prob = random.default_rng.uniform(0, 1)
         time_since_release = tick - self.last_release_tick
 

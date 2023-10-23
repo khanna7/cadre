@@ -205,29 +205,19 @@ class Model:
         hispanic_female_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 1])
         asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
 
-        print("White male count:", white_male_count)
-        print("Black male count:", black_male_count)
-        print("Hispanic male count:", hispanic_male_count)
-        print("Asian male count:", asian_male_count)
-
-        print("White female count:", white_female_count)
-        print("Black female count:", black_female_count)
-        print("Hispanic female count:", hispanic_female_count)
-        print("Asian female count:", asian_female_count)
-
         race_sex_pop_counts = {
-            'white_male': white_male_count,
-            'black_male': black_male_count,
-            'hispanic_male': hispanic_male_count,
-            'asian_male': asian_male_count,
-            'white_female': white_female_count,
-            'black_female': black_female_count,
-            'hispanic_female': hispanic_female_count,
-            'asian_female': asian_female_count
+            'WHITE_MALE': white_male_count,
+            'BLACK_MALE': black_male_count,
+            'HISPANIC_MALE': hispanic_male_count,
+            'ASIAN_MALE': asian_male_count,
+            'WHITE_FEMALE': white_female_count,
+            'BLACK_FEMALE': black_female_count,
+            'HISPANIC_FEMALE': hispanic_female_count,
+            'ASIAN_FEMALE': asian_female_count
             }
 
-
-
+        race_sex_pop_props = {key: value / len(all_agents) for key, value in race_sex_pop_counts.items()}
+        
         for person in self.network.get_agents():
             person.aging()
 
@@ -238,7 +228,7 @@ class Model:
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
-                race_sex_pop_counts = race_sex_pop_counts
+                race_sex_pop_props = race_sex_pop_props
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
@@ -253,7 +243,7 @@ class Model:
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
-                race_sex_pop_counts = race_sex_pop_counts
+                race_sex_pop_props = race_sex_pop_props
             )
 
             incaceration_states.append(person.current_incarceration_status)
