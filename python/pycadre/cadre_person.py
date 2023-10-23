@@ -195,6 +195,12 @@ class Person(core.Agent):
                 converted_race_sex_inc_probs[key] = 0  
 
 
+            print(f" At tick: {tick}")
+            print(f"For {key}:")
+            print(f"INCARCERATION_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
+            print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
+            print(f"Converted probability for {key}: {converted_race_sex_inc_probs[key]}", "\n")
+
         if self.current_incarceration_status == 0:
             if (self.n_incarcerations == 0) or (self.n_incarcerations > 0 and past_recidivism_limit):
                 # include people pass the recidivism limit, so the enhanced probability does not apply to them 
@@ -209,7 +215,8 @@ class Person(core.Agent):
                         print("Agent incarcerated")
                         print(converted_race_sex_inc_probs.values())
                         self.update_attributes_at_incarceration_tick(tick)
-
+                        
+                
     def update_attributes_at_incarceration_tick(self, tick):
         self.current_incarceration_status = 1
         self.last_incarceration_tick = tick
@@ -312,20 +319,16 @@ class Person(core.Agent):
         race_sex_pop_props
     ):
     
-        RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list[
-            "RECIDIVISM_UPDATED_PROB_LIMIT"
-        ]
-
-        #print("Keys in race_sex_pop_props:", race_sex_pop_props.keys())
-
-        RECIDIVISM_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"] #use same values as INC_RACE_SEX_PROP
-        #print("Keys in RECIDIVISM_RACE_SEX_PROP:", RECIDIVISM_RACE_SEX_PROP.keys())
-
+        RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list["RECIDIVISM_UPDATED_PROB_LIMIT"]
         prob = random.default_rng.uniform(0, 1)
-        time_since_release = tick - self.last_release_tick
 
-
+        INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"] #use same values as INC_RACE_SEX_PROP
         converted_race_sex_recidivism_probs = {}
+        print(INC_RACE_SEX_PROP)
+
+        
+        time_since_release = tick - self.last_release_tick
+        
         for key in race_sex_pop_props:
             if race_sex_pop_props[key] != 0:
                 if "FEMALE" in key:
@@ -333,11 +336,19 @@ class Person(core.Agent):
                 else:
                     base_prob = probability_daily_recidivism_males
 
-                converted_race_sex_recidivism_probs[key] = base_prob * (RECIDIVISM_RACE_SEX_PROP[key] / race_sex_pop_props[key])
-
+                converted_race_sex_recidivism_probs[key] = base_prob * (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key])
                 #print(f"Converted prob for {key}: {converted_race_sex_recidivism_probs}")
+                
+                # Printing the values for debugging
+                print(f" At tick: {tick}")
+                print(f"For {key}:")
+                print(f"RECIDIVISM_RACE_SEX_PROP value: {INC_RACE_SEX_PROP[key]}")
+                print(f"race_sex_pop_props value: {race_sex_pop_props[key]}")
+                print(f"Converted probability for {key}: {converted_race_sex_recidivism_probs[key]}", "\n", "\n")
             else:
                 converted_race_sex_recidivism_probs[key] = 0
+                
+
 
         if self.current_incarceration_status == 0 and self.n_incarcerations > 0:
             if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
