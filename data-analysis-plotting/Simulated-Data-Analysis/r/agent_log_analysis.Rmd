@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231011_095510/agent_log.csv")
+  agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231023_084630/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -844,12 +844,22 @@ ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
   theme_minimal() +
   labs(title = "",
        x = "Time (Days)",
-       y = "Incarceration Rate (per 100,000 persons)")+
-  ylim(0, 350)
+       y = "Incarceration Rate (per 100,000 persons)")#+
+  #ylim(0, 350)
 
 
 ```
 
+Number incarcerated:
+
+```{r}
+ggplot(incarceration_summary, aes(x = tick, y = n_incarcerated)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Number Incarcerated")
+```
 
 Number and proportion of incarcerated persons at last tick:
 
@@ -884,11 +894,39 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
 
 agent_dt[tick==last_tick & current_incarceration_status == 1, 
          .N, 
+         by=c("race", "female")][,"prop":=round(N/sum(N)*100, 0)][]
+
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
          by=c("age_groups")][,"prop":=round(N/sum(N)*100, 0)][]
 
 agent_dt[tick==last_tick & current_incarceration_status == 1, 
          .N, 
          by=c("race", "female", "age_groups")][order(race, female, age_groups)][,"prop":=round(N/sum(N)*100, 0)][]
+```
+
+Break down number and proportions of incarcerated persons at last tick by race:
+
+```{r}
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("race")][,"prop":=round(N/sum(N)*100, 0)][]
+```
+
+Break down number and proportions of incarcerated persons at last tick by sex:
+
+```{r}
+agent_dt[tick==last_tick & current_incarceration_status == 1, 
+         .N, 
+         by=c("female")][,"prop":=round(N/sum(N)*100, 0)][]
+```
+
+Break down number and proportions of incarcerated persons in the middle by race:
+
+```{r}
+agent_dt[tick==5001 & current_incarceration_status == 1, 
+         .N, 
+         by=c("race")][,"prop":=round(N/sum(N)*100, 0)][]
 ```
 
 How many persons have been ever incarcerated?
