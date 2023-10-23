@@ -182,9 +182,11 @@ class Person(core.Agent):
     def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_props):
         prob = random.default_rng.uniform(0, 1)
 
-        INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"]
-        
+        INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"]        
         converted_race_sex_inc_probs = {}
+
+        time_since_release = tick - self.last_release_tick
+        past_recidivism_limit = time_since_release > load_params.params_list["RECIDIVISM_UPDATED_PROB_LIMIT"]
 
         for key in race_sex_pop_props:
             if race_sex_pop_props[key] != 0:
@@ -194,7 +196,8 @@ class Person(core.Agent):
 
 
         if self.current_incarceration_status == 0:
-            if self.n_incarcerations == 0:
+            if (self.n_incarcerations == 0) or (self.n_incarcerations > 0 and past_recidivism_limit):
+                # include people pass the recidivism limit, so the enhanced probability does not apply to them 
                 sex = "FEMALE" if self.female == 1 else "MALE"
                 race_sex_key = f"{self.race.upper()}_{sex.upper()}"
 
@@ -300,11 +303,6 @@ class Person(core.Agent):
                     elif self.female == 0:
                         if prob < probability_daily_recidivism_males:
                             self.update_attributes_at_incarceration_tick(tick=tick)
-
-                elif time_since_release > RECIDIVISM_UPDATED_PROB_LIMIT:
-                    # after recidivism limit period, inc prob is the same for both genders
-                    if prob < probability_daily_incarceration:
-                        self.update_attributes_at_incarceration_tick(tick=tick)
         
     def assign_smoker_status(self):
         SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
