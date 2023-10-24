@@ -1073,6 +1073,23 @@ hist(ever_incarcerated_released$incarceration_length,
      main = "Distribution of incarceration lengths")
 ```
 
+
+Break down number and proportions of persons ever incarcerated at last tick by race and sex:
+
+```{r}
+ever_incarcerated_info[, .N, by = c("race", "female")][,
+  .(Race = race, 
+    Female = female,
+    Count = N,
+    Proportion = round(N / sum(N), 2)
+   )
+][order(Race)]
+```
+
+ever_inc_dt
+```
+
+
 Break down number and proportions of persons ever incarcerated at last tick by race, sex and age:
 
 ```{r}
@@ -1084,6 +1101,8 @@ ever_inc_dt <-
 
 ever_inc_dt
 ```
+
+
 ```{r}
 ever_inc_dt[, colSums(.SD), .SDcols = 4:5]
 ```
