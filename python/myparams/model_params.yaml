@@ -187,6 +187,11 @@ INC_RACE_SEX_PROP:
 # Data from other race categories were distributed uniformly among white and black
 # https://www.notion.so/a5df7fb2488e48d088de5eca3bd489cb?pvs=4#6d7391bd775d461082a721f853dceb7e
 
+INCARCERATION_SMOKING_ASSOC:
+  MIN: 0.50
+  MAX: 0.80
+#Ives, et al. 2022. “Nine Years of...” Preventive Medicine Reports 29 (October): 101921.
+
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
 network_log_file: 'output/network_log.csv'

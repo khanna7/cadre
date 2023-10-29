@@ -205,6 +205,8 @@ class Model:
         hispanic_female_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 1])
         asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
 
+        current_smoking_count = sum([1 for agent in all_agents if agent.smoker == "Current"])
+
         race_sex_pop_counts = {
             'WHITE_MALE': white_male_count,
             'BLACK_MALE': black_male_count,
@@ -217,6 +219,7 @@ class Model:
             }
 
         race_sex_pop_props = {key: value / len(all_agents) for key, value in race_sex_pop_counts.items()}
+        pct_smoking = current_smoking_count/len(all_agents)
         
         for person in self.network.get_agents():
             person.aging()
@@ -228,7 +231,8 @@ class Model:
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
-                race_sex_pop_props = race_sex_pop_props
+                race_sex_pop_props = race_sex_pop_props,
+                pct_smoking = pct_smoking
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
