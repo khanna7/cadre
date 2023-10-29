@@ -244,7 +244,8 @@ class Model:
                 probability_daily_recidivism_males=load_params.params_list[
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["MALES"],
-                race_sex_pop_props = race_sex_pop_props
+                race_sex_pop_props = race_sex_pop_props,
+                pct_smoking = pct_smoking
             )
 
             incaceration_states.append(person.current_incarceration_status)
