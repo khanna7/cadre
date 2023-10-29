@@ -108,28 +108,32 @@ class Person(core.Agent):
         prob = random.default_rng.uniform(0, 1)
         #print("Generated prob in transition_alc_use:", prob)
 
-        if self.alc_use_status == 0:
+        if self.current_incarceration_status == 0:
+            if self.alc_use_status == 0:
+                pass
+
+            elif self.alc_use_status == 1:
+                if prob <= TRANS_PROB_1_2:
+                    self.alc_use_status += 1
+                    self.n_alc_use_stat_trans += 1
+
+            elif self.alc_use_status == 2:
+                increase = self.get_regular_to_heavy_alc_use_transition_network_influence()
+                if prob <= increase * TRANS_PROB_2_3:
+                    self.alc_use_status += 1
+                    self.n_alc_use_stat_trans += 1
+
+                elif prob > 1 - TRANS_PROB_2_1:
+                    self.alc_use_status -= 1
+                    self.n_alc_use_stat_trans += 1
+
+            elif self.alc_use_status == 3:
+                if prob > 1 - TRANS_PROB_3_2:
+                    self.alc_use_status -= 1
+                    self.n_alc_use_stat_trans += 1
+                    
+        else: 
             pass
-
-        elif self.alc_use_status == 1:
-            if prob <= TRANS_PROB_1_2:
-                self.alc_use_status += 1
-                self.n_alc_use_stat_trans += 1
-
-        elif self.alc_use_status == 2:
-            increase = self.get_regular_to_heavy_alc_use_transition_network_influence()
-            if prob <= increase * TRANS_PROB_2_3:
-                self.alc_use_status += 1
-                self.n_alc_use_stat_trans += 1
-
-            elif prob > 1 - TRANS_PROB_2_1:
-                self.alc_use_status -= 1
-                self.n_alc_use_stat_trans += 1
-
-        elif self.alc_use_status == 3:
-            if prob > 1 - TRANS_PROB_3_2:
-                self.alc_use_status -= 1
-                self.n_alc_use_stat_trans += 1
 
     def get_smoking_network_influence_factor(self):
         increase = 1
@@ -162,22 +166,26 @@ class Person(core.Agent):
         def probs_key():
             return self.race.upper() + "_" + ("FEMALES" if self.female else "MALES")
 
-        # cessation for current smokers
-        if self.smoker == "Current":
-            key = probs_key()
-            if prob <= SMOKING_TRANSITION_PROBS[key]["CESSATION"]:
-                self.smoker = "Former"
-                self.n_smkg_stat_trans += 1
-                self.last_smkg_trans_tick = tick
-       
-        # relapse for former smokers
-        elif self.smoker == "Former":
-            key = probs_key()
-            increase = self.get_former_to_current_smoking_transition_network_influence()
-            if prob <= increase * SMOKING_TRANSITION_PROBS[key]["RELAPSE"]:
-                self.smoker = "Current"
-                self.n_smkg_stat_trans += 1
-                self.last_smkg_trans_tick = tick
+        if self.current_incarceration_status == 0:
+            # cessation for current smokers
+            if self.smoker == "Current":
+                key = probs_key()
+                if prob <= SMOKING_TRANSITION_PROBS[key]["CESSATION"]:
+                    self.smoker = "Former"
+                    self.n_smkg_stat_trans += 1
+                    self.last_smkg_trans_tick = tick
+        
+            # relapse for former smokers
+            elif self.smoker == "Former":
+                key = probs_key()
+                increase = self.get_former_to_current_smoking_transition_network_influence()
+                if prob <= increase * SMOKING_TRANSITION_PROBS[key]["RELAPSE"]:
+                    self.smoker = "Current"
+                    self.n_smkg_stat_trans += 1
+                    self.last_smkg_trans_tick = tick
+    
+        else:
+            pass
 
     def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_props, pct_smoking):
         prob = random.default_rng.uniform(0, 1)
