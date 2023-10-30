@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231029_143256/agent_log.csv")
+agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231029_195947/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -1369,7 +1369,15 @@ class(summaries_smoking)
 
 current_smoker_proportions <- sapply(
   summaries_smoking, 
-  function(x) x$proportions[x$proportions$Category == "Current", "Proportion"])
+  function(x) {
+    if ("Current" %in% x$proportions$Category){
+      return(x$proportions[x$proportions$Category == "Current", "Proportion"])
+    }
+    else {
+      return(0)
+    }
+  }
+)
 
 current_smoker_df <- data.frame(Time = time_periods,
                                 Labels = labels,
