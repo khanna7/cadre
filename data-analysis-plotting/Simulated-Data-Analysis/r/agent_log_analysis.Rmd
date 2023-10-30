@@ -30,7 +30,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 Read the agent data into data-table:
 
 ```{r}
-agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231029_195947/agent_log.csv")
+agent_dt <- fread("/users/akhann16/code/cadre/python/output_20231029_214346/agent_log.csv")
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -149,7 +149,7 @@ ggplot(gender_proportions_long, aes(x = tick, y = proportion, color = gender, gr
   labs(title = "",
        x = "Time (Days)",
        y = "Sex Distributions") +
-  scale_color_manual(values = c("#1b9e77", "#d95f02"), labels = c("Female", "Male")) +
+  scale_color_manual(values = c("#1b9e77", "#d95f02"), labels = c("Male", "Female")) +
   theme_minimal() +
   theme(legend.title = element_blank())+
   scale_y_continuous(limits = c(0.4, 0.6), breaks = seq(0.4, 0.6, by = 0.1))
@@ -1114,6 +1114,16 @@ Break down number and proportions of incarcerated agents by alcohol use:
 last_tick
 
 table(agent_dt[tick==last_tick &
+         current_incarceration_status==1,]$alc_use_status, exclude = NULL)
+
+table(agent_dt[tick==10941 &
+         current_incarceration_status==1,]$alc_use_status, exclude = NULL)
+
+
+table(agent_dt[tick==10901 &
+         current_incarceration_status==1,]$alc_use_status, exclude = NULL)
+
+table(agent_dt[tick==9901 &
          current_incarceration_status==1,]$alc_use_status, exclude = NULL)
 
 table(agent_dt[tick==5001 &
