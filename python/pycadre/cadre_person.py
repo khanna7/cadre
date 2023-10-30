@@ -329,13 +329,16 @@ class Person(core.Agent):
         RECIDIVISM_UPDATED_PROB_LIMIT = load_params.params_list["RECIDIVISM_UPDATED_PROB_LIMIT"]
         INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"] #use same values as INC_RACE_SEX_PROP
         INC_CURRENT_SMOKING = load_params.params_list["INCARCERATION_SMOKING_ASSOC"]
+        INC_CURRENT_AUD = load_params.params_list["INCARCERATION_AUD_ASSOC"]
 
         inc_current_smoking_rate = (
             (INC_CURRENT_SMOKING["MIN"] + 
             INC_CURRENT_SMOKING["MAX"])/2
             )
+        inc_current_aud_rate = (INC_CURRENT_AUD["MALES"] + INC_CURRENT_AUD["FEMALES"])/2
 
-        converted_race_sex_smoking_recidivism_probs = {}
+
+        converted_race_sex_smoking_alc_recidivism_probs = {}
         base_prob = {}        
         
         time_since_release = tick - self.last_release_tick
@@ -348,26 +351,41 @@ class Person(core.Agent):
             else:
                 base_prob[key] = probability_daily_recidivism_females if "FEMALE" in key else probability_daily_recidivism_males
             
-                if self.smoker == "Current":
-                    converted_race_sex_smoking_recidivism_probs[key] = (
+                if self.smoker == "Current" and self.alc_use_status == 3:
+                    converted_race_sex_smoking_alc_recidivism_probs[key] = (
                         base_prob[key] * 
                         (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
-                        (inc_current_smoking_rate / pct_smoking)
+                        (inc_current_smoking_rate / pct_smoking)*
+                        (inc_current_aud_rate / pct_aud)
                     ) 
-            
-                else: 
-                    converted_race_sex_smoking_recidivism_probs[key] = (
+                elif self.smoker == "Current" and self.alc_use_status != 3:
+                    converted_race_sex_smoking_alc_recidivism_probs[key] = (
                         base_prob[key] * 
                         (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
-                        (1-inc_current_smoking_rate) / (1- pct_smoking)
-                    )
+                        (inc_current_smoking_rate / pct_smoking) * 
+                        (1 - inc_current_aud_rate / 1-pct_aud) 
+                ) 
+                elif self.smoker != "Current" and self.alc_use_status == 3:
+                    converted_race_sex_smoking_alc_recidivism_probs[key] = (
+                        base_prob[key] * 
+                        (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
+                        (1-inc_current_smoking_rate / 1-pct_smoking) * 
+                        (inc_current_aud_rate / pct_aud) 
+                ) 
+                elif self.smoker != "Current" and self.alc_use_status != 3:
+                    converted_race_sex_smoking_alc_recidivism_probs[key] = (
+                        base_prob[key] * 
+                        (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
+                        (1-inc_current_smoking_rate / 1-pct_smoking) * 
+                        (1-inc_current_aud_rate / 1-pct_aud) 
+                ) 
                     
         if self.current_incarceration_status == 0 and self.n_incarcerations > 0:
             if time_since_release <= RECIDIVISM_UPDATED_PROB_LIMIT:
                 # Adjusting recidivism probability based on race and sex
                 sex = "FEMALE" if self.female == 1 else "MALE"
                 race_sex_key = f"{self.race.upper()}_{sex.upper()}"
-                specific_prob = converted_race_sex_smoking_recidivism_probs.get(race_sex_key, 0)
+                specific_prob = converted_race_sex_smoking_alc_recidivism_probs.get(race_sex_key, 0)
                                     
                 if prob < specific_prob:
                     self.update_attributes_at_incarceration_tick(tick=tick)
