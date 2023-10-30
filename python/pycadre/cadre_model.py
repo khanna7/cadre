@@ -206,6 +206,7 @@ class Model:
         asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
 
         current_smoking_count = sum([1 for agent in all_agents if agent.smoker == "Current"])
+        current_AUD_count = sum([1 for agent in all_agents if agent.alc_use_status == 3])
 
         race_sex_pop_counts = {
             'WHITE_MALE': white_male_count,
@@ -219,7 +220,9 @@ class Model:
             }
 
         race_sex_pop_props = {key: value / len(all_agents) for key, value in race_sex_pop_counts.items()}
+        
         pct_smoking = current_smoking_count/len(all_agents)
+        pct_aud = current_AUD_count/len(all_agents) 
         
         for person in self.network.get_agents():
             person.aging()
@@ -232,7 +235,8 @@ class Model:
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
                 race_sex_pop_props = race_sex_pop_props,
-                pct_smoking = pct_smoking
+                pct_smoking = pct_smoking,
+                pct_aud = pct_aud
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
@@ -245,7 +249,8 @@ class Model:
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["MALES"],
                 race_sex_pop_props = race_sex_pop_props,
-                pct_smoking = pct_smoking
+                pct_smoking = pct_smoking,
+                pct_aud = pct_aud
             )
 
             incaceration_states.append(person.current_incarceration_status)

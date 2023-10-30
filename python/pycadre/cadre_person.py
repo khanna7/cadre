@@ -187,35 +187,54 @@ class Person(core.Agent):
         else:
             pass
 
-    def simulate_incarceration(self, tick, probability_daily_incarceration, race_sex_pop_props, pct_smoking):
+    def simulate_incarceration(self, tick, probability_daily_incarceration, 
+                               race_sex_pop_props, pct_smoking, pct_aud):
         prob = random.default_rng.uniform(0, 1)
 
         INC_RACE_SEX_PROP = load_params.params_list["INC_RACE_SEX_PROP"]        
-        
         INC_CURRENT_SMOKING = load_params.params_list["INCARCERATION_SMOKING_ASSOC"]
+        INC_CURRENT_AUD = load_params.params_list["INCARCERATION_AUD_ASSOC"]
+
 
         inc_current_smoking_rate = (INC_CURRENT_SMOKING["MIN"] + INC_CURRENT_SMOKING["MAX"])/2
+        inc_current_aud_rate = (INC_CURRENT_AUD["MALES"] + INC_CURRENT_AUD["FEMALES"])/2
        
         time_since_release = tick - self.last_release_tick
         past_recidivism_limit = time_since_release > load_params.params_list["RECIDIVISM_UPDATED_PROB_LIMIT"]
 
-        #converted_race_sex_inc_probs = {}
-        converted_race_sex_smoking_inc_probs = {}
+
+        converted_race_sex_smoking_alc_inc_probs = {}
         
         for key in race_sex_pop_props:
             if race_sex_pop_props[key] == 0: 
-                converted_race_sex_smoking_inc_probs[key] = 0
-            elif self.smoker == "Current":
-                converted_race_sex_smoking_inc_probs[key] = (
+                converted_race_sex_smoking_alc_inc_probs[key] = 0
+            elif self.smoker == "Current" and self.alc_use_status == 3:
+                converted_race_sex_smoking_alc_inc_probs[key] = (
                     probability_daily_incarceration * 
                     (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
-                    (inc_current_smoking_rate / pct_smoking)
+                    (inc_current_smoking_rate / pct_smoking) * 
+                    (inc_current_aud_rate / pct_aud)
                 ) 
-            elif self.smoker != "Current": 
-                converted_race_sex_smoking_inc_probs[key] = (
+            elif self.smoker == "Current" and self.alc_use_status != 3:
+                converted_race_sex_smoking_alc_inc_probs[key] = (
                     probability_daily_incarceration * 
                     (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
-                    (1-inc_current_smoking_rate) / (1- pct_smoking)
+                    (inc_current_smoking_rate / pct_smoking) * 
+                    (1 - inc_current_aud_rate / 1-pct_aud) 
+                ) 
+            elif self.smoker != "Current" and self.alc_use_status == 3: 
+                converted_race_sex_smoking_alc_inc_probs[key] = (
+                    probability_daily_incarceration * 
+                    (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
+                    (1-inc_current_smoking_rate) / (1- pct_smoking) *
+                    (inc_current_aud_rate / pct_aud)                   
+                )
+            elif self.smoker != "Current" and self.alc_use_status != 3: 
+                converted_race_sex_smoking_alc_inc_probs[key] = (
+                    probability_daily_incarceration * 
+                    (INC_RACE_SEX_PROP[key] / race_sex_pop_props[key]) *
+                    (1-inc_current_smoking_rate) / (1- pct_smoking) *
+                    (1-inc_current_aud_rate / 1-pct_aud)                   
                 )
  
                 
@@ -225,8 +244,8 @@ class Person(core.Agent):
                 sex = "FEMALE" if self.female == 1 else "MALE"
                 race_sex_key = f"{self.race.upper()}_{sex.upper()}"
 
-                if race_sex_key in converted_race_sex_smoking_inc_probs:
-                    specific_prob = converted_race_sex_smoking_inc_probs[race_sex_key]
+                if race_sex_key in converted_race_sex_smoking_alc_inc_probs:
+                    specific_prob = converted_race_sex_smoking_alc_inc_probs[race_sex_key]
 
                     if prob < specific_prob:
                         self.update_attributes_at_incarceration_tick(tick)
@@ -301,7 +320,8 @@ class Person(core.Agent):
         probability_daily_recidivism_females,
         probability_daily_recidivism_males,
         race_sex_pop_props,
-        pct_smoking 
+        pct_smoking,
+        pct_aud
     ):
     
         prob = random.default_rng.uniform(0, 1)
