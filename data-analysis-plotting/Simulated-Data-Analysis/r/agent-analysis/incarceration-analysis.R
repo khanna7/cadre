@@ -88,3 +88,50 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
 agent_dt[tick==last_tick & current_incarceration_status == 1, 
          .N, 
          by=c("alc_use_status")][,"prop":=round(N/sum(N)*100, 0)][]
+
+
+# Ever incarcerated ----------
+
+# how many?
+
+# To answer this question, we can group the last incarceration times by agent ID.
+# If last incarceration time is -1, the person has never been incarcerated. 
+# If last incarceration time is > -1, the person has been incarcerated at least once. 
+
+last_incarceration_time <- agent_dt[, 
+                                    .(last_incarceration_time = max(last_incarceration_tick)), 
+                                    by = id]
+
+n_ever_incarcerated <- sum(last_incarceration_time$last_incarceration_time != -1)
+
+prop_ever_incarcerated <- n_ever_incarcerated / nrow(last_incarceration_time)
+
+
+# agent-level analysis of those ever incarcerated 
+
+ever_incarcerated_times <- last_incarceration_time[last_incarceration_time > 1]
+dim(ever_incarcerated_times)
+
+## demographics
+
+### generate dataset
+ever_incarcerated_ids <-
+  unique(agent_dt[id %in% ever_incarcerated_times$id, id])
+ever_incarcerated_info <- agent_dt[id %in% ever_incarcerated_ids,
+                                   .SD[.N, list(
+                                     id,
+                                     age = last(age),
+                                     race = last(race),
+                                     female = last(female)
+                                   )],
+                                   by = id]
+
+
+### create distributions
+
+# Disparity analysis ----------
+## defined as ratio of % representation in incarcerated population
+## to representation in general population
+
+
+
