@@ -97,52 +97,30 @@ class Person(core.Agent):
     
     def transition_alc_use(self):
 
-        # level up
-        ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
-        TRANS_PROB_1_2 = ALC_USE_STATES["TRANS_PROB_1_2"]
-        TRANS_PROB_2_3 = ALC_USE_STATES["TRANS_PROB_2_3"]
-        # LEVEL DOWN
-        TRANS_PROB_2_1 = ALC_USE_STATES["TRANS_PROB_2_1"]
-        TRANS_PROB_3_2 = ALC_USE_STATES["TRANS_PROB_3_2"]
-
-        prob = random.default_rng.uniform(0, 1)
-        #print("Generated prob in transition_alc_use:", prob)
-
         if self.current_incarceration_status == 0:
-            if self.alc_use_status == 0:
-                pass
+            prob = random.default_rng.uniform(0, 1)
 
-            elif self.alc_use_status == 1:
-                if prob <= TRANS_PROB_1_2:
-                    self.alc_use_status += 1
-                    self.n_alc_use_stat_trans += 1
+            # determine the current alc state, and next state based on transition probabilities
+            current_state = self.alc_use_status
+            trans_probs = []
+            state = ['N', '1', '2', '3']
 
-            elif self.alc_use_status == 2:
-                increase = self.get_regular_to_heavy_alc_use_transition_network_influence()
-                if prob <= increase * TRANS_PROB_2_3:
-                    self.alc_use_status += 1
-                    self.n_alc_use_stat_trans += 1
+            #build a list of cum. transition probabilities
+            trans_prob_key = f'TRANS_PROB_{current_state}_{state}'
+            print(trans_prob_key, "\n")
 
-                elif prob > 1 - TRANS_PROB_2_1:
-                    self.alc_use_status -= 1
-                    self.n_alc_use_stat_trans += 1
-
-            elif self.alc_use_status == 3:
-                if prob > 1 - TRANS_PROB_3_2:
-                    self.alc_use_status -= 1
-                    self.n_alc_use_stat_trans += 1
-                    
-        else: 
+    
+        else:
             pass
 
     def get_smoking_network_influence_factor(self):
-        increase = 1
-        if self.graph is not None:
-            for n in self.graph.neighbors(self):
-                if n.smoker == "Current":
-                    increase = 1.61 
-                    break
-        return increase
+            increase = 1
+            if self.graph is not None:
+                for n in self.graph.neighbors(self):
+                    if n.smoker == "Current":
+                        increase = 1.61 
+                        break
+            return increase
 
     def get_former_to_current_smoking_transition_network_influence(self):
         per_neighbor_factor = load_params.params_list["SMOKING_NETWORK_EFFECTS"]["ONSET"]["FIRST_DEGREE"]
@@ -156,11 +134,10 @@ class Person(core.Agent):
             nincreases = min(nsmokers, max_n_neighbors)
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
-    
 
     def transition_smoking_status(self, tick):
         SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
-     
+        
         prob = random.default_rng.uniform(0, 1)
 
         def probs_key():
@@ -183,10 +160,11 @@ class Person(core.Agent):
                     self.smoker = "Current"
                     self.n_smkg_stat_trans += 1
                     self.last_smkg_trans_tick = tick
-    
+
         else:
             pass
 
+    
     def simulate_incarceration(self, tick, probability_daily_incarceration, 
                                race_sex_pop_props, pct_smoking, pct_aud):
         prob = random.default_rng.uniform(0, 1)

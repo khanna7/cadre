@@ -25,22 +25,36 @@ FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 NUM_RELEASE_ALCOHOL_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 
 ALC_USE_PROPS: 
-  A: 0.083 #abstainer
-  O: 0.729 #ocassional user
-  R: 0.132 #regular user
-  D: 0.056 #heavydrinker /AU Disorder 
-  #REF see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
+  N: 0.35 #no drinkgs in last 12m
+  CAT_1: 0.55 #<= 40gpd for M,  <= 20gpd for F
+  CAT_2: 0.05 #41-60 for M, 21-40 for F
+  CAT_3: 0.05 #>= 61 for M, >= 41 for F 
+  # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
+  
 
 ALC_USE_STATES:
-  # level up
-  TRANS_PROB_0_1: 0
-  TRANS_PROB_1_2: 0.0072
-  TRANS_PROB_2_3: 0.05
-  # LEVEL DOWN
-  TRANS_PROB_1_0: 0
-  TRANS_PROB_2_1: 0.04
-  TRANS_PROB_3_2: 0.1178
-# REF: https://docs.google.com/document/d/1bCyglQwCkY6k9D5W28kTQLoE0ZnzGLzb4z-ME64PQ3s/edit#bookmark=id.ym6j6jyv731k
+  # from N
+  TRANS_PROB_N_N: 0.993684
+  TRANS_PROB_N_1: 0.0002604598
+  TRANS_PROB_N_2: 0.0006111654
+  TRANS_PROB_N_3: 0.0002886173
+  # from 1
+  TRANS_PROB_1_N: 0.0001665947
+  TRANS_PROB_1_1: 0.9997175
+  TRANS_PROB_1_2: 6.936145e-05
+  TRANS_PROB_1_3: 3.584933e-05
+  # from 2 
+  TRANS_PROB_2_N: 3.307502e-05
+  TRANS_PROB_2_1: 0.001020066
+  TRANS_PROB_2_2: 0.996866
+  TRANS_PROB_2_3: 0.001217685
+  # from 3
+  TRANS_PROB_3_N: 1.098082e-05
+  TRANS_PROB_3_1: 0.0004387222
+  TRANS_PROB_3_2: 0.001076249
+  TRANS_PROB_3_3: 0.9982205
+# REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; PMCID: PMC9722571.
+# apply bionomial probability to compute daily rates
 
 # PROBABILITY_DAILY_INCARCERATION: 0.001223976
 # Derived from Macmadu 2021 
