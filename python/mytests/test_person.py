@@ -299,10 +299,10 @@ class TestPerson(unittest.TestCase):
         is within 0.01 units of the target proportion (0-1 scale)
         """
 
-        ABSTAINERS_PROP = self.params_list["ALC_USE_PROPS"]["N"]
-        OCCASIONAL_PROP = self.params_list["ALC_USE_PROPS"]["CAT_1"]
-        REGULAR_PROP = self.params_list["ALC_USE_PROPS"]["CAT_2"]
-        AUD_PROP = self.params_list["ALC_USE_PROPS"]["CAT_3"]
+        NON_PROP = self.params_list["ALC_USE_PROPS"]["N"]
+        CAT1_PROP = self.params_list["ALC_USE_PROPS"]["CAT_1"]
+        CAT2_PROP = self.params_list["ALC_USE_PROPS"]["CAT_2"]
+        CAT3_PROP = self.params_list["ALC_USE_PROPS"]["CAT_3"]
 
         all_alco = []
 
@@ -313,10 +313,10 @@ class TestPerson(unittest.TestCase):
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco)) / len(all_alco)
-        self.assertAlmostEqual(alco_dist[0], ABSTAINERS_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[1], OCCASIONAL_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[2], REGULAR_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[3], AUD_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[0], NON_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[1], CAT1_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[2], CAT2_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.01)
 
 """ 
     def test_sentence_duration_emp(self):
