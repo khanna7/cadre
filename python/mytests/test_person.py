@@ -1,6 +1,6 @@
 from statistics import mean as mean
 import unittest
-#from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
 from pycadre import cadre_model
@@ -8,7 +8,7 @@ from pycadre.person_creator import PersonCreator, init_person_creator
 import pycadre.load_params
 from mpi4py import MPI
 from repast4py import context as ctx, schedule
-
+import scipy.stats as stats
 
 class TestPerson(unittest.TestCase):
     def setUp(self):
@@ -317,6 +317,51 @@ class TestPerson(unittest.TestCase):
         self.assertAlmostEqual(alco_dist[1], CAT1_PROP, delta=0.01)
         self.assertAlmostEqual(alco_dist[2], CAT2_PROP, delta=0.01)
         self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.01)
+
+
+    # def test_transition_alc_use(self):
+    #     person_creator = init_person_creator()
+    #     person = person_creator.create_person()
+    #     person.alc_use_status = 1  # Starting in state 1
+    #     person.current_incarceration_status = 0  # Not incarcerated
+
+    #     # Create a mock RNG with a mock uniform method
+    #     mock_rng = MagicMock()
+    #     mock_rng.uniform.side_effect = [0.5, 0.000001]
+        
+    #     # Patch 'default_rng' to return the mock RNG
+    #     with patch('repast4py.random.default_rng', return_value=mock_rng):
+    #         person.transition_alc_use()  # Transition should not occur
+    #         self.assertEqual(person.alc_use_status, 1)
+
+    #         person.transition_alc_use()  # Transition should occur
+    #         # Assuming this is the expected state
+    #         expected_state = 0
+    #         self.assertEqual(person.alc_use_status, expected_state)
+
+
+    # def test_transition_alc_use_statistically(self):
+    #     person_creator = init_person_creator()
+    #     transitions = {0: 0, 1: 0, ...}  # Include all possible states here
+    #     n = 10000  # Number of simulations
+
+    #     for _ in range(n):
+    #         person = person_creator.create_person()
+    #         person.alc_use_status = 1  # Starting in state 1
+    #         person.transition_alc_use()  # Execute the transition
+    #         transitions[person.alc_use_status] += 1  # Record the outcome
+
+    #     # Now transitions dict contains the count of transitions to each state
+    #     observed = [transitions[state] for state in sorted(transitions)]
+    #     expected = [n * probability for probability in expected_probabilities]  # Define your expected probabilities list
+
+    #     # Perform the chi-squared test
+    #     chi_square, p_value = stats.chisquare(observed, f_exp=expected)
+
+    #     # Set your significance level
+    #     alpha = 0.05
+    #     self.assertLess(p_value, alpha, "The transition probabilities do not match the expected distribution.")
+
 
 """ 
     def test_sentence_duration_emp(self):
