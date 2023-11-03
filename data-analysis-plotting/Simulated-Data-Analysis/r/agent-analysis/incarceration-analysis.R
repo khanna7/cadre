@@ -129,9 +129,155 @@ ever_incarcerated_info <- agent_dt[id %in% ever_incarcerated_ids,
 
 ### create distributions
 
-# Disparity analysis ----------
-## defined as ratio of % representation in incarcerated population
-## to representation in general population
+ever_incarcerated_info[,#age 
+                       .(
+  mean_age = mean(age),
+  min_age = min(age),
+  max_age = max(age)
+)]
+
+sex_incarcerated_proportion <- 
+  ever_incarcerated_info[, .(
+    Count = .N,
+    Proportion = round(.N / nrow(ever_incarcerated_info), 2)
+  ), 
+  by = .(Sex = ifelse(female==1, "Female", "Male"))
+  ]
+
+race_incarcerated_proportion <- 
+  ever_incarcerated_info[, .(
+  Count = .N,
+  Proportion = round(.N / nrow(ever_incarcerated_info), 2)
+  ), 
+  by = .(Race=race)]
+
+race_sex_incarcerated_proportion <- 
+  ever_incarcerated_info[, .N, by = c("race", "female")][
+    #race, sex
+    ,
+    .(Race = race,
+      Sex = ifelse(female == 1, "Female", "Male"),
+      Count = N,
+      Proportion = round(N / sum(N), 2)
+    )[order(c(female, race))]
+  ]
+
+
+# Race/Sex distribution in full population ----------
+
+## defined as  % group representation in incarcerated population
+## relative to to representation in general population
+
+unique_agents <- unique(agent_dt, by = "id")
+dim(unique_agents)
+str(unique_agents)
+
+race_population_proportion <- 
+  unique_agents[, .(
+                Count = .N,
+                Proportion = round(.N/nrow(unique_agents), 2)
+                ),
+              by = .(Race = race)
+              ]
+
+sex_population_proportion <-
+  unique_agents[, .(
+  Count = .N,
+  Proportion = round(.N/nrow(unique_agents), 2)
+  ),
+  by = .(Sex = ifelse(female==1, "Female", "Male"))
+  ]
+
+race_sex_population_proportion <- 
+  unique_agents[, .N, by = c("race", "female")][
+    #race, sex
+    ,
+    .(Race = race,
+      Sex = ifelse(female == 1, "Female", "Male"),
+      Count = N,
+      Proportion = round(N / sum(N), 2)
+    )[order(c(female, race))]
+  ]
 
 
 
+# Disparity analysis ---------
+
+## race-sex combined
+disparity_analysis <- merge(
+  race_sex_incarcerated_proportion,
+  race_sex_population_proportion,
+  by = c("Race", "Sex"),
+  suffixes = c("_Incarcerated", "_Population")
+)
+
+
+disparity_analysis[, Disparity_Ratio := round(Proportion_Incarcerated / Proportion_Population, 2)]
+disparity_analysis <- disparity_analysis[order(-Disparity_Ratio)]
+disparity_analysis
+
+
+## race only
+disparity_analysis_race <- merge(
+  race_incarcerated_proportion,
+  race_population_proportion,
+  by = c("Race"),
+  suffixes = c("_Incarcerated", "_Population")
+)
+
+
+disparity_analysis_race[, Disparity_Ratio := round(Proportion_Incarcerated / Proportion_Population, 2)]
+disparity_analysis_race[order(-Disparity_Ratio)]
+
+
+## sex only
+disparity_analysis_sex <- merge(
+  sex_incarcerated_proportion,
+  sex_population_proportion,
+  by = c("Sex"),
+  suffixes = c("_Incarcerated", "_Population")
+)
+
+
+disparity_analysis_sex[, Disparity_Ratio := round(Proportion_Population / Proportion_Incarcerated, 2)]
+disparity_analysis_sex[order(-Disparity_Ratio)]
+
+
+# Visualizing incarceration disparity by sex and race -----------
+
+# sex
+sex_data <- data.frame(
+  Sex = rep(c("Female", "Male"), each = 2),
+  Count = c(43, 8080, 527, 7622),
+  Proportion = c(0.08, 0.51, 0.92, 0.49),
+  PopulationType = rep(c("Incarcerated", "General"), 2)
+)
+
+ggplot(sex_data, aes(x = Sex, y = Proportion, fill = PopulationType)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
+  scale_y_continuous(breaks = seq(0, 1, 0.25), limits = c(0, 1))+
+  labs(title = "",
+       x = "Sex",
+       y = "Proportion",
+       fill = "Population Type") +
+  theme_minimal()
+
+
+# race 
+race_data <- data.frame(
+  Race = rep(c("Black", "Hispanic", "White", "Asian"), each = 2),
+  Count = c(188, 1310, 123, 2580, 254, 11214, 5, 598),
+  Proportion = c(0.33, 0.08, 0.22, 0.16, 0.45, 0.71, 0.01, 0.04),
+  PopulationType = rep(c("Incarcerated", "General"), 4)
+)
+
+ggplot(race_data, aes(x = Race, y = Proportion, fill = PopulationType)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
+  scale_y_continuous(breaks = seq(0, 1, 0.25), limits = c(0, 1))+
+  labs(title = "",
+       x = "Race",
+       y = "Proportion",
+       fill = "Population Type") +
+  theme_minimal()
