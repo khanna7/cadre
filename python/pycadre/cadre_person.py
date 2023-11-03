@@ -101,9 +101,11 @@ class Person(core.Agent):
 
         # Check if the agent is not incarcerated
         if self.current_incarceration_status == 0:
+            #print("Person alc use status:", self.alc_use_status)
             
             # Generate a random probability for the transition using repast4py's RNG
             prob = random.default_rng.uniform(0, 1)
+            #print("Prob = ", prob)
 
             # Determine the next state based on the current state and transition probabilities
             current_state = self.alc_use_status
@@ -131,7 +133,9 @@ class Person(core.Agent):
                     self.alc_use_status = new_state
                     if new_state != current_state:
                         self.n_alc_use_stat_trans += 1
-                        #print("Alcohol state transition!")
+                        #print("Probability is:", prob)
+                        #print("Cumulative probability is:", cum_prob)
+                        #print("Alcohol state transition from", current_state, "to", new_state)
                     break  # Exit loop after transition occurs
             
         #print("Alcohol use state:", self.alc_use_status)
