@@ -96,22 +96,45 @@ class Person(core.Agent):
         return increase
     
     def transition_alc_use(self):
+        # Load all transition probabilities
+        ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
 
+        # Check if the agent is not incarcerated
         if self.current_incarceration_status == 0:
+            
+            # Generate a random probability for the transition using repast4py's RNG
             prob = random.default_rng.uniform(0, 1)
 
-            # determine the current alc state, and next state based on transition probabilities
+            # Determine the next state based on the current state and transition probabilities
             current_state = self.alc_use_status
             trans_probs = []
-            state = ['N', '1', '2', '3']
+            states = ['N', '1', '2', '3']
+            
+            # Build the list of cumulative transition probabilities and corresponding states
+            for state in states:
+                trans_prob_key = f'TRANS_PROB_{current_state}_{state}'
+                if trans_prob_key in ALC_USE_STATES:
+                    # Append a tuple with the cumulative probability and the target state
+                    if trans_probs:
+                        trans_probs.append((trans_probs[-1][0] + ALC_USE_STATES[trans_prob_key], state))
+                        print(trans_probs, "\n")
+                    else:
+                        # First entry is the probability itself since there is no previous cumulative probability
+                        trans_probs.append((ALC_USE_STATES[trans_prob_key], state))
+                        print(trans_probs, "\n")
 
-            #build a list of cum. transition probabilities
-            trans_prob_key = f'TRANS_PROB_{current_state}_{state}'
-            print(trans_prob_key, "\n")
-
-    
-        else:
-            pass
+            # Use the generated probability to determine the next state
+            for cum_prob, state in trans_probs:
+                if prob < cum_prob:
+                    # Convert state strings to appropriate numerical values, if necessary
+                    new_state = {'N': 0, '1': 1, '2': 2, '3': 3}.get(state, current_state)
+                    self.alc_use_status = new_state
+                    if new_state != current_state:
+                        self.n_alc_use_stat_trans += 1
+                        #print("Alcohol state transition!")
+                    break  # Exit loop after transition occurs
+            
+        #print("Alcohol use state:", self.alc_use_status)
 
     def get_smoking_network_influence_factor(self):
             increase = 1
@@ -459,7 +482,7 @@ class Person(core.Agent):
         if self.alc_use_status == 0: return
 
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
-        ALC_USE_PROPS_INIT = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
+        ALC_USE_PROPS_INIT = [AU_PROPS["N"], AU_PROPS["CAT_1"], AU_PROPS["CAT_2"], AU_PROPS["CAT_3"]]
         ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
         ALC_USE_PROPS_POSTRELEASE[3] = 0.17
         ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
