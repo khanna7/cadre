@@ -17,10 +17,10 @@ class TestPerson(unittest.TestCase):
         )
 
     def test_post_release_alc_use(self):
-        self.params_list['ALC_USE_PROPS']['A'] = 0.1
-        self.params_list['ALC_USE_PROPS']['O'] = 0.7
-        self.params_list['ALC_USE_PROPS']['R'] = 0.1
-        self.params_list['ALC_USE_PROPS']['D'] = 0.1
+        self.params_list['ALC_USE_PROPS']['N'] = 0.1
+        self.params_list['ALC_USE_PROPS']['CAT_1'] = 0.7
+        self.params_list['ALC_USE_PROPS']['CAT_2'] = 0.1
+        self.params_list['ALC_USE_PROPS']['CAT_3'] = 0.1
         person_creator = init_person_creator()
         p = person_creator.create_person()
         p.n_releases = 1
@@ -299,10 +299,10 @@ class TestPerson(unittest.TestCase):
         is within 0.01 units of the target proportion (0-1 scale)
         """
 
-        ABSTAINERS_PROP = self.params_list["ALC_USE_PROPS"]["A"]
-        OCCASIONAL_PROP = self.params_list["ALC_USE_PROPS"]["O"]
-        REGULAR_PROP = self.params_list["ALC_USE_PROPS"]["R"]
-        AUD_PROP = self.params_list["ALC_USE_PROPS"]["D"]
+        ABSTAINERS_PROP = self.params_list["ALC_USE_PROPS"]["N"]
+        OCCASIONAL_PROP = self.params_list["ALC_USE_PROPS"]["CAT_1"]
+        REGULAR_PROP = self.params_list["ALC_USE_PROPS"]["CAT_2"]
+        AUD_PROP = self.params_list["ALC_USE_PROPS"]["CAT_3"]
 
         all_alco = []
 

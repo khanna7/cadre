@@ -117,11 +117,11 @@ class Person(core.Agent):
                     # Append a tuple with the cumulative probability and the target state
                     if trans_probs:
                         trans_probs.append((trans_probs[-1][0] + ALC_USE_STATES[trans_prob_key], state))
-                        print(trans_probs, "\n")
+                        #print(trans_probs, "\n")
                     else:
                         # First entry is the probability itself since there is no previous cumulative probability
                         trans_probs.append((ALC_USE_STATES[trans_prob_key], state))
-                        print(trans_probs, "\n")
+                        #print(trans_probs, "\n")
 
             # Use the generated probability to determine the next state
             for cum_prob, state in trans_probs:
