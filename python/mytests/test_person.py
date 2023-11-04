@@ -8,7 +8,6 @@ from pycadre.person_creator import PersonCreator, init_person_creator
 import pycadre.load_params
 from mpi4py import MPI
 from repast4py import context as ctx, schedule
-import scipy.stats as stats
 
 class TestPerson(unittest.TestCase):
     def setUp(self):
