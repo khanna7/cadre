@@ -319,26 +319,36 @@ class TestPerson(unittest.TestCase):
         self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.01)
 
 
-    # def test_transition_alc_use(self):
-    #     person_creator = init_person_creator()
-    #     person = person_creator.create_person()
-    #     person.alc_use_status = 1  # Starting in state 1
-    #     person.current_incarceration_status = 0  # Not incarcerated
+    def test_transition_alc_use(self):
+        person_creator = init_person_creator()
+        person = person_creator.create_person()
+        person.alc_use_status = 1  # Starting in state 1
+        person.current_incarceration_status = 0  # Not incarcerated
+        ALC_USE_STATES = self.params_list["ALC_USE_STATES"]
 
-    #     # Create a mock RNG with a mock uniform method
-    #     mock_rng = MagicMock()
-    #     mock_rng.uniform.side_effect = [0.5, 0.000001]
+        for current_state in ALC_USE_STATES: 
+            N = 100000
+            sums = {}
+            for i in range(N):
+                person.alc_use_status = 1
+                new_state = person.get_new_alc_use_state(current_state)
+                if new_state in sums:
+                    sums[new_state] += 1
+                else:
+                    sums[new_state] = 1
+
+            tot = 0
+            for state in ALC_USE_STATES:
+                tot += ALC_USE_STATES[current_state][state]
+            scaled_states = {}
+            for state in ALC_USE_STATES:
+                scaled_states[state] = ALC_USE_STATES[current_state][state] / tot
         
-    #     # Patch 'default_rng' to return the mock RNG
-    #     with patch('repast4py.random.default_rng', return_value=mock_rng):
-    #         person.transition_alc_use()  # Transition should not occur
-    #         self.assertEqual(person.alc_use_status, 1)
-
-    #         person.transition_alc_use()  # Transition should occur
-    #         # Assuming this is the expected state
-    #         expected_state = 0
-    #         self.assertEqual(person.alc_use_status, expected_state)
-
+            for state in sums:
+                expected = scaled_states[state]
+                result = sums[state]/N
+                self.assertAlmostEqual(expected, result, delta=0.006)
+                print(expected, result, abs(expected - result))
 
     # def test_transition_alc_use_statistically(self):
     #     person_creator = init_person_creator()

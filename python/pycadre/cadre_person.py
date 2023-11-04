@@ -6,7 +6,7 @@ import csv
 
 # read parameters
 
-
+alc_use_states = [0, 1, 2, 3]
 class Person(core.Agent):
     """The Person Agent
 
@@ -95,48 +95,42 @@ class Person(core.Agent):
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
     
-    def transition_alc_use(self):
+    def get_new_alc_use_state(self, current_state):
+        trans_probs = []
+        states = [0, 1, 2, 3]
         # Load all transition probabilities
         ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
 
+        tot = 0
+        for state in states:
+            tot += ALC_USE_STATES[current_state][state]
+        scaled_states = {}
+        for state in states:
+            scaled_states[state] = ALC_USE_STATES[current_state][state] / tot
+        
+        for state in states:
+            # Append a tuple with the cumulative probability and the target state
+            if trans_probs:
+                trans_probs.append((trans_probs[-1][0] + scaled_states[state], state))
+            else:
+                # First entry is the probability itself since there is no previous cumulative probability
+                trans_probs.append((scaled_states[state], state))
+
+        prob = random.default_rng.uniform(0, 1)
+        for cum_prob, state in trans_probs:
+            if prob <= cum_prob:
+                new_state = state
+                if new_state != current_state:
+                    self.n_alc_use_stat_trans += 1
+                break  # Exit loop after transition occurs
+        return new_state
+
+    def transition_alc_use(self):
         # Check if the agent is not incarcerated
         if self.current_incarceration_status == 0:
             #print("Person alc use status:", self.alc_use_status)
-            
-            # Generate a random probability for the transition using repast4py's RNG
-            prob = random.default_rng.uniform(0, 1)
-            #print("Prob = ", prob)
 
-            # Determine the next state based on the current state and transition probabilities
-            current_state = self.alc_use_status
-            trans_probs = []
-            states = ['N', '1', '2', '3']
-            
-            # Build the list of cumulative transition probabilities and corresponding states
-            for state in states:
-                trans_prob_key = f'TRANS_PROB_{current_state}_{state}'
-                if trans_prob_key in ALC_USE_STATES:
-                    # Append a tuple with the cumulative probability and the target state
-                    if trans_probs:
-                        trans_probs.append((trans_probs[-1][0] + ALC_USE_STATES[trans_prob_key], state))
-                        #print(trans_probs, "\n")
-                    else:
-                        # First entry is the probability itself since there is no previous cumulative probability
-                        trans_probs.append((ALC_USE_STATES[trans_prob_key], state))
-                        #print(trans_probs, "\n")
-
-            # Use the generated probability to determine the next state
-            for cum_prob, state in trans_probs:
-                if prob < cum_prob:
-                    # Convert state strings to appropriate numerical values, if necessary
-                    new_state = {'N': 0, '1': 1, '2': 2, '3': 3}.get(state, current_state)
-                    self.alc_use_status = new_state
-                    if new_state != current_state:
-                        self.n_alc_use_stat_trans += 1
-                        #print("Probability is:", prob)
-                        #print("Cumulative probability is:", cum_prob)
-                        #print("Alcohol state transition from", current_state, "to", new_state)
-                    break  # Exit loop after transition occurs
+            self.alc_use_status = self.get_new_alc_use_state(self.alc_use_status)
             
         #print("Alcohol use state:", self.alc_use_status)
 
