@@ -97,16 +97,16 @@ class Person(core.Agent):
     
     def get_new_alc_use_state(self, current_state):
         trans_probs = []
-        states = [0, 1, 2, 3]
         # Load all transition probabilities
         ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
+        states = ALC_USE_STATES[current_state]
 
         tot = 0
         for state in states:
-            tot += ALC_USE_STATES[current_state][state]
+            tot += states[state]
         scaled_states = {}
         for state in states:
-            scaled_states[state] = ALC_USE_STATES[current_state][state] / tot
+            scaled_states[state] = states[state] / tot
         
         for state in states:
             # Append a tuple with the cumulative probability and the target state
