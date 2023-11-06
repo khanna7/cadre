@@ -42,7 +42,8 @@ ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
   theme_minimal() +
   labs(title = "",
        x = "Time (Days)",
-       y = "Incarceration Rate (per 100,000 persons)")#+
+       y = "Incarceration Rate (per 100,000 persons)")+
+  theme(text = element_text(size = 20, face = "bold"))
 
 
 # number incarcerated
@@ -80,14 +81,39 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
          by=c("race", "female")][,"prop":=round(N/sum(N)*100, 0)][]
 
 # smoking
-agent_dt[tick==last_tick & current_incarceration_status == 1, 
+incarcerated <- 
+  agent_dt[tick %in% selected_ticks & current_incarceration_status==1, 
          .N, 
-         by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][]
+         by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][order(smoking_status)]
+
+incarcerated$group <- "Incarcerated"
+
+general_pop <- 
+  agent_dt[tick %in% selected_ticks, 
+         .N, 
+         by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][order(smoking_status)]
+general_pop$group <- "General"
+
+combined_data <- rbind(incarcerated, general_pop)
+combined_data$smoking_status <- factor(combined_data$smoking_status, 
+                                       levels = c("Current", "Former", "Never"))
+
+
+ggplot(combined_data, aes(x = smoking_status, y = prop, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
+  labs(title = "",
+       x = "Smoking Status",
+       y = "Proportion (%)",
+       fill = "Population Type")+
+  theme_minimal() +
+  theme(text = element_text(size = 20, face = "bold"))
+
 
 # alcohol 
-agent_dt[tick==last_tick & current_incarceration_status == 1, 
+agent_dt[tick %in% selected_ticks & current_incarceration_status == 1, 
          .N, 
-         by=c("alc_use_status")][,"prop":=round(N/sum(N)*100, 0)][]
+         by=c("alc_use_status")][,"prop":=round(N/sum(N)*100, 0)][order(alc_use_status)]
 
 
 # Ever incarcerated ----------
@@ -261,7 +287,8 @@ ggplot(sex_data, aes(x = Sex, y = Proportion, fill = PopulationType)) +
        x = "Sex",
        y = "Proportion",
        fill = "Population Type") +
-  theme_minimal()
+  theme_minimal()+
+  theme(text=element_text(face = "bold", size = 20))
 
 
 # race 
@@ -280,4 +307,14 @@ ggplot(race_data, aes(x = Race, y = Proportion, fill = PopulationType)) +
        x = "Race",
        y = "Proportion",
        fill = "Population Type") +
-  theme_minimal()
+  theme_minimal()+
+  theme(text=element_text(face="bold", size=20))
+
+# current smoking
+
+race_data <- data.frame(
+  Race = rep(c("Black", "Hispanic", "White", "Asian"), each = 2),
+  Count = c(188, 1310, 123, 2580, 254, 11214, 5, 598),
+  Proportion = c(0.33, 0.08, 0.22, 0.16, 0.45, 0.71, 0.01, 0.04),
+  PopulationType = rep(c("Incarcerated", "General"), 4)
+)
