@@ -16,21 +16,12 @@ class TestPerson(unittest.TestCase):
         )
 
     def test_post_release_alc_use(self):
-        # self.params_list['ALC_USE_PROPS'][0] = 0.1
-        # self.params_list['ALC_USE_PROPS'][1] = 0.7
-        # self.params_list['ALC_USE_PROPS'][2] = 0.1
-        # self.params_list['ALC_USE_PROPS'][3] = 0.1
-        
-        person_creator = init_person_creator()
-        p = person_creator.create_person()
-        p.n_releases = 1
-        
-        p.alc_use_status = 0
         states=[]
         
+        person_creator = init_person_creator()
         n = 10000
+        
         for i in range(n):
-            person = init_person_creator()
             p = person_creator.create_person()
             p.n_releases = 1
             p.update_alc_use_post_release()
@@ -42,10 +33,10 @@ class TestPerson(unittest.TestCase):
         count_of_2 = states.count(2)
         count_of_3 = states.count(3)
         
-        self.assertAlmostEqual(count_of_0/n, 0.31, delta=0.01)
+        self.assertAlmostEqual(count_of_0/n, 0.31, delta=0.01) #allt are hardcoded right now - should be changed
         self.assertAlmostEqual(count_of_1/n, 0.51, delta=0.01) 
         self.assertAlmostEqual(count_of_2/n, 0.01, delta=0.01) 
-        self.assertAlmostEqual(count_of_3/n, 0.17, delta=0.01) #state 3 is hardcoded to 17%
+        self.assertAlmostEqual(count_of_3/n, 0.17, delta=0.01) 
         
     def test_age_assignment(self):
 
