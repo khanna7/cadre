@@ -8,7 +8,6 @@ import csv
 
 # read parameters
 
-alc_use_states = [0, 1, 2, 3]
 class Person(core.Agent):
     """The Person Agent
 
