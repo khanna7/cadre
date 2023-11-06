@@ -25,10 +25,10 @@ FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 NUM_RELEASE_ALCOHOL_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 
 ALC_USE_PROPS: 
-  N: 0.35 #no drinkgs in last 12m
-  CAT_1: 0.55 #<= 40gpd for M,  <= 20gpd for F
-  CAT_2: 0.05 #41-60 for M, 21-40 for F
-  CAT_3: 0.05 #>= 61 for M, >= 41 for F 
+  0: 0.35 #no drinkgs in last 12m
+  1: 0.55 #<= 40gpd for M,  <= 20gpd for F
+  2: 0.05 #41-60 for M, 21-40 for F
+  3: 0.05 #>= 61 for M, >= 41 for F 
   # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
   
 
@@ -172,16 +172,28 @@ SMOKING_NETWORK_EFFECTS:
     FIRST_DEGREE: 1.36
 # REF: Christakis NA, N Engl J Med. 2008;358(21):2249-2258.
 
+# ALCOHOL_NETWORK_EFFECTS:
+#   ONSET:
+#     FIRST_DEGREE: 1.50
+#     SECOND_DEGREE: 1.36
+#     THIRD_DEGREE:  1.15
+#   DISCONTINUATION:
+#     FIRST_DEGREE: 1.29
+#     SECOND_DEGREE: 1.21
+#     THIRD_DEGREE: 1.05
+#REF: Rosenquist JN, Ann Intern Med. 2010;152(7):426-433, W141.
+
+## REMOVE NETWORK EFFECTS
 ALCOHOL_NETWORK_EFFECTS:
   ONSET:
-    FIRST_DEGREE: 1.50
-    SECOND_DEGREE: 1.36
-    THIRD_DEGREE:  1.15
+    FIRST_DEGREE: 1
+    SECOND_DEGREE: 1
+    THIRD_DEGREE:  1
   DISCONTINUATION:
-    FIRST_DEGREE: 1.29
-    SECOND_DEGREE: 1.21
-    THIRD_DEGREE: 1.05
-#REF: Rosenquist JN, Ann Intern Med. 2010;152(7):426-433, W141.
+    FIRST_DEGREE: 1
+    SECOND_DEGREE: 1
+    THIRD_DEGREE: 1
+
 
 MAX_N_NEIGHBORS_EFFECT:
   SMOKING: 3

@@ -24,7 +24,7 @@ class PersonCreator:
         RD = load_params.params_list["RACE_DISTRIBUTION"]
         RACE_DISTRIBUTION = [RD["White"], RD["Black"], RD["Hispanic"], RD["Asian"]]
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
-        ALC_USE_PROPS = [AU_PROPS["N"], AU_PROPS["CAT_1"], AU_PROPS["CAT_2"], AU_PROPS["CAT_3"]]
+        ALC_USE_PROPS = [AU_PROPS[0], AU_PROPS[1], AU_PROPS[2], AU_PROPS[3]]
 
 
         my_age = max(MIN_AGE, age) if age is not None else random.default_rng.uniform(MIN_AGE, MAX_AGE)

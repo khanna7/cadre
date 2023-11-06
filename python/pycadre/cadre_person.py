@@ -485,7 +485,7 @@ class Person(core.Agent):
             self.smoker =  "Current" if (prob_current > random.default_rng.random()) else "Former"
 
     def update_alc_use_post_release(self):
-        if self.alc_use_status == 0: return
+        #if self.alc_use_status == 0: return
 
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
         ALC_USE_PROPS_INIT = [AU_PROPS["N"], AU_PROPS["CAT_1"], AU_PROPS["CAT_2"], AU_PROPS["CAT_3"]]
@@ -495,10 +495,15 @@ class Person(core.Agent):
         ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
         ALC_USE_PROPS_POSTRELEASE[0] = ALC_USE_PROPS_INIT[0] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
 
+        
+        print("Alcohol states init", ALC_USE_PROPS_INIT)
+        print("Alcohol states PR", ALC_USE_PROPS_POSTRELEASE)
+        
         if (self.n_releases > 0):
             alc_use_status_postrelease = random.default_rng.choice(
-                range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
+                range(0, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[0:]) for x in ALC_USE_PROPS_POSTRELEASE[0:]]
             )
+            print("New status selected = ", alc_use_status_postrelease)
             self.alc_use_status = alc_use_status_postrelease
 
 def create_person(nid, agent_type, rank, **kwargs):
