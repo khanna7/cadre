@@ -20,7 +20,7 @@ input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
 
 # Read simulated data ------------
 
-sim_data_path <- "/users/akhann16/code/cadre/python/output_20231105_233822/agent_log.csv"
+sim_data_path <- "/users/akhann16/code/cadre/python/output_20231106_082519/agent_log.csv"
 agent_dt <- fread(sim_data_path)
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
