@@ -1,6 +1,8 @@
 from functools import partial
 from unicodedata import name
 from repast4py import core, schedule, random
+
+import copy
 import pycadre.load_params as load_params
 import csv
 
@@ -108,11 +110,11 @@ class Person(core.Agent):
         trans_probs = []
         # Load all transition probabilities
         ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
-        states = ALC_USE_STATES[current_state]
+        states = copy.deepcopy(ALC_USE_STATES[current_state])
 
         if current_state == 2:
             increase = self.get_regular_to_heavy_alc_use_transition_network_influence()
-            states[3] *= increase
+            states[3] = states[3] * increase
         scaled_states = self.normalize_transitions(states)
         
         for state in scaled_states:
