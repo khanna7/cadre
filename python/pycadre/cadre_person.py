@@ -115,6 +115,7 @@ class Person(core.Agent):
             increase = self.get_regular_to_heavy_alc_use_transition_network_influence()
             states[3] = states[3] * increase
         scaled_states = self.normalize_transitions(states)
+        #print("Scaled states: ", scaled_states)
         
         for state in scaled_states:
             # Append a tuple with the cumulative probability and the target state
@@ -125,7 +126,9 @@ class Person(core.Agent):
                 trans_probs.append((scaled_states[state], state))
 
         prob = random.default_rng.uniform(0, 1)
+        #print("Trans probs", trans_probs)
         for cum_prob, state in trans_probs:
+            #print("Trans probs: ", trans_probs)
             if prob <= cum_prob:
                 new_state = state
                 if new_state != current_state:
@@ -396,7 +399,7 @@ class Person(core.Agent):
                                     
                 if prob < specific_prob:
                     self.update_attributes_at_incarceration_tick(tick=tick)
-                    print("Agent experiences recidivism")
+                    #print("Agent experiences recidivism")
     
     def assign_smoker_status(self):
         SMOKING_CATS = load_params.params_list["SMOKING_CATS"]
@@ -488,7 +491,7 @@ class Person(core.Agent):
         #if self.alc_use_status == 0: return
 
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
-        ALC_USE_PROPS_INIT = [AU_PROPS["N"], AU_PROPS["CAT_1"], AU_PROPS["CAT_2"], AU_PROPS["CAT_3"]]
+        ALC_USE_PROPS_INIT = [AU_PROPS[0], AU_PROPS[1], AU_PROPS[2], AU_PROPS[3]]
         ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
         ALC_USE_PROPS_POSTRELEASE[3] = 0.17
         ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
@@ -496,14 +499,14 @@ class Person(core.Agent):
         ALC_USE_PROPS_POSTRELEASE[0] = ALC_USE_PROPS_INIT[0] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
 
         
-        print("Alcohol states init", ALC_USE_PROPS_INIT)
-        print("Alcohol states PR", ALC_USE_PROPS_POSTRELEASE)
+        #print("Alcohol states init", ALC_USE_PROPS_INIT)
+        #print("Alcohol states PR", ALC_USE_PROPS_POSTRELEASE)
         
         if (self.n_releases > 0):
             alc_use_status_postrelease = random.default_rng.choice(
-                range(0, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[0:]) for x in ALC_USE_PROPS_POSTRELEASE[0:]]
+                range(0, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE) for x in ALC_USE_PROPS_POSTRELEASE]
             )
-            print("New status selected = ", alc_use_status_postrelease)
+            #print("Post-release status selected = ", alc_use_status_postrelease)
             self.alc_use_status = alc_use_status_postrelease
 
 def create_person(nid, agent_type, rank, **kwargs):

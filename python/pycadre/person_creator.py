@@ -35,6 +35,7 @@ class PersonCreator:
         alc_use_status = random.default_rng.choice(
             range(0, len(ALC_USE_PROPS)), p=ALC_USE_PROPS
         )
+        #print("New agent's alcohol use status is", alc_use_status)
         person = cadre_person.Person(
             self.id,
             cadre_person.Person.TYPE,
