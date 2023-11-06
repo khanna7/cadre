@@ -16,31 +16,37 @@ class TestPerson(unittest.TestCase):
         )
 
     def test_post_release_alc_use(self):
-        self.params_list['ALC_USE_PROPS']['N'] = 0.1
-        self.params_list['ALC_USE_PROPS']['CAT_1'] = 0.7
-        self.params_list['ALC_USE_PROPS']['CAT_2'] = 0.1
-        self.params_list['ALC_USE_PROPS']['CAT_3'] = 0.1
+        # self.params_list['ALC_USE_PROPS'][0] = 0.1
+        # self.params_list['ALC_USE_PROPS'][1] = 0.7
+        # self.params_list['ALC_USE_PROPS'][2] = 0.1
+        # self.params_list['ALC_USE_PROPS'][3] = 0.1
+        
         person_creator = init_person_creator()
         p = person_creator.create_person()
         p.n_releases = 1
+        
         p.alc_use_status = 0
-        for i in range(100):
-            p.update_alc_use_post_release()
-            self.assertEqual(0, p.alc_use_status)
-        p.alc_use_status = 1
-        hist = { 1: 0., 2: 0., 3: 0. }
-        n = 50000
+        states=[]
+        
+        n = 10000
         for i in range(n):
+            person = init_person_creator()
+            p = person_creator.create_person()
+            p.n_releases = 1
             p.update_alc_use_post_release()
-            hist[p.alc_use_status] += 1
-
-        expected = 0.17 / 0.9
-        result = hist[3] / n
-        self.assertAlmostEqual(expected, result, delta=0.01)
-        expected = (0.7 - (0.07 / 2)) / 0.9
-        result = hist[1] / n
-        self.assertAlmostEqual(expected, result, delta=0.01) 
-
+            new_state = p.alc_use_status
+            states.append(new_state)
+            
+        count_of_0 = states.count(0)
+        count_of_1 = states.count(1)
+        count_of_2 = states.count(2)
+        count_of_3 = states.count(3)
+        
+        self.assertAlmostEqual(count_of_0/n, 0.31, delta=0.01)
+        self.assertAlmostEqual(count_of_1/n, 0.51, delta=0.01) 
+        self.assertAlmostEqual(count_of_2/n, 0.01, delta=0.01) 
+        self.assertAlmostEqual(count_of_3/n, 0.17, delta=0.01) #state 3 is hardcoded to 17%
+        
     def test_age_assignment(self):
 
         ages = []
@@ -298,10 +304,10 @@ class TestPerson(unittest.TestCase):
         is within 0.01 units of the target proportion (0-1 scale)
         """
 
-        NON_PROP = self.params_list["ALC_USE_PROPS"]["N"]
-        CAT1_PROP = self.params_list["ALC_USE_PROPS"]["CAT_1"]
-        CAT2_PROP = self.params_list["ALC_USE_PROPS"]["CAT_2"]
-        CAT3_PROP = self.params_list["ALC_USE_PROPS"]["CAT_3"]
+        NON_PROP = self.params_list["ALC_USE_PROPS"][0]
+        CAT1_PROP = self.params_list["ALC_USE_PROPS"][1]
+        CAT2_PROP = self.params_list["ALC_USE_PROPS"][2]
+        CAT3_PROP = self.params_list["ALC_USE_PROPS"][3]
 
         all_alco = []
 

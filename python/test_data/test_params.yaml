@@ -23,10 +23,10 @@ RACE_DISTRIBUTION:
 FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 
 ALC_USE_PROPS: 
-  N: 0.35 #no drinkgs in last 12m
-  CAT_1: 0.55 #<= 40gpd for M,  <= 20gpd for F
-  CAT_2: 0.05 #41-60 for M, 21-40 for F
-  CAT_3: 0.05 #>= 61 for M, >= 41 for F 
+  0: 0.35 #no drinkgs in last 12m
+  1: 0.55 #<= 40gpd for M,  <= 20gpd for F
+  2: 0.05 #41-60 for M, 21-40 for F
+  3: 0.05 #>= 61 for M, >= 41 for F 
   # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
 
 ALC_USE_STATES:
