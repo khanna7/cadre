@@ -492,6 +492,7 @@ class Person(core.Agent):
 
         AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
         ALC_USE_PROPS_INIT = [AU_PROPS[0], AU_PROPS[1], AU_PROPS[2], AU_PROPS[3]]
+        #print("Alc use props init: ",  ALC_USE_PROPS_INIT)
         ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
         ALC_USE_PROPS_POSTRELEASE[3] = 0.17
         ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
@@ -499,8 +500,9 @@ class Person(core.Agent):
         ALC_USE_PROPS_POSTRELEASE[0] = ALC_USE_PROPS_INIT[0] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/3
 
         
-        #print("Alcohol states init", ALC_USE_PROPS_INIT)
-        #print("Alcohol states PR", ALC_USE_PROPS_POSTRELEASE)
+        # print("Alcohol states init", ALC_USE_PROPS_INIT)
+        # print("Alcohol states PR", ALC_USE_PROPS_POSTRELEASE)
+        # print("Sum PR", sum(ALC_USE_PROPS_POSTRELEASE))
         
         if (self.n_releases > 0):
             alc_use_status_postrelease = random.default_rng.choice(
