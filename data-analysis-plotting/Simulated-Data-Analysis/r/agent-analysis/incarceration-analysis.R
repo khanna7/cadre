@@ -27,6 +27,7 @@ input_params <- agent_log_env[["input_params"]]
 
 # Summary ------------
 
+last_tick <- max(agent_dt$tick)
 selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
 
 # mean incarceration rate over time
@@ -80,40 +81,8 @@ agent_dt[tick==last_tick & current_incarceration_status == 1,
          .N, 
          by=c("race", "female")][,"prop":=round(N/sum(N)*100, 0)][]
 
-# smoking
-incarcerated <- 
-  agent_dt[tick %in% selected_ticks & current_incarceration_status==1, 
-         .N, 
-         by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][order(smoking_status)]
-
-incarcerated$group <- "Incarcerated"
-
-general_pop <- 
-  agent_dt[tick %in% selected_ticks, 
-         .N, 
-         by=c("smoking_status")][,"prop":=round(N/sum(N)*100, 0)][order(smoking_status)]
-general_pop$group <- "General"
-
-combined_data <- rbind(incarcerated, general_pop)
-combined_data$smoking_status <- factor(combined_data$smoking_status, 
-                                       levels = c("Current", "Former", "Never"))
 
 
-ggplot(combined_data, aes(x = smoking_status, y = prop, fill = group)) +
-  geom_bar(stat = "identity", position = position_dodge()) +
-  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
-  labs(title = "",
-       x = "Smoking Status",
-       y = "Proportion (%)",
-       fill = "Population Type")+
-  theme_minimal() +
-  theme(text = element_text(size = 20, face = "bold"))
-
-
-# alcohol 
-agent_dt[tick %in% selected_ticks & current_incarceration_status == 1, 
-         .N, 
-         by=c("alc_use_status")][,"prop":=round(N/sum(N)*100, 0)][order(alc_use_status)]
 
 
 # Ever incarcerated ----------
@@ -318,3 +287,65 @@ race_data <- data.frame(
   Proportion = c(0.33, 0.08, 0.22, 0.16, 0.45, 0.71, 0.01, 0.04),
   PopulationType = rep(c("Incarcerated", "General"), 4)
 )
+
+
+# Visualize incarceration disparity by smoking  -----------
+
+incarcerated <- 
+  agent_dt[tick %in% selected_ticks & current_incarceration_status==1, 
+           .N, 
+           by=c("smoking_status")][,"prop":=round(N/sum(N), 3)][order(smoking_status)]
+
+incarcerated$group <- "Incarcerated"
+
+general_pop <- 
+  agent_dt[tick %in% selected_ticks, 
+           .N, 
+           by=c("smoking_status")][,"prop":=round(N/sum(N), 3)][order(smoking_status)]
+general_pop$group <- "General"
+
+combined_data <- rbind(incarcerated, general_pop)
+combined_data$smoking_status <- factor(combined_data$smoking_status, 
+                                       levels = c("Current", "Former", "Never"))
+
+
+ggplot(combined_data, aes(x = smoking_status, y = prop, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
+  labs(title = "",
+       x = "Smoking Status",
+       y = "Proportion (%)",
+       fill = "Population Type")+
+  ylim(c(0,1))+
+  theme_minimal() +
+  theme(text = element_text(size = 20, face = "bold"))
+
+
+# Visualize incarceration disparity by alcohol status -----------
+
+incarcerated2 <- 
+  agent_dt[tick %in% selected_ticks & current_incarceration_status == 1, 
+         .N, 
+         by=c("alc_use_status")][,"prop":=round(N/sum(N), 3)][order(alc_use_status)]
+
+incarcerated2$group <- "Incarcerated"
+
+general_pop2 <- 
+  agent_dt[tick %in% selected_ticks, 
+           .N, 
+           by=c("alc_use_status")][,"prop":=round(N/sum(N), 3)][order(alc_use_status)]
+general_pop2$group <- "General"
+
+combined_data2 <- rbind(incarcerated2, general_pop2)
+
+
+ggplot(combined_data2, aes(x = alc_use_status, y = prop, fill = group)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("General" = "blue", "Incarcerated" = "red")) +
+  labs(title = "",
+       x = "Alcohol Use",
+       y = "Proportion (%)",
+       fill = "Population Type")+
+  ylim(c(0,1)) +
+  theme_minimal() +
+  theme(text = element_text(size = 20, face = "bold"))
