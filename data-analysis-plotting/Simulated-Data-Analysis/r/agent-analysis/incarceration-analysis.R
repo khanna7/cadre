@@ -1,4 +1,5 @@
 # Analyze incarceration data
+rm(list=ls())
 
 
 # Load R environment ---------
@@ -44,7 +45,8 @@ ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
   labs(title = "",
        x = "Time (Days)",
        y = "Incarceration Rate (per 100,000 persons)")+
-  theme(text = element_text(size = 20, face = "bold"))
+  theme(text = element_text(size = 20, face = "bold"))+
+  ylim(c(0,500))
 
 
 # number incarcerated
