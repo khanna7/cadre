@@ -200,7 +200,7 @@ smoking_legend <- data.frame(
 )
 
 alc_legend <- data.frame(
-  group = c("Alcohol Use Disorder"),
+  group = c("Heavy Alcohol Use"),
   shape = c("circle"),
   fillcolor = c("red"),
   color = c("red")
@@ -239,7 +239,7 @@ Horizontal legend alignment:
 ```{r}
 # Create a legend
 legend <- data.frame(
-  group = c("Recently Released", "Network Member", "Current Smoking", "Alcohol Use Disorder"),
+  group = c("Recently Released", "Network Member", "Current Smoking", "Heavy Alcohol Use"),
   shape = c("square", "circle", "circle", "circle"),
   fillcolor = c("black", "white", "blue", "red"),
   color = c("black", "black", "blue", "red")
