@@ -15,13 +15,14 @@ renv::activate()
 
 # Input params ------------
 
-input_params <- read_yaml("~/code/cadre/python/myparams/model_params.yaml")
+
 
 
 # Read simulated data ------------
 
-sim_data_path <- "/users/akhann16/code/cadre/python/output_20231107_122911/agent_log.csv"
-agent_dt <- fread(sim_data_path)
+sim_data_path <- "/users/akhann16/code/cadre/python/output_20231107_122911/"
+agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
+input_params <- read.table(paste0(sim_data_path, "parameters.txt"))
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
