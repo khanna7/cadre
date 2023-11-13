@@ -124,8 +124,10 @@ SENTENCE_DURATION_EMP:
 SMOKING_CATS: ["Current", "Former", "Never"]
 NUM_RELEASE_SMOKING_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 RELEASE_SMOKING_INCREASE:
-  MALES: 1.7
-  FEMALES: 1.61
+  #MALES: 1.7
+  MALES: 1
+  #FEMALES: 1.61
+  FEMALES: 1
 # Per National Survey of  American Life (Bailey 2015).
 
 SMOKING_PREV:
