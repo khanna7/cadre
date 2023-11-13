@@ -20,9 +20,9 @@ renv::activate()
 
 # Read simulated data ------------
 
-sim_data_path <- "/users/akhann16/code/cadre/python/output_20231107_122911/"
+sim_data_path <- "/users/akhann16/code/cadre/python/output_20231110_152817/"
 agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
-input_params <- read.table(paste0(sim_data_path, "parameters.txt"))
+#input_params <- read.table(paste0(sim_data_path, "parameters.txt"))
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
@@ -32,7 +32,7 @@ print(last_tick)
 
 agent_log_env <- new.env()
 agent_log_env$agent_dt <- agent_dt
-agent_log_env$input_parms <- input_params
+#agent_log_env$input_parms <- input_params
 
 
 # Save environment ------------
