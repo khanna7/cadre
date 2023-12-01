@@ -322,8 +322,6 @@ class Person(core.Agent):
             #self.assign_smoker_status() 
             #self.update_alc_use_post_release()
 
-    
-
     def simulate_recidivism(
         self,
         tick,
@@ -460,16 +458,16 @@ class Person(core.Agent):
             }
         }
 
-        smoking_increase_factor = [load_params.parameters.params['RELEASE_SMOKING_INCREASE']['MALES'], load_params.parameters.params['RELEASE_SMOKING_INCREASE']['FEMALES']]
-        num_smoking_increases = load_params.parameters.params['NUM_RELEASE_SMOKING_INCREASES']
-        if self.n_releases > 0:
-            n = max(self.n_releases, num_smoking_increases)
-            for race in RACE_CATS:
-                for sex in [0, 1]:
-                    current = pow(smoking_increase_factor[sex], n) * SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][0]
-                    SMOKING_PREV_BY_RACE_AND_GENDER[race][sex] = (current,
-                                                            1 - (current + SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]),
-                                                            SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]) 
+        # smoking_increase_factor = [load_params.parameters.params['RELEASE_SMOKING_INCREASE']['MALES'], load_params.parameters.params['RELEASE_SMOKING_INCREASE']['FEMALES']]
+        # num_smoking_increases = load_params.parameters.params['NUM_RELEASE_SMOKING_INCREASES']
+        # if self.n_releases > 0:
+        #     n = max(self.n_releases, num_smoking_increases)
+        #     for race in RACE_CATS:
+        #         for sex in [0, 1]:
+        #             current = pow(smoking_increase_factor[sex], n) * SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][0]
+        #             SMOKING_PREV_BY_RACE_AND_GENDER[race][sex] = (current,
+        #                                                     1 - (current + SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]),
+        #                                                     SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]) 
 
         network_increase = self.get_smoking_network_influence_factor()
         if network_increase != 1:
