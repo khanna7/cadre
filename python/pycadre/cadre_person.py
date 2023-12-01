@@ -319,8 +319,8 @@ class Person(core.Agent):
             self.incarceration_duration = -1
             self.n_releases += 1
             #self.previous_smoking_status = self.smoker
-            self.assign_smoker_status() 
-            self.update_alc_use_post_release()
+            #self.assign_smoker_status() 
+            #self.update_alc_use_post_release()
 
     
 
