@@ -15,11 +15,14 @@ library(ggplot2)
 
 
 # Utility functions ------------
-source(here("agent-analysis", "utils", "post-release-smoking.R"))
+#source(here("agent-analysis", "utils", "post-release-smoking.R"))
+source("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/utils/post-release-smoking.R")
+
 
 # Read RDS file ------------
 
-agent_log_env <- readRDS(here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
+#agent_log_env <- readRDS(here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
+agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/rds-outs/agent_log_env.RDS")
 
 
 # Load data ------------
