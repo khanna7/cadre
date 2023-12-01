@@ -12,8 +12,8 @@ calculate_proportions <- function(data) {
 # Function to filter agents and calculate proportions for the given time period after release
 summary_after_release <- function(time_period, agent_dt) {
   agents_within_time_period <- agent_dt[last_release_tick > 0 & 
-                                          tick <= last_release_tick + time_period &
-                                          tick %in% c(seq(10501, 10941, 10), last_tick)
+                                          tick <= last_release_tick + time_period #&
+                                          # tick %in% c(seq(10501, 10941, 10), last_tick)
                                           ]
   proportions <- calculate_proportions(agents_within_time_period)
   return(proportions)
