@@ -20,8 +20,15 @@ renv::activate()
 
 # Read simulated data ------------
 
-sim_data_path <- "/users/akhann16/code/cadre/python/output_20231110_152817/"
+
+#sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231128_194046/" #noah's data
+#sim_data_path <- "/users/akhann16/code/cadre/python/output_20231110_152817/"
+#sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231106_082519/"
+
+sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231201_134916/" 
+
 agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
+
 #input_params <- read.table(paste0(sim_data_path, "parameters.txt"))
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
