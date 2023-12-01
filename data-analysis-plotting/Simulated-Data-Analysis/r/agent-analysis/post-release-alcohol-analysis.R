@@ -1,21 +1,8 @@
 # Analyze incarceration data
-renv::activate()
 
 rm(list=ls())
-
-# Set the root director for the spin function 
   
-  #' ---
-  #' title: "Post-Release Alcohol Analysis"
-  #' output: html_document
-  #' ---
-  
-  #' ```{r setup, include=FALSE}
-  #' knitr::opts_knit$set(root.dir = '~/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r')
-  #' ```
-  
-  
-
+renv::activate()
 
 
 # Load packages ---------
@@ -30,8 +17,9 @@ library(dplyr)
 # Utility functions ------------
 
 #source(here("agent-analysis", "utils", "post-release-alcohol.R"))
-#print(here("agent-analysis", "utils", "post-release-alcohol.R"))
+#print(here("agent-analysis", "utils", "post-release-alcohol.R")) 
 source("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/utils/post-release-alcohol.R")
+
 
 # Read RDS file ------------
 
