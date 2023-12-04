@@ -256,7 +256,10 @@ INCARCERATION_AUD_ASSOC:
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
 network_log_file: 'output/network_log.csv'
+incarceration_log_file: 'output/incarceration_log.csv'
 network_file: 'network.txt'
+network_file: 'network.txt'
+
 
 
 

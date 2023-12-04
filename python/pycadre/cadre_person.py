@@ -197,7 +197,7 @@ class Person(core.Agent):
             pass
 
     
-    def simulate_incarceration(self, tick, probability_daily_incarceration, 
+    def simulate_incarceration(self, tick, model, probability_daily_incarceration, 
                                race_sex_pop_props, pct_smoking, pct_aud):
         prob = random.default_rng.uniform(0, 1)
 
@@ -259,6 +259,7 @@ class Person(core.Agent):
 
                     if prob < specific_prob:
                         self.update_attributes_at_incarceration_tick(tick)
+                        model.log_incarceration(self, tick)
                         
                 
     def update_attributes_at_incarceration_tick(self, tick):

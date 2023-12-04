@@ -44,7 +44,7 @@ class Model:
         self.runner.schedule_stop(params["STOP_AT"])
         # self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_repeating_event(1, 10, self.log_network)
-        self.runner.schedule_repeating_event(1, 1, self.log_incarceration)
+        #self.runner.schedule_repeating_event(1, 1, self.log_incarceration)
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
@@ -104,7 +104,6 @@ class Model:
         )
 
         # initialize the counts logging
-
         self.counts = CountsLog(
             agent_count,
             len(n_incarcerated),
@@ -129,6 +128,13 @@ class Model:
         self.data_set = logging.ReducingDataSet(
             loggers, MPI.COMM_WORLD, load_params.params_list["counts_log_file"]
         )
+
+        # Initialize the incarceration logging
+        incarceration_logging_cols = ["tick", "id", "age", "race", "female", "alc_use_status", "smoking_status"]
+        self.incarceration_logger = logging.TabularLogger(
+            comm, load_params.params_list["incarceration_log_file"], incarceration_logging_cols
+        )
+
 
     def log_agent(self, person, tick):
         self.agent_logger.log_row(
@@ -180,6 +186,8 @@ class Model:
         self.network_logger.write()
 
     def log_incarceration(self, person, tick):
+        tick = self.runner.schedule.tick
+
         self.incarceration_logger.log_row(
             tick,
             person.name,
@@ -189,6 +197,8 @@ class Model:
             person.alc_use_status,
             person.smoker
         )
+        self.incarceration_logger.write()
+
 
     def at_end(self):
         self.data_set.close()
@@ -243,6 +253,7 @@ class Model:
             person.transition_smoking_status(tick)
             person.simulate_incarceration(
                 tick=tick,
+                model = self,
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
