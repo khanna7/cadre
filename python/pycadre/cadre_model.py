@@ -44,6 +44,7 @@ class Model:
         self.runner.schedule_stop(params["STOP_AT"])
         # self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_repeating_event(1, 10, self.log_network)
+        self.runner.schedule_repeating_event(1, 1, self.log_incarceration)
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
@@ -177,6 +178,17 @@ class Model:
             agent2 = edge[1]
             self.network_logger.log_row(tick, agent1.id, agent2.id)
         self.network_logger.write()
+
+    def log_incarceration(self, person, tick):
+        self.incarceration_logger.log_row(
+            tick,
+            person.name,
+            round(person.age),
+            person.race,
+            person.female,
+            person.alc_use_status,
+            person.smoker
+        )
 
     def at_end(self):
         self.data_set.close()
