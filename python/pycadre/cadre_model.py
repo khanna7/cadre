@@ -263,8 +263,10 @@ class Model:
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
+
             person.simulate_recidivism(
                 tick=tick,
+                model=self,
                 probability_daily_recidivism_females=load_params.params_list[
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["FEMALES"],
@@ -345,18 +347,14 @@ class Model:
         
         # Get the correct output directory
         output_directory = self.get_output_directory()
-
-        # Update paths for the log files
-        load_params.params_list['agent_log_file'] = os.path.join(output_directory, 'agent_log.csv')
-        load_params.params_list['network_log_file'] = os.path.join(output_directory, 'network_log.csv')
-        load_params.params_list['counts_log_file'] = os.path.join(output_directory, 'counts_log.csv')
-
         
         # Since load_params.params_list contains keys like 'agent_log_file', 'network_log_file', etc.
         # We update their paths to ensure they are saved in the same directory as the parameters
         load_params.params_list['agent_log_file'] = os.path.join(self.output_directory, 'agent_log.csv')
         load_params.params_list['network_log_file'] = os.path.join(self.output_directory, 'network_log.csv')
         load_params.params_list['counts_log_file'] = os.path.join(self.output_directory, 'counts_log.csv')
+        load_params.params_list['incarceration_log_file'] = os.path.join(output_directory, 'incarceration_log.csv')
+
 
     def start(self):
         self.runner.execute()
