@@ -4,6 +4,8 @@ from repast4py import core, schedule, random
 
 import copy
 import pycadre.load_params as load_params
+#from pycadre.Model import Model
+
 import csv
 
 # read parameters
@@ -326,6 +328,7 @@ class Person(core.Agent):
     def simulate_recidivism(
         self,
         tick,
+        model,
         probability_daily_recidivism_females,
         probability_daily_recidivism_males,
         race_sex_pop_props,
@@ -398,6 +401,7 @@ class Person(core.Agent):
                                     
                 if prob < specific_prob:
                     self.update_attributes_at_incarceration_tick(tick=tick)
+                    model.log_incarceration(self, tick)
                     #print("Agent experiences recidivism")
     
     def assign_smoker_status(self):
