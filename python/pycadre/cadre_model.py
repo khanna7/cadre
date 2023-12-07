@@ -185,7 +185,7 @@ class Model:
             self.network_logger.log_row(tick, agent1.id, agent2.id)
         self.network_logger.write()
 
-    def log_incarceration(self, person, tick):
+    def log_incarceration(self, person, tick, event_type):
         tick = self.runner.schedule.tick
 
         self.incarceration_logger.log_row(
@@ -195,7 +195,8 @@ class Model:
             person.race,
             person.female,
             person.alc_use_status,
-            person.smoker
+            person.smoker,
+            event_type
         )
         self.incarceration_logger.write()
 

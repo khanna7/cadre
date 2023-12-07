@@ -261,7 +261,7 @@ class Person(core.Agent):
 
                     if prob < specific_prob:
                         self.update_attributes_at_incarceration_tick(tick)
-                        model.log_incarceration(self, tick)
+                        model.log_incarceration(self, tick, event_type="Incarceration")
                         
                 
     def update_attributes_at_incarceration_tick(self, tick):
@@ -312,7 +312,7 @@ class Person(core.Agent):
         elif self.dur_cat == 4:
             self.sentence_duration = random.default_rng.integers(1096, 2191)
 
-    def simulate_release(self, tick):
+    def simulate_release(self, tick, model):
         # Check if the agent is still in the graph
         
         if self.graph is not None and self.graph.has_node(self):
@@ -321,6 +321,9 @@ class Person(core.Agent):
             self.last_release_tick = tick
             self.incarceration_duration = -1
             self.n_releases += 1
+            
+            model.log_incarceration(self, tick, event_type="Release")
+            
             #self.previous_smoking_status = self.smoker
             #self.assign_smoker_status() 
             #self.update_alc_use_post_release()
