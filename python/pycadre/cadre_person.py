@@ -260,11 +260,11 @@ class Person(core.Agent):
                     specific_prob = converted_race_sex_smoking_alc_inc_probs[race_sex_key]
 
                     if prob < specific_prob:
-                        self.update_attributes_at_incarceration_tick(tick)
+                        self.update_attributes_at_incarceration_tick(tick, model)
                         model.log_incarceration(self, tick, event_type="Incarceration")
                         
                 
-    def update_attributes_at_incarceration_tick(self, tick):
+    def update_attributes_at_incarceration_tick(self, tick, model):
         self.current_incarceration_status = 1
         self.last_incarceration_tick = tick
         self.incarceration_duration = 0
@@ -275,7 +275,7 @@ class Person(core.Agent):
         runner = schedule.runner()
         runner.schedule_event(
             self.when_to_release,
-            partial(self.simulate_release, tick=self.when_to_release),
+            partial(self.simulate_release, tick=self.when_to_release, model=model),
         )
 
     def assign_sentence_duration_cat(self):
@@ -403,8 +403,8 @@ class Person(core.Agent):
                 specific_prob = converted_race_sex_smoking_alc_recidivism_probs.get(race_sex_key, 0)
                                     
                 if prob < specific_prob:
-                    self.update_attributes_at_incarceration_tick(tick=tick)
-                    model.log_incarceration(self, tick)
+                    self.update_attributes_at_incarceration_tick(tick=tick, model=model)
+                    model.log_incarceration(self, tick, event_type="Incarceration")
                     #print("Agent experiences recidivism")
     
     def assign_smoker_status(self):
