@@ -27,6 +27,11 @@ agent_dt <- agent_log_env[["agent_dt"]]
 input_params <- agent_log_env[["input_params"]]
 
 
+# View data --------
+
+head(incarceration_dt[order(id, tick)], 100)
+     
+
 # Summary ------------
 
 last_tick <- max(agent_dt$tick)
