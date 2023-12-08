@@ -32,57 +32,57 @@ ALC_USE_PROPS:
   # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
   
 
-# ALC_USE_STATES:
-#   # from N
-#   0:
-#     #0: 0.993684
-#     0: 0.9988398 #subtract sum from 1
-#     1: 0.0002604598
-#     2: 0.0006111654
-#     3: 0.0002886173
-#   1:
-#     0: 0.0001665947
-#     #1: 0.9997175
-#     1: 0.9997282 #sutract sum from 1
-#     2: 6.936145e-05
-#     3: 3.584933e-05
-#   2:
-#     0: 3.307502e-05
-#     1: 0.001020066
-#     #2: 0.996866
-#     2: 0.9977292 #subtract sum from 1
-#     3: 0.001217685
-#   3:
-#     0: 1.098082e-05
-#     1: 0.0004387222
-#     2: 0.001076249
-#    #3: 0.9982205
-#     3: 0.998474 #subtract sum from 1
-# REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; PMCID: PMC9722571.
-# apply bionomial probability to compute daily rates
-
 ALC_USE_STATES:
   # from N
   0:
-    0: 1 
-    1: 0
-    2: 0
-    3: 0
+    #0: 0.993684
+    0: 0.9988398 #subtract sum from 1
+    1: 0.0002604598
+    2: 0.0006111654
+    3: 0.0002886173
   1:
-    0: 0
-    1: 1
-    2: 0
-    3: 0
+    0: 0.0001665947
+    #1: 0.9997175
+    1: 0.9997282 #sutract sum from 1
+    2: 6.936145e-05
+    3: 3.584933e-05
   2:
-    0: 0
-    1: 0
-    2: 1
-    3: 0
+    0: 3.307502e-05
+    1: 0.001020066
+    #2: 0.996866
+    2: 0.9977292 #subtract sum from 1
+    3: 0.001217685
   3:
-    0: 0
-    1: 0
-    2: 0
-    3: 1
+    0: 1.098082e-05
+    1: 0.0004387222
+    2: 0.001076249
+   #3: 0.9982205
+    3: 0.998474 #subtract sum from 1
+# REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; PMCID: PMC9722571.
+# apply bionomial probability to compute daily rates
+
+# ALC_USE_STATES:
+#   # from N
+#   0:
+#     0: 1 
+#     1: 0
+#     2: 0
+#     3: 0
+#   1:
+#     0: 0
+#     1: 1
+#     2: 0
+#     3: 0
+#   2:
+#     0: 0
+#     1: 0
+#     2: 1
+#     3: 0
+#   3:
+#     0: 0
+#     1: 0
+#     2: 0
+#     3: 1
 
 # PROBABILITY_DAILY_INCARCERATION: 0.001223976
 # Derived from Macmadu 2021 
