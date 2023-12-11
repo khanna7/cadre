@@ -28,18 +28,21 @@ renv::activate()
 sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231207_211453/" 
 
 agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
-
-#input_params <- read.table(paste0(sim_data_path, "parameters.txt"))
 str(agent_dt)
 last_tick <- max(agent_dt$tick)
 print(last_tick)
+
+
+# Read input parameters ------------
+
+input_params <- yaml.load_file(paste0(sim_data_path, "parameters.txt"))
 
 
 # Create environment to save ------------
 
 agent_log_env <- new.env()
 agent_log_env$agent_dt <- agent_dt
-#agent_log_env$input_parms <- input_params
+agent_log_env$input_params <- input_params
 
 
 # Save environment ------------
