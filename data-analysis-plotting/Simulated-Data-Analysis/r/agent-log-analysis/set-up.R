@@ -25,7 +25,7 @@ renv::activate()
 #sim_data_path <- "/users/akhann16/code/cadre/python/output_20231110_152817/"
 #sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231106_082519/"
 
-sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231205_115728/" 
+sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231207_211453/" 
 
 agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
 
@@ -44,4 +44,4 @@ agent_log_env$agent_dt <- agent_dt
 
 # Save environment ------------
 
-saveRDS(agent_log_env, here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
+saveRDS(agent_log_env, here("agent-log-analysis", "rds-outs", "agent_log_env.RDS"))
