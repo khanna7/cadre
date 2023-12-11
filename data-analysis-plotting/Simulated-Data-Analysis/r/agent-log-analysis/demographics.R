@@ -68,8 +68,6 @@ race_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
 race_proportions_long <- melt(race_proportions_by_tick, id.vars = "tick", variable.name = "race", value.name = "proportion")
 
 # Create a time series plot of race proportions
-
-# Create a time series plot of race proportions
 race_plot <-
   ggplot(race_proportions_long, aes(x = tick, y = proportion, color = race, group = race)) +
   geom_line(linewidth=1.2) +
