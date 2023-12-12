@@ -46,7 +46,8 @@ ggplot(incarceration_summary, aes(x = tick, y = rate_per_100k)) +
   labs(title = "",
        x = "Time (Days)",
        y = "Incarceration Rate (per 100,000 persons)")+
-  theme(text = element_text(size = 20, face = "bold"))+
+  #theme(text = element_text(size = 20, face = "bold"))+
+  theme(text = element_text(face = "bold"))+
   ylim(c(0,500))
 
 
@@ -321,7 +322,8 @@ ggplot(combined_data, aes(x = smoking_status, y = prop, fill = group)) +
        fill = "Population Type")+
   ylim(c(0,1))+
   theme_minimal() +
-  theme(text = element_text(size = 20, face = "bold"))
+  #theme(text = element_text(size = 20, face = "bold"))
+  theme(text = element_text(face = "bold"))
 
 
 # Visualize incarceration disparity by alcohol status -----------
@@ -351,5 +353,5 @@ ggplot(combined_data2, aes(x = alc_use_status, y = prop, fill = group)) +
        fill = "Population Type")+
   ylim(c(0,1)) +
   theme_minimal() +
-  theme(text = element_text(size = 20, face = "bold"))
- 
+  #theme(text = element_text(size = 20, face = "bold"))
+  theme()

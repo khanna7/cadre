@@ -127,7 +127,9 @@ p <- ggplot() +
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        text = element_text(size = 24, face = "bold"))
+        #text = element_text(size = 24, face = "bold"))
+        text = element_text(size = 12))
+
 p
 
 
