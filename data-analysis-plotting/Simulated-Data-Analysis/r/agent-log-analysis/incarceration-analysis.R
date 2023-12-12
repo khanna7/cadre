@@ -18,7 +18,7 @@ library(ggplot2)
 # Read RDS file ------------
 
 #agent_log_env <- readRDS(here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
-agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/rds-outs/agent_log_env.RDS")
+agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-log-analysis/rds-outs/agent_log_env.RDS")
 
 
 # Load data ------------
@@ -26,11 +26,6 @@ agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simu
 agent_dt <- agent_log_env[["agent_dt"]]
 input_params <- agent_log_env[["input_params"]]
 
-
-# View data --------
-
-head(incarceration_dt[order(id, tick)], 100)
-     
 
 # Summary ------------
 

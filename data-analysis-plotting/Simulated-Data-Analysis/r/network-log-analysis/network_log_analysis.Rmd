@@ -16,7 +16,7 @@ library(ggplot2)
 ```
 
 ```{r}
-network_log_env <- readRDS(here("network-analysis", "rds-outs", "network_log_env.RDS"))
+network_log_env <- readRDS(here("network-log-analysis", "rds-outs", "network_log_env.RDS"))
 network_dt <- network_log_env[["network_dt"]]
 input_params <- network_log_env[["input_params"]]
 agent_dt <- network_log_env[["agent_dt"]]

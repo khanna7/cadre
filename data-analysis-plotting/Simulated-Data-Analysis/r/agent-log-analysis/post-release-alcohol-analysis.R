@@ -18,7 +18,7 @@ library(dplyr)
 
 #source(here("agent-analysis", "utils", "post-release-alcohol.R"))
 #print(here("agent-analysis", "utils", "post-release-alcohol.R")) 
-source("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/utils/post-release-alcohol.R")
+source("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-log-analysis/utils/post-release-alcohol.R")
 
 
 # Read RDS file ------------
@@ -27,7 +27,7 @@ source("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysi
 #agent_log_env <- readRDS(here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
 print(here("agent-analysis", "rds-outs", "agent_log_env.RDS"))
 
-agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-analysis/rds-outs/agent_log_env.RDS")
+agent_log_env <- readRDS("/users/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/agent-log-analysis/rds-outs/agent_log_env.RDS")
 
 
 
@@ -181,8 +181,9 @@ p <-
        color = "Population") +
   scale_x_continuous(breaks = heavy_use_AUD_df$Time, labels = heavy_use_AUD_df$Labels) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        text = element_text(size = 24, face = "bold"))
-
+        #text = element_text(size = 12, face = "bold"))
+        text = element_text(size = 12))
+        
 p
 
 
