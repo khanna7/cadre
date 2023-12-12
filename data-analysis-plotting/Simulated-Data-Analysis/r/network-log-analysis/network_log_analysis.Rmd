@@ -368,3 +368,21 @@ cat("Prevalence of AUD among selected agents: ", prevalence_ego_aud, "\n")
 
 ```
 
+# Alcohol use and Smoking in the Full population
+
+```{r}
+last_tick_agent_dt <- agent_dt[tick==last_tick,,]
+last_tick_agent_dt_not_inc <- agent_dt[tick==last_tick & n_incarcerations<1,]
+first_tick_agent_dt_not_inc <- agent_dt[tick==1 & n_incarcerations<1,]
+
+table(last_tick_agent_dt$smoking_status)/sum(table(last_tick_agent_dt$smoking_status))
+table(last_tick_agent_dt$alc_use_status)/sum(table(last_tick_agent_dt$alc_use_status))
+
+table(last_tick_agent_dt_not_inc$smoking_status)/sum(table(last_tick_agent_dt_not_inc$smoking_status))
+table(last_tick_agent_dt_not_inc$alc_use_status)/sum(table(last_tick_agent_dt_not_inc$alc_use_status))
+
+table(first_tick_agent_dt_not_inc$smoking_status)/sum(table(first_tick_agent_dt_not_inc$smoking_status))
+table(first_tick_agent_dt_not_inc$alc_use_status)/sum(table(first_tick_agent_dt_not_inc$alc_use_status))
+
+```
+
