@@ -4,6 +4,8 @@ from repast4py import core, schedule, random
 
 import copy
 import pycadre.load_params as load_params
+from pycadre import cadre_logging
+
 #from pycadre.Model import Model
 
 import csv
@@ -261,7 +263,7 @@ class Person(core.Agent):
 
                     if prob < specific_prob:
                         self.update_attributes_at_incarceration_tick(tick, model)
-                        model.log_incarceration(self, tick, event_type="Incarceration")
+                        cadre_logging.log_incarceration(self, tick, event_type="Incarceration")
                         
                 
     def update_attributes_at_incarceration_tick(self, tick, model):
@@ -322,7 +324,7 @@ class Person(core.Agent):
             self.incarceration_duration = -1
             self.n_releases += 1
             
-            model.log_incarceration(self, tick, event_type="Release")
+            cadre_logging.log_incarceration(self, tick, event_type="Release")
             
             #self.previous_smoking_status = self.smoker
             #self.assign_smoker_status() 
@@ -404,7 +406,7 @@ class Person(core.Agent):
                                     
                 if prob < specific_prob:
                     self.update_attributes_at_incarceration_tick(tick=tick, model=model)
-                    model.log_incarceration(self, tick, event_type="Incarceration")
+                    cadre_logging.log_incarceration(self, tick, event_type="Incarceration")
                     #print("Agent experiences recidivism")
     
     def assign_smoker_status(self):
