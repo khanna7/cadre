@@ -17,13 +17,11 @@ library(ggplot2)
 renv::activate()
 here()
 
-
-
-
-
 # Read simulated data ------------
 
-sim_data_loc <- "/users/akhann16/code/cadre/python/output_20231207_211453/"
+#sim_data_loc <- "/users/akhann16/code/cadre/python/output_20231207_121640/"
+
+sim_data_loc <- "~/code/cadre/python/output_20231212_194321/"
 
 network_dt <- fread(paste0(sim_data_loc, "network_log.csv")) #simulated network data
 agent_dt <- fread(paste0(sim_data_loc, "agent_log.csv"))#simulated agent data
