@@ -374,6 +374,10 @@ cat("Prevalence of AUD among selected agents: ", prevalence_ego_aud, "\n")
 last_tick_agent_dt <- agent_dt[tick==last_tick,,]
 last_tick_agent_dt_not_inc <- agent_dt[tick==last_tick & n_incarcerations<1,]
 first_tick_agent_dt_not_inc <- agent_dt[tick==1 & n_incarcerations<1,]
+last_tick_male_only_agent_dt <- agent_dt[tick==last_tick & female==0,,]
+last_tick_female_only_agent_dt <- agent_dt[tick==last_tick & female==1,,]
+
+
 
 table(last_tick_agent_dt$smoking_status)/sum(table(last_tick_agent_dt$smoking_status))
 table(last_tick_agent_dt$alc_use_status)/sum(table(last_tick_agent_dt$alc_use_status))
@@ -383,6 +387,10 @@ table(last_tick_agent_dt_not_inc$alc_use_status)/sum(table(last_tick_agent_dt_no
 
 table(first_tick_agent_dt_not_inc$smoking_status)/sum(table(first_tick_agent_dt_not_inc$smoking_status))
 table(first_tick_agent_dt_not_inc$alc_use_status)/sum(table(first_tick_agent_dt_not_inc$alc_use_status))
+
+table(last_tick_male_only_agent_dt$alc_use_status, exclude = NULL)/sum(table(last_tick_male_only_agent_dt$alc_use_status, exclude = NULL))
+
+table(last_tick_female_only_agent_dt$alc_use_status, exclude = NULL)/sum(table(last_tick_female_only_agent_dt$alc_use_status, exclude = NULL))
 
 ```
 
