@@ -12,8 +12,8 @@ def main():
     params_list = pycadre.load_params.load_params(args.parameters_file, args.parameters)
     
     # Set seed from params
-    if 'random.seed' in params_list:
-        seed = int(params_list['random.seed'])
+    if 'BASE_SEED' in params_list:
+        seed = int(params_list['BASE_SEED'])
         random.init(seed)
     else:
         # repast4py should do this when random is imported
