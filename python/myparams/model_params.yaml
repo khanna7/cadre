@@ -193,9 +193,26 @@ INCARCERATION_SMOKING_ASSOC:
 #Ives, et al. 2022. “Nine Years of...” Preventive Medicine Reports 29 (October): 101921.
 
 INCARCERATION_AUD_ASSOC: 
-  MALES: 0.26
+  MALES: 0.23
   FEMALES: 0.20
 # Fazel S, Yoon IA, Hayes AJ. Addiction. 2017 Oct;112(10):1725-1739. doi: 10.1111/add.13877. 
+
+POST_RELEASE_SMOKING_RELAPSE: 0.003467
+# Computed to maintain 45.4% current smoking rate post-release
+# Porter, L. C. (2014). Incarceration and Post-release Health Behavior. Journal of Health and Social Behavior)
+# Derivation: https://docs.google.com/document/d/1GE8LVp8oBL2hE_b_mvmh82Ua8Vbp0-NyNCn5xICVabE/edit#bookmark=id.ti9degtlapqh
+
+POST_RELEASE_ALC_USE_TRANSITION_RATES:
+  # level up
+  TRANS_PROB_0_1: 0
+  TRANS_PROB_1_2: 0.0072
+  TRANS_PROB_2_3: 0.05
+  # LEVEL DOWN
+  TRANS_PROB_1_0: 0
+  TRANS_PROB_2_1: 0.03348
+  TRANS_PROB_3_2: 0.02929
+# ! NEEDS TO BE UPDATED FOR THE NEW CATEGORIZATION + TO FIX A MISTAKE
+# Derivation: https://docs.google.com/document/d/1GE8LVp8oBL2hE_b_mvmh82Ua8Vbp0-NyNCn5xICVabE/edit#bookmark=id.nm6n0pyau7hz
 
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'

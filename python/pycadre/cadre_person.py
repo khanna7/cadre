@@ -99,6 +99,12 @@ class Person(core.Agent):
 
         # level up
         ALC_USE_STATES = load_params.params_list["ALC_USE_STATES"]
+
+        if self.n_incarcerations > 0:
+            # post-release proportions of alcohol are skewed towards more abuse,
+            # so the transition rates need to change to reflect that
+            ALC_USE_STATES = load_params.params_list["POST_RELEASE_ALC_USE_TRANSITION_RATES"]
+
         TRANS_PROB_1_2 = ALC_USE_STATES["TRANS_PROB_1_2"]
         TRANS_PROB_2_3 = ALC_USE_STATES["TRANS_PROB_2_3"]
         # LEVEL DOWN
@@ -157,7 +163,6 @@ class Person(core.Agent):
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
     
-
     def transition_smoking_status(self, tick):
         SMOKING_TRANSITION_PROBS = load_params.params_list["SMOKING_TRANSITION_PROBS"]
      
@@ -179,7 +184,14 @@ class Person(core.Agent):
             elif self.smoker == "Former":
                 key = probs_key()
                 increase = self.get_former_to_current_smoking_transition_network_influence()
-                if prob <= increase * SMOKING_TRANSITION_PROBS[key]["RELAPSE"]:
+
+                relapse_rate = SMOKING_TRANSITION_PROBS[key]["RELAPSE"]
+
+                # if history of incarceration --> expose to elevated relapse rate
+                if self.n_incarcerations > 0:
+                    relapse_rate = load_params.params_list["POST_RELEASE_SMOKING_RELAPSE"]
+
+                if prob <= increase * relapse_rate:
                     self.smoker = "Current"
                     self.n_smkg_stat_trans += 1
                     self.last_smkg_trans_tick = tick
@@ -249,8 +261,7 @@ class Person(core.Agent):
 
                     if prob < specific_prob:
                         self.update_attributes_at_incarceration_tick(tick)
-                        
-                
+                            
     def update_attributes_at_incarceration_tick(self, tick):
         self.current_incarceration_status = 1
         self.last_incarceration_tick = tick
@@ -309,10 +320,8 @@ class Person(core.Agent):
             self.incarceration_duration = -1
             self.n_releases += 1
             #self.previous_smoking_status = self.smoker
-            self.assign_smoker_status() 
-            self.update_alc_use_post_release()
-
-    
+            #self.assign_smoker_status() 
+            #self.update_alc_use_post_release()
 
     def simulate_recidivism(
         self,
@@ -450,16 +459,16 @@ class Person(core.Agent):
             }
         }
 
-        smoking_increase_factor = [load_params.parameters.params['RELEASE_SMOKING_INCREASE']['MALES'], load_params.parameters.params['RELEASE_SMOKING_INCREASE']['FEMALES']]
-        num_smoking_increases = load_params.parameters.params['NUM_RELEASE_SMOKING_INCREASES']
-        if self.n_releases > 0:
-            n = max(self.n_releases, num_smoking_increases)
-            for race in RACE_CATS:
-                for sex in [0, 1]:
-                    current = pow(smoking_increase_factor[sex], n) * SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][0]
-                    SMOKING_PREV_BY_RACE_AND_GENDER[race][sex] = (current,
-                                                            1 - (current + SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]),
-                                                            SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]) 
+        # smoking_increase_factor = [load_params.parameters.params['RELEASE_SMOKING_INCREASE']['MALES'], load_params.parameters.params['RELEASE_SMOKING_INCREASE']['FEMALES']]
+        # num_smoking_increases = load_params.parameters.params['NUM_RELEASE_SMOKING_INCREASES']
+        # if self.n_releases > 0:
+        #     n = max(self.n_releases, num_smoking_increases)
+        #     for race in RACE_CATS:
+        #         for sex in [0, 1]:
+        #             current = pow(smoking_increase_factor[sex], n) * SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][0]
+        #             SMOKING_PREV_BY_RACE_AND_GENDER[race][sex] = (current,
+        #                                                     1 - (current + SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]),
+        #                                                     SMOKING_PREV_BY_RACE_AND_GENDER[race][sex][2]) 
 
         network_increase = self.get_smoking_network_influence_factor()
         if network_increase != 1:
@@ -477,21 +486,21 @@ class Person(core.Agent):
             prob_current = smoking_prev[0] / (smoking_prev[0] + smoking_prev[1])
             self.smoker =  "Current" if (prob_current > random.default_rng.random()) else "Former"
 
-    def update_alc_use_post_release(self):
-        if self.alc_use_status == 0: return
+    # def update_alc_use_post_release(self):
+    #     if self.alc_use_status == 0: return
 
-        AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
-        ALC_USE_PROPS_INIT = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
-        ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
-        ALC_USE_PROPS_POSTRELEASE[3] = 0.17
-        ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
-        ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
+    #     AU_PROPS = load_params.params_list["ALC_USE_PROPS"]
+    #     ALC_USE_PROPS_INIT = [AU_PROPS["A"], AU_PROPS["O"], AU_PROPS["R"], AU_PROPS["D"]]
+    #     ALC_USE_PROPS_POSTRELEASE = list(ALC_USE_PROPS_INIT)
+    #     ALC_USE_PROPS_POSTRELEASE[3] = 0.17
+    #     ALC_USE_PROPS_POSTRELEASE[2] = ALC_USE_PROPS_INIT[2] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
+    #     ALC_USE_PROPS_POSTRELEASE[1] = ALC_USE_PROPS_INIT[1] - abs(ALC_USE_PROPS_POSTRELEASE[3] - ALC_USE_PROPS_INIT[3])/2
 
-        if (self.n_releases > 0):
-            alc_use_status_postrelease = random.default_rng.choice(
-                range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
-            )
-            self.alc_use_status = alc_use_status_postrelease
+    #     if (self.n_releases > 0):
+    #         alc_use_status_postrelease = random.default_rng.choice(
+    #             range(1, len(ALC_USE_PROPS_POSTRELEASE)), p=[x/sum(ALC_USE_PROPS_POSTRELEASE[1:]) for x in ALC_USE_PROPS_POSTRELEASE[1:]]
+    #         )
+    #         self.alc_use_status = alc_use_status_postrelease
 
 def create_person(nid, agent_type, rank, **kwargs):
     return Person(nid, agent_type, rank)
