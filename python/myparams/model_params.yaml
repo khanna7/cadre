@@ -214,6 +214,22 @@ POST_RELEASE_ALC_USE_TRANSITION_RATES:
 # ! NEEDS TO BE UPDATED FOR THE NEW CATEGORIZATION + TO FIX A MISTAKE
 # Derivation: https://docs.google.com/document/d/1GE8LVp8oBL2hE_b_mvmh82Ua8Vbp0-NyNCn5xICVabE/edit#bookmark=id.nm6n0pyau7hz
 
+RACE_SEX_INCARCERATION_SELECTION_MULTIPLIER:
+  ASIAN_FEMALE: 0.035908484661947265
+  ASIAN_MALE: 0.5025397168485897
+  BLACK_FEMALE: 0.5393876848985207
+  BLACK_MALE: 8.919193139268026
+  HISPANIC_FEMALE: 0.19002858202083261
+  HISPANIC_MALE: 2.6594525138257263
+  WHITE_FEMALE: 0.06994610709780989
+  WHITE_MALE: 0.9788966921470849
+  
+# Computed by multiplier = incarceration_group_proportion / general_population_group_proportion
+
+SMOKING_INCARCERATION_MULTIPLIER: 5.631050130207205 
+AUD_INCARCERATION_MULTIPLIER: 3.839285714285715 # ! Created with data for AUD and not the objective Cat IV alcohol use
+# computed by incarceration_group_proportion / general_population_group_proportion
+
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
 network_log_file: 'output/network_log.csv'
