@@ -21,7 +21,7 @@ here()
 
 #sim_data_loc <- "/users/akhann16/code/cadre/python/output_20231207_121640/"
 
-sim_data_loc <- "~/code/cadre/python/output_20231212_194321/"
+sim_data_loc <- "~/data/akhann16/cadre_simulated_data/random-seeds-30/instance_1/output/"
 
 network_dt <- fread(paste0(sim_data_loc, "network_log.csv")) #simulated network data
 agent_dt <- fread(paste0(sim_data_loc, "agent_log.csv"))#simulated agent data
