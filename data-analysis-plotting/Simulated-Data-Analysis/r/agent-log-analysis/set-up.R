@@ -1,16 +1,16 @@
-rm(list=ls())
-
-# Load libraries ------------
-
-library(here)
-library(data.table)
-library(yaml)
-
-
-# Activate environment ------------
-
-# renv::load()
-renv::activate()
+  rm(list=ls())
+  
+  # Load libraries ------------
+  
+  library(here)
+  library(data.table)
+  library(yaml)
+  
+  
+  # Activate environment ------------
+  
+  # renv::load()
+  renv::activate()
 
 
 # Input params ------------
@@ -20,12 +20,7 @@ renv::activate()
 
 # Read simulated data ------------
 
-
-#sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231128_194046/" #noah's data
-#sim_data_path <- "/users/akhann16/code/cadre/python/output_20231110_152817/"
-#sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231106_082519/"
-
-sim_data_path <- "~/data/akhann16/cadre_simulated_data/output_20231207_211453/" 
+sim_data_path <- "~/data/akhann16/cadre_simulated_data/random-seeds-30/instance_1/output/" 
 
 agent_dt <- fread(paste0(sim_data_path, "agent_log.csv"))
 str(agent_dt)
