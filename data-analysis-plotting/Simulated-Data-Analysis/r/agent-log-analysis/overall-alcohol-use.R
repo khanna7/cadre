@@ -99,10 +99,10 @@ alc_use_status_long <- melt(alc_use_by_tick,
                               value.name = "proportion")
 
 
-# create a time series plot of race proportions
+# create a time series plot 
 
 alc_use_time_plot <-
-  ggplot(race_proportions_long, 
+  ggplot(alc_use_status_long, 
          aes(x = tick, y = proportion, color = alc_use_status, group = alc_use_status)) +
   geom_line(linewidth=1.2) +
   labs(title = "",
