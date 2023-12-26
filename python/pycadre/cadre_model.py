@@ -5,21 +5,12 @@ from repast4py.util import find_free_filename
 import pycadre.load_params as load_params
 from pycadre.cadre_network import ErdosReyniNetwork
 from pycadre.person_creator import init_person_creator
+from pycadre import cadre_logging 
 from repast4py import logging, schedule
 from mpi4py import MPI
 from dataclasses import dataclass
 import os, re
 from datetime import datetime
-
-@dataclass
-class CountsLog:
-    pop_size: int = 0
-    n_incarcerated: int = 0
-    n_current_smokers: int = 0
-    n_AUD: int = 0
-    n_alcohol_abstainers: int = 0
-    n_exits: int = 0
-    n_entries: int = 0
 
 
 class Model:
@@ -66,101 +57,14 @@ class Model:
         self.output_directory = self.get_output_directory()
         self.update_output_paths()
 
-        # initialize the agent logging
-        tabular_logging_cols = [
-            "tick",
-            "id",
-            "age",
-            "race",
-            "female",
-            "alc_use_status",
-            "smoking_status",
-            "last_incarceration_tick",
-            "last_release_tick",
-            "current_incarceration_status",
-            "entry_at_tick",
-            "exit_at_tick",
-            "n_incarcerations",
-            "n_releases",
-            "n_smkg_stat_trans",
-            "n_alc_use_stat_trans",
-        ]
-        self.agent_logger = logging.TabularLogger(
-            comm, load_params.params_list["agent_log_file"], tabular_logging_cols
-        )
-
-        agent_count = self.network.get_num_agents()
-        n_incarcerated = []
-        current_smokers = []
-        AUD = []
-        abstainers = []
-
-        # initialize the network logging
-        network_tabular_logging_cols = ["tick", "p1", "p2"]
-        self.network_logger = logging.TabularLogger(
-            comm,
-            load_params.params_list["network_log_file"],
-            network_tabular_logging_cols,
-        )
-
-        # initialize the counts logging
-        self.counts = CountsLog(
-            agent_count,
-            len(n_incarcerated),
-            len(current_smokers),
-            len(AUD),
-            len(abstainers),
-        )
-        loggers = logging.create_loggers(
-            self.counts,
-            op=MPI.SUM,
-            names={
-                "pop_size": "pop_size",
-                "n_incarcerated": "n_incarcerated",
-                "n_current_smokers": "n_current_smokers",
-                "n_AUD": "n_AUD",
-                "n_alcohol_abstainers": "n_alcohol_abstainers",
-                "n_exits": "n_exits",
-                "n_entries": "n_entries",
-            },
-            rank=self.rank,
-        )
-        self.data_set = logging.ReducingDataSet(
-            loggers, MPI.COMM_WORLD, load_params.params_list["counts_log_file"]
-        )
-
-        # Initialize the incarceration logging
-        incarceration_logging_cols = ["tick", "id", "age", "race", "female", "alc_use_status", "smoking_status"]
-        self.incarceration_logger = logging.TabularLogger(
-            comm, load_params.params_list["incarceration_log_file"], incarceration_logging_cols
-        )
-
-
-    def log_agent(self, person, tick):
-        self.agent_logger.log_row(
-            tick,
-            person.name,
-            round(person.age),
-            person.race,
-            person.female,
-            person.alc_use_status,
-            person.smoker,
-            person.last_incarceration_tick,
-            person.last_release_tick,
-            person.current_incarceration_status,
-            person.entry_at_tick,
-            person.exit_at_tick,
-            person.n_incarcerations,
-            person.n_releases,
-            person.n_smkg_stat_trans,
-            person.n_alc_use_stat_trans
-        )
+        cadre_logging.init_logging(self.network.get_num_agents(), comm, self.rank, self.output_directory)
+       
 
     def log_agents(self):
         tick = self.runner.schedule.tick
         for person in self.network.get_agents():
-            self.log_agent(person, tick)
-        self.agent_logger.write()
+            cadre_logging.log_agent(person, tick)
+        cadre_logging.agent_logger.write()
     
 
     def get_instance_number(self):
@@ -182,27 +86,13 @@ class Model:
         for edge in self.network.get_edges():
             agent1 = edge[0]
             agent2 = edge[1]
-            self.network_logger.log_row(tick, agent1.id, agent2.id)
-        self.network_logger.write()
+            cadre_logging.network_logger.log_row(tick, agent1.id, agent2.id)
+        cadre_logging.network_logger.write()
 
-    def log_incarceration(self, person, tick, event_type):
-        tick = self.runner.schedule.tick
-
-        self.incarceration_logger.log_row(
-            tick,
-            person.name,
-            round(person.age),
-            person.race,
-            person.female,
-            person.alc_use_status,
-            person.smoker,
-            event_type
-        )
-        self.incarceration_logger.write()
-
+    
 
     def at_end(self):
-        self.data_set.close()
+        cadre_logging.data_set.close()
 
     def print_progress(self):
         tick = self.runner.schedule.tick
@@ -215,7 +105,7 @@ class Model:
         smokers = []
         alc_use_status = []
 
-        self.data_set.log(tick)
+        cadre_logging.data_set.log(tick)
 
         all_agents = self.network.get_agents()
         white_male_count = sum([1 for agent in all_agents if agent.race == "White" and agent.female == 0])
@@ -289,17 +179,17 @@ class Model:
 
         self.network_step(tick)
 
-        self.counts.pop_size = self.network.get_num_agents()
-        self.counts.n_incarcerated = sum(incaceration_states)
-        self.counts.n_current_smokers = len(current_smokers)
-        self.counts.n_AUD = len(AUD_persons)
-        self.counts.n_alcohol_abstainers = len(alc_abstainers)
+        cadre_logging.counts.pop_size = self.network.get_num_agents()
+        cadre_logging.counts.n_incarcerated = sum(incaceration_states)
+        cadre_logging.counts.n_current_smokers = len(current_smokers)
+        cadre_logging.counts.n_AUD = len(AUD_persons)
+        cadre_logging.counts.n_alcohol_abstainers = len(alc_abstainers)
 
     def network_step(self, tick):
         for p in self.network.get_agents():
             if p.exit_of_age(tick):
                 p.exit_at_tick = tick
-                self.log_agent(p, tick)
+                cadre_logging.log_agent(p, tick)
                 self.network.remove_agent(p)
                 new = self.person_creator.create_person(tick=tick)
                 self.network.add(new)
