@@ -18,3 +18,14 @@ summary_after_release <- function(time_period) {
   agent_count <- nrow(agents_within_time_period)
   return(list("proportions" = proportions, "agent_count" = agent_count))
 }
+
+summary_after_release_multiple <- 
+  function(agent_dt, time_period) {
+  agents_within_time_period <- agent_dt[last_release_tick > 0 &
+                                          tick - last_release_tick <= time_period]
+  
+  proportions <- calculate_proportions_smoking(agents_within_time_period)
+  agent_count <- nrow(agents_within_time_period)
+  return(list("proportions" = proportions, "agent_count" = agent_count))
+}
+
