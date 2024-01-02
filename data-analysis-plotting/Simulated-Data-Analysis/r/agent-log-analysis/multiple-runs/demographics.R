@@ -65,38 +65,41 @@ aggregated_race_proportions <- combined_race_proportions[, .(mean_proportion = m
                                                              sd_proportion = sd(proportion)), 
                                                          by = .(tick, race)]
 
-ggplot(aggregated_race_proportions, 
-       aes(x = tick/365, y = mean_proportion, color = race, group = race)) +
-  geom_line() +
-  labs(title = "",
-       x = "Time (Days)",
-       y = "Proportion") +
+# Calculate min and max proportion for each race and tick across all instances
+race_proportions_stats <- combined_race_proportions[, .(min_proportion = min(proportion),
+                                                        max_proportion = max(proportion)), 
+                                                    by = .(tick, race)]
+
+# Plot
+
+target_values$color <- c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")[match(target_values$race, c("White", "Black", "Hispanic", "Asian"))]
+
+# calculate the x-position for the annotations
+half_time <- max(combined_race_proportions$tick)/365/2
+
+# convert data.tables to data.frames for ggplot2
+race_proportions_stats_df <- as.data.frame(race_proportions_stats)
+aggregated_race_proportions_df <- as.data.frame(aggregated_race_proportions)
+target_values_df <- as.data.frame(target_values)
+
+# initialize plot
+p_race <- ggplot() +
+  # First plot the individual trajectories as ribbons
+  geom_ribbon(data = race_proportions_stats_df, aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = race), alpha = 0.3) +
+  scale_fill_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  # Next, plot the mean proportions as lines
+  geom_line(data = aggregated_race_proportions_df, aes(x = tick/365, y = mean_proportion, color = race, group = race)) +
   scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
-  theme_minimal() +
-  theme(
-    legend.title = element_blank(),
-    axis.text.x = element_text(size = 14, face = "bold"),  
-    axis.text.y = element_text(size = 14, face = "bold"),  
-    legend.text = element_text(size = 14),
-    axis.title.x = element_text(size = 16, face = "bold"),
-    axis.title.y = element_text(size = 16, face = "bold")
-  ) +
   theme(legend.title = element_blank())+
   scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.1)) +
-  
-  geom_text(aes(x = max(tick/365)/2, y = target_values$target_pct[target_values$race == "White"] + 0.03,
-                label = sprintf("Target: %.3f", target_values$target_pct[target_values$race == "White"])), color = "#377eb8", check_overlap = TRUE, size=5) +
-  
-  geom_text(aes(x = max(tick/365)/2, y = target_values$target_pct[target_values$race == "Black"] + 0.03,
-                label = sprintf("Target: %.3f", target_values$target_pct[target_values$race == "Black"])), color = "#ff7f00", check_overlap = TRUE, size=5) +
-  
-  geom_text(aes(x = max(tick/365)/2, y = target_values$target_pct[target_values$race == "Hispanic"] + 0.03, 
-                label = sprintf("Target: %.3f", target_values$target_pct[target_values$race == "Hispanic"])), color = "#4daf4a", check_overlap = TRUE, size=5) +
-  
-  geom_text(aes(x = max(tick/365)/2, y = target_values$target_pct[target_values$race == "Asian"] + 0.03,
-                label = sprintf("Target: %.3f", target_values$target_pct[target_values$race == "Asian"])), color = "#e41a1c", check_overlap = TRUE, size=5)
+  labs(title = "",
+       x = "Time (Days)",
+       y = "Proportion") 
 
-  
+p_race <- p + geom_text(data = target_values_df, aes(x = half_time, y = target_pct + 0.03,
+                                                label = sprintf("Target: %.3f", target_pct)), color = target_values_df$color, check_overlap = TRUE, size=5)
+
+p_race
 
 # Sex distribution ------------
 
