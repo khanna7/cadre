@@ -83,7 +83,7 @@ aggregated_race_proportions_df <- as.data.frame(aggregated_race_proportions)
 target_values_df <- as.data.frame(target_values)
 
 # initialize plot
-p_race <- ggplot() +
+p_race_base <- ggplot() +
   # First plot the individual trajectories as ribbons
   geom_ribbon(data = race_proportions_stats_df, aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = race), alpha = 0.3) +
   scale_fill_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
@@ -91,129 +91,126 @@ p_race <- ggplot() +
   geom_line(data = aggregated_race_proportions_df, aes(x = tick/365, y = mean_proportion, color = race, group = race)) +
   scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
   theme(legend.title = element_blank())+
-  scale_y_continuous(limits = c(0, 0.8), breaks = seq(0, 0.8, by = 0.1)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
   labs(title = "",
        x = "Time (Days)",
-       y = "Proportion") 
+       y = "Proportion")+
+  theme_minimal()
 
-p_race <- p + geom_text(data = target_values_df, aes(x = half_time, y = target_pct + 0.03,
+p_race <- p_race_base + 
+  geom_text(data = target_values_df, aes(x = half_time, y = target_pct + 0.03,
                                                 label = sprintf("Target: %.3f", target_pct)), color = target_values_df$color, check_overlap = TRUE, size=5)
 
 p_race
 
-# Sex distribution ------------
-
-agent_dt[tick==last_tick, .N, by=female][,"%":=N/sum(N)][order(female)]
-female_target <- input_params$FEMALE_PROP
-
-gender_pct <- agent_dt[tick == last_tick, .N, by = female][, "%":= N/sum(N)][order(female)]
-
-female_target <- input_params$FEMALE_PROP
-
-# calculate target percentages for each gender
-female_target_pct <- female_target
-male_target_pct <- 1 - female_target
-
-# calculate actual percentages for each gender
-female_actual_pct <- gender_pct[female == 1, `%`]
-male_actual_pct <- gender_pct[female == 0, `%`]
 
 
-# create plot for last tick
-ggplot(gender_pct, aes(x = ifelse(female == 0, "Male", "Female"), y = `%`, fill = ifelse(female == 0, "Male", "Female"))) +
-  geom_bar(stat = "identity", color = "black") +
-  scale_fill_manual(values = c("#1b9e77", "#d95f02")) +
-  annotate("text", x = 1, y = female_actual_pct, 
-           label = paste0("Female Target = ", round(female_actual_pct*100, 1), "%"), 
-           color = "#1b9e77", size = 4, vjust = 0) +
-  annotate("text", x = 2, y = male_actual_pct, 
-           label = paste0("Male Target = ", round(male_actual_pct*100, 1), "%"), 
-           color = "#d95f02", size = 4, vjust = 0) +
-  labs(title = "",
-       x = "Time (Days)",
-       y = "Sex Distributions",
-       fill = "") +
-  theme_minimal()
+# Sex distribution ----------
 
+# Initialize a list to store sex proportions for each instance
+all_gender_proportions_by_tick <- list()
 
-
-
-# plot over time:
+for (i in 1:length(all_instances_data)) {
+  agent_dt <- all_instances_data[[i]]$agent_dt
+  last_tick <- max(agent_dt$tick)
+  selected_ticks <- c(seq(1, last_tick, by = 10), last_tick)
   
-# calculate the proportion of males and females at the specified time ticks
-gender_proportions_by_tick <- agent_dt[tick %in% time_ticks, .(
-  male = sum(female == 0) / .N,
-  female = sum(female == 1) / .N
-), by = tick]
+  # Calculate sex proportions for each instance
+  gender_proportions <- agent_dt[tick %in% selected_ticks, .(
+    male = sum(female == 0) / .N,
+    female = sum(female == 1) / .N
+  ), by = tick]
+  
+  # Convert to long format for easier aggregation later
+  gender_proportions_long <- melt(gender_proportions, id.vars = "tick", variable.name = "gender", value.name = "proportion")
+  
+  # Add instance identifier
+  gender_proportions_long$instance <- i
+  
+  # Append these calculations to all_gender_proportions_by_tick
+  all_gender_proportions_by_tick[[i]] <- gender_proportions_long
+}
 
-# convert the data from wide to long format
-gender_proportions_long <- melt(gender_proportions_by_tick, id.vars = "tick", variable.name = "gender", value.name = "proportion")
+# Combine all gender proportions into a single data frame
+combined_gender_proportions <- do.call(rbind, all_gender_proportions_by_tick)
 
-ggplot(gender_proportions_long, aes(x = tick, y = proportion, color = gender, group = gender)) +
-  geom_line(linewidth=1.5) +
+# Calculate mean and optionally SD for each sampled tick across all instances
+aggregated_gender_proportions <- combined_gender_proportions[, .(mean_proportion = mean(proportion),
+                                                                 sd_proportion = sd(proportion)), 
+                                                             by = .(tick, gender)]
+
+# Calculate min and max proportion for each sex and tick across all instances
+gender_proportions_stats <- combined_gender_proportions[, .(min_proportion = min(proportion),
+                                                            max_proportion = max(proportion)), 
+                                                        by = .(tick, gender)]
+
+# Convert data.tables to data.frames for ggplot2
+gender_proportions_stats_df <- as.data.frame(gender_proportions_stats)
+aggregated_gender_proportions_df <- as.data.frame(aggregated_gender_proportions)
+
+
+# plot
+
+# Define colors for male and female
+colors <- c("male" = "#1b9e77", "female" = "#d95f02")
+
+# Calculate the x-position for the annotations
+half_time <- max(aggregated_gender_proportions_df$tick)/365/2
+
+# Target percentages for each gender
+female_target_pct <- input_params$FEMALE_PROP
+male_target_pct <- 1 - female_target_pct
+
+# Create a data frame for the target sex distribution
+target_sex_distribution_df <- data.frame(
+  gender = c("male", "female"),
+  target_pct = c(male_target_pct, female_target_pct),
+  color = c("#1b9e77", "#d95f02")  # Use the appropriate colors for male and female
+)
+
+# Plot
+p_sex_distribution_base <- 
+  ggplot() +
+  # Shaded area for variability across instances
+  geom_ribbon(data = gender_proportions_stats_df, 
+              aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = gender), alpha = 0.3) +
+  scale_fill_manual(values = colors) +
+  # Mean proportion lines
+  geom_line(data = aggregated_gender_proportions_df, 
+            aes(x = tick/365, y = mean_proportion, color = gender, group = gender)) +
+  scale_color_manual(values = colors) 
+
+p_sex_distribution_base
+
+# Adjust the target_sex_distribution_df to include specific y-values for the labels
+target_sex_distribution_df$label_y <- c(male_target_pct - 0.05, female_target_pct+0.03)  # Adjust these values as needed
+
+# Plot
+p_sex_distribution <- 
+  p_sex_distribution_base +
+  # Annotations for target values with specific y-values
+  geom_text(data = target_sex_distribution_df, 
+            aes(x = half_time, y = label_y, label = sprintf("Target: %.3f", target_pct)), 
+            color = target_sex_distribution_df$color, size = 5) +
+  # Aesthetics and labels
   labs(title = "",
-       x = "Time (Days)",
-       y = "Proportion") +
-  scale_color_manual(values = c("#1b9e77", "#d95f02"), labels = c("Male", "Female")) +
+       x = "Time (Years)",
+       y = "Proportion",
+       fill = "Gender",
+       color = "Gender") +
   theme_minimal() +
-  theme(
-    legend.title = element_blank(),
-    axis.text.x = element_text(size = 16, face = "bold"),  
-    axis.text.y = element_text(size = 16, face = "bold"),  
-    legend.text = element_text(size = 16),
-    axis.title.x = element_text(size = 16, face = "bold"),
-    axis.title.y = element_text(size = 16, face = "bold")
-  ) +
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0.4, 0.6, by = 0.1)) +
-  geom_text(aes(x = max(tick)/2, y = (female_target+0.03), label = sprintf("Target: %.3f", female_target)), color = "#d95f02", check_overlap = TRUE, size = 5) + 
-  geom_text(aes(x = max(tick)/2, y = (1 - female_target - 0.03), label = sprintf("Target: %.3f", 1 - female_target)), color = "#1b9e77", check_overlap = TRUE, size = 5)
+  # theme(legend.title = element_blank(),
+  #       axis.text.x = element_text(size = 14, face = "bold"),  
+  #       axis.text.y = element_text(size = 14, face = "bold"),  
+  #       legend.text = element_text(size = 14),
+  #       axis.title.x = element_text(size = 16, face = "bold"),
+  #       axis.title.y = element_text(size = 16, face = "bold")) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
+
+# Print the plot
+p_sex_distribution
 
 
 
-# Age distribution ------------
 
-agebreaks <- c(18, 25, 35, 45, 55, 65)
-agelabels <- c("18-24", "25-34", "35-44", "45-54", "55-64")
-
-agent_dt[tick == last_tick, .N, ]
-setDT(agent_dt)[ , age_groups := cut(age, 
-                                     breaks = agebreaks, 
-                                     include.lowest = TRUE,
-                                     right = FALSE, 
-                                     labels = agelabels)]
-nrow(agent_dt[tick == last_tick])
-
-agent_dt[tick == last_tick, .N, by=c("age_groups", "race", "female")][order(age_groups, race, female)]
-agent_dt[tick == last_tick, .N, by=c("race", "age_groups", "female")][order(race, age_groups)]
-
-agent_dt[tick==last_tick, .N, by=c("race", "female")][,"%":=N/sum(N)*100][order(race)]
-
-
-
-agent_dt[tick==last_tick, .N, by=c("age_groups")][,"%":=round(N/sum(N)*100)][order(age_groups)]
-
-#Median age at the start: 
-  
-agent_dt[tick==1, median(age)]
-
-
-# Median age at the end:
-  
-nrow(agent_dt[tick==last_tick])
-agent_dt[tick==last_tick, median(age)]
-
-
-# Create age groups
-agent_dt_by_age_group <- agent_dt[tick==last_tick, .N, 
-                                  by = .(age_group = cut(age, breaks = c(18, 25, 35, 45, 55, 65, 75, 80, 84)))]
-
-# Create bar chart
-ggplot(agent_dt_by_age_group, aes(x = age_group, y = N, fill = age_group)) +
-  geom_bar(stat = "identity", color = "black") +
-  scale_fill_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#ffff33", "#a65628", "#f781bf")) +
-  labs(title = "Agent Age Distribution",
-       x = "Age Group",
-       y = "Count",
-       fill = "Age Group") +
-  theme_minimal()
-
+# Add age distribution later if needed
