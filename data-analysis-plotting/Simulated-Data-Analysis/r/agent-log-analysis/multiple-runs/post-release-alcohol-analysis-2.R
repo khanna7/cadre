@@ -261,19 +261,6 @@ heavy_use_AUD_df <- data.frame(Time = time_periods,
                                Mean = heavy_use_mean,
                                SD = heavy_use_sd)
 
-aggregated_data <- aggregate(Proportion ~ Tick, data = overall_heavy_use_df, function(x) c(Mean = mean(x), SD = sd(x)))
-
-heavy_use_AUD_df$Overall_Mean <- aggregated_data$Mean
-heavy_use_AUD_df$Overall_SD <- aggregated_data$SD
-
-
-# Convert the aggregated data to a proper dataframe
-overall_heavy_use_df <- data.frame(
-  Time = aggregated_data$Tick,
-  Mean = sapply(aggregated_data$Proportion, "[", 1),  # Extract Mean
-  SD = sapply(aggregated_data$Proportion, "[", 2)     # Extract SD
-)
-
 # Plotting with error bars for previously incarcerated
 p_prev_inc <- 
   ggplot(heavy_use_AUD_df, aes(x = Time, y = Mean, group = 1)) +
@@ -295,9 +282,9 @@ p_base
 
 p_legend <- 
   ggplot(heavy_use_AUD_df, aes(x = Time, y = Mean)) +
-  geom_line(aes(color = "Previously Incarcerated"), size = 1) +
+  geom_line(aes(color = "Previously Incarcerated")) +
   geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD, fill = "Previously Incarcerated"), alpha=0.3) +
-  geom_hline(aes(yintercept = cat_III_mean, color = "Overall"), size = 1) +
+  geom_hline(aes(yintercept = cat_III_mean, color = "Overall"), linewidth = 1) +
   geom_ribbon(aes(ymin = cat_III_mean - cat_III_sd, ymax = cat_III_mean + cat_III_sd, fill = "Overall"), alpha=0.3) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
   scale_x_continuous(breaks = time_periods, labels = labels) +
