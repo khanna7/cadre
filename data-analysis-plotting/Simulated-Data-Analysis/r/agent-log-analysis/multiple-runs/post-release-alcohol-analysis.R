@@ -294,3 +294,10 @@ p_legend <-
   guides(color = guide_legend(title = "Groups"), fill = guide_legend(title = "Groups"))
 
 p_legend
+
+p <- p_legend +  
+  labs(title = "",
+       x = "Time After Release",
+       y = "Proportion of Agents in Category III Alcohol Use",
+       color = "Population") 
+p
