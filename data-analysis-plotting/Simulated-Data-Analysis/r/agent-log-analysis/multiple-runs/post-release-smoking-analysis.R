@@ -93,16 +93,63 @@ for (time_period in time_periods) {
   aggregated_smoking_data <- rbind(aggregated_smoking_data, data.frame(Time = time_period, Mean = mean_proportion, SD = sd_proportion))
 }
 
-ggplot(aggregated_smoking_data, aes(x = Time, y = Mean)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha=0.3) +
+p_prev_inc <-
+  ggplot(aggregated_smoking_data, aes(x = Time, y = Mean)) +
+  geom_line(color = "blue") +
+  geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), fill = "blue", alpha = 0.3) +
   scale_x_continuous(breaks = time_periods, labels = labels) +
   labs(title = "",
        x = "Time After Release",
        y = "Mean Proportion of Current Smoking") +
-  theme_minimal()+
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))+
-  guides(alpha = "none")  
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
 
+p_prev_inc
+
+
+# Compute and add plot of current smoking rate in the overall population ---------
+
+# Initialize a list to store smoking ratios for each instance
+smoking_ratios_list <- list()
+
+# Loop through each instance data
+for (i in 1:length(all_instances_data)) {
+  agent_dt <- all_instances_data[[i]]$agent_dt
+  proportion_data <- calculate_proportions_smoking(agent_dt)
   
+  # Extract proportion for "Current" smokers
+  current_smokers_proportion <- proportion_data[proportion_data$Category == "Current", "Proportion"]
+  smoking_ratios_list[[i]] <- current_smokers_proportion
+}
+
+# Convert the list to a vector
+smoking_ratios_vector <- unlist(smoking_ratios_list)
+
+# Compute overall statistics (mean, sd, etc.) for "Current" smokers across instances
+overall_mean_smoking <- mean(smoking_ratios_vector, na.rm = TRUE)
+overall_sd_smoking <- sd(smoking_ratios_vector, na.rm = TRUE)
+
+# Add to Plot
+
+p_base <- 
+  ggplot(aggregated_smoking_data, aes(x = Time, y = Mean)) +
+  geom_line(aes(color = "Previously Incarcerated")) +
+  geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD, fill = "Previously Incarcerated"), alpha = 0.3) +
+  geom_hline(aes(yintercept = overall_mean_smoking, color = "Overall Population")) +
+  geom_ribbon(aes(ymin = overall_mean_smoking - overall_sd_smoking, ymax = overall_mean_smoking + overall_sd_smoking, fill = "Overall Population"), alpha = 0.3) +
+  scale_color_manual(values = c("Previously Incarcerated" = "blue", "Overall Population" = "red"), 
+                     name = "Group", 
+                     labels = c("Previously Incarcerated", "Overall Population")) +
+  scale_fill_manual(values = c("Previously Incarcerated" = "blue", "Overall Population" = "red"), 
+                    name = "Group", 
+                    labels = c("Previously Incarcerated", "Overall Population")) +
+  scale_x_continuous(breaks = time_periods, labels = labels) +
+  labs(title = "",
+       x = "Time After Release",
+       y = "Proportion of Current Smoking") +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
+
+p_base
+
 
