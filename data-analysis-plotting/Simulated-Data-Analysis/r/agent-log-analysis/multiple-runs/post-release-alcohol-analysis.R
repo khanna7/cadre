@@ -33,6 +33,7 @@ all_instances_alcohol_summaries <- list()
 for (i in 1:length(all_instances_data)) {
   agent_dt <- all_instances_data[[i]]$agent_dt
   last_tick <- max(agent_dt$tick)
+  selected_ticks <- seq(1, max(agent_dt$tick), by = 10)
   
   # Calculations for various subsets
   all_agents_summary <- calculate_proportions(agent_dt[tick == last_tick])
@@ -89,8 +90,9 @@ ggplot(all_agents_stats, aes(x = Category, y = mean_proportion)) +
 
 # Compute metrics (time series) ------------
 
-selected_ticks <- c(1, 7, 14, 30, 90, 180, 365)
-labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
+
+#selected_ticks <- c(1, 7, 14, 30, 90, 180, 365)
+#labels <- c("1D", "1W", "2W", "1M", "3M", "6M", "1Y")
 
 # Assuming selected_ticks is defined and all_instances_data is available
 
@@ -98,6 +100,8 @@ all_instances_time_series <- list()
 
 for (i in 1:length(all_instances_data)) {
   agent_dt <- all_instances_data[[i]]$agent_dt
+  last_tick <- max(agent_dt$tick)
+  selected_ticks <- seq(1, max(agent_dt$tick), by = 10)
   
   # Calculate proportions at each tick
   instance_time_series <- lapply(selected_ticks, function(tick) {
@@ -108,4 +112,34 @@ for (i in 1:length(all_instances_data)) {
   
   all_instances_time_series[[i]] <- instance_time_series
 }
+
+# Initialize a list for aggregated data
+aggregated_time_series <- list()
+
+for (tick in selected_ticks) {
+  # Extract data for the current tick from all instances
+  tick_data <- lapply(all_instances_time_series, function(instance) instance[[which(selected_ticks == tick)]])
+  
+  # Aggregate data across instances for each category
+  aggregated_tick_data <- lapply(unique_categories, function(category) {
+    category_data <- sapply(tick_data, function(instance) {
+      if(category %in% instance$proportions$Category){
+        return(instance$proportions[instance$proportions$Category == category, "Proportion"])
+      } else {
+        return(NA)
+      }
+    })
+    
+    mean_proportion <- mean(category_data, na.rm = TRUE)
+    sd_proportion <- sd(category_data, na.rm = TRUE)
+    return(data.frame(Category = category, Mean = mean_proportion, SD = sd_proportion))
+  })
+  
+  aggregated_tick_data <- do.call(rbind, aggregated_tick_data)
+  aggregated_tick_data$Tick <- tick
+  aggregated_time_series[[tick]] <- aggregated_tick_data
+}
+
+# Combine all ticks into a single dataframe
+aggregated_time_series_df <- do.call(rbind, aggregated_time_series)
 
