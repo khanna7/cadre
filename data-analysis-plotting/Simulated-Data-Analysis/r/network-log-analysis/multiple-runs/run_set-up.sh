@@ -4,7 +4,7 @@
 #SBATCH --output=logs/result_%j.out          # Standard output and error log
 #SBATCH --error=logs/error_%j.err            # Error log
 #SBATCH --ntasks=1                      # Run on a single CPU
-#SBATCH --mem=24gb                       # Job memory request
+#SBATCH --mem=100gb                       # Job memory request
 #SBATCH --time=02:00:00                 # Time limit hrs:min:sec
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=aditya_khanna@brown.edu
