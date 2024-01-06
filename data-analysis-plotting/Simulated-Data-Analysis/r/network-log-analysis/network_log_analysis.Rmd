@@ -239,7 +239,7 @@ Horizontal legend alignment:
 ```{r}
 # Create a legend
 legend <- data.frame(
-  group = c("Recently Released", "Network Member", "Current Smoking", "Heavy Alcohol Use"),
+  group = c("Recently Released", "Neither", "Current Smoking", "Heavy Alcohol Use"),
   shape = c("square", "circle", "circle", "circle"),
   fillcolor = c("black", "white", "blue", "red"),
   color = c("black", "black", "blue", "red")
