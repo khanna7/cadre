@@ -44,8 +44,8 @@ for (i in 1:num_instances){
   )
   
   # Save individual instance data
-  saveRDS(list(agent_dt = agent_dt, input_params = input_params), 
-           here("agent-log-analysis", "multiple-runs" ,"rds-outs", paste0("agent_log_env_instance_", i, ".RDS")))
+  # saveRDS(list(agent_dt = agent_dt, input_params = input_params), 
+  #          here("agent-log-analysis", "multiple-runs" ,"rds-outs", paste0("agent_log_env_instance_", i, ".RDS")))
 
   
   }
