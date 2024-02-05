@@ -61,8 +61,10 @@ cp $CFG_FILE $TURBINE_OUTPUT/cfg.cfg
 #VENV_SITE_PACKAGES=/gpfs/data/akhann16/ncollie1/venv/3.9/lib/python3.9/site-packages
 #export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/data/akhann16/ncollie1/src/r4py_examples/zombies:$VENV_SITE_PACKAGES
 
-VENV_SITE_PACKAGES=/gpfs/data/akhann16/ncollie1/venv/3.9/lib/python3.9/site-packages
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python:$VENV_SITE_PACKAGES 
+#VENV_SITE_PACKAGES=/gpfs/data/akhann16/ncollie1/venv/3.9/lib/python3.9/site-packages
+#export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python:$VENV_SITE_PACKAGES 
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python
+
 
 EMEWS_EXT=$EMEWS_PROJECT_ROOT/ext/emews
 
