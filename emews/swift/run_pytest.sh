@@ -15,7 +15,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 export EXPID=$1
-#export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+# export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 export TURBINE_OUTPUT=/oscar/data/akhann16/akhann16/cadre_simulated_data/emews_experiments/$EXPID
 check_directory_exists
 
@@ -41,7 +41,7 @@ export PPN=$CFG_PPN
 export MAIL_USER=$CFG_MAIL_USER
 export MAIL_TYPE=$CFG_MAIL_TYPE
 export TURBINE_JOBNAME="${EXPID}_job"
-export TURBINE_MPI_THREAD=1 
+export TURBINE_MPI_THREAD=1
 
 
 mkdir -p $TURBINE_OUTPUT
@@ -63,7 +63,7 @@ cp $CFG_FILE $TURBINE_OUTPUT/cfg.cfg
 
 VENV_SITE_PACKAGES=/gpfs/data/akhann16/sfw/pyenvs/repast4py-py3.11/lib/python3.11/site-packages
 #export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python:$VENV_SITE_PACKAGES 
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python:$VENV_SITE_PACKAGES
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/../python:$EMEWS_PROJECT_ROOT/python:/gpfs/home/akhann16/code/cadre/python:$VENV_SITE_PACKAGES
 
 
 EMEWS_EXT=$EMEWS_PROJECT_ROOT/ext/emews
@@ -91,10 +91,17 @@ fi
 # TODO: Some slurm machines may expect jobs to be run
 # with srun, rather than mpiexec (for example). If
 # so, uncomment this export.
-# export TURBINE_LAUNCHER=srun
+export TURBINE_LAUNCHER=mpirun
 # export TURBINE_SBATCH_ARGS="--exclusive"
 export TURBINE_SBATCH_ARGS="--mail-user=$MAIL_USER --mail-type=$MAIL_TYPE"
-# export TURBINE_LAUNCH_OPTIONS="--mpi=pmix"
+export TURBINE_LAUNCH_OPTIONS="--mca opal_warn_on_missing_libcuda 0 --mca btl '^openib' --mca opal_common_ucx_opal_mem_hooks 1"
+
+# See https://www.mail-archive.com/devel@lists.open-mpi.org/msg21434.html
+# MPI_LIB="/oscar/runtime/software/hpcx-mpi/4.1.5rc2/hpcx-ompi/lib"
+MPI_LIB="/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/openmpi-4.1.2-s5wtoqbqirz4ivubo6uzp2ndglheablu/lib"
+CUDA_LIB="/oscar/rt/9.2/software/0.20-generic/0.20.1/opt/spack/linux-rhel9-x86_64_v3/gcc-11.3.1/cuda-12.1.1-ebglvvqo7uhjvhvff2qlsjtjd54louaf/lib64"
+# export LD_PRELOAD="$CUDA_LIB/libcudart.so"
+
 
 # TODO: Add any script variables that you want to log as
 # part of the experiment meta data to the USER_VARS array,
@@ -110,5 +117,6 @@ swift-t -n $PROCS $MACHINE -p \
     -e TURBINE_MPI_THREAD \
     -e TURBINE_OUTPUT \
     -e EMEWS_PROJECT_ROOT \
+    -e LD_LIBRARY_PATH=$MPI_LIB:$LD_LIBRARY_PATH \
     $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE \
     $CMD_LINE_ARGS

@@ -94,7 +94,7 @@ def init_logging(num_agents, comm, rank, output_dir):
         rank=rank,
     )
     data_set = logging.ReducingDataSet(
-        loggers, MPI.COMM_WORLD, parameters.params["counts_log_file"]
+        loggers, comm, parameters.params["counts_log_file"]
     )
     
 

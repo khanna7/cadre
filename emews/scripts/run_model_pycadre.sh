@@ -33,9 +33,12 @@ PARAM_LINE="$1"
 EMEWS_ROOT=$2
 
 # TODO: Activate the python venv
-module load python/3.9.0
+module load python/3.11.0s-ixrhc3q
 #source /gpfs/data/akhann16/ncollie1/venv/3.9/bin/activate
-source /gpfs/home/akhann16/code/cadre/python/new_cadre_env_4/bin/activate 
+#source /gpfs/home/akhann16/code/cadre/python/new_cadre_env_4/bin/activate
+source /gpfs/data/akhann16/sfw/pyenvs/repast4py-py3.11/bin/activate
+
+export PYTHONPATH=$EMEWS_ROOT/../python:$PYTHONPATH
 
 # Each model run, runs in its own "instance" directory
 # Set INSTANCE_DIRECTORY to that and cd into it.
