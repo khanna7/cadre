@@ -29,10 +29,17 @@ git log -5 master --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%
 ```
 
 ## Last Commit 
-### Last commit made on on each branch
+### Last commit made on on each local branch
 ```
 git for-each-ref --sort=-committerdate refs/heads/ --format='%(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) %(contents:subject) %(color:green)(%(committerdate))%(color:reset) %(color:bold blue)<%(authorname)>%(color:reset)'
 ```
+
+### Fetched remote branches not in local
+```
+git for-each-ref --sort=-committerdate refs/remotes/ --format='%(color:yellow)%(refname:short)%(color:reset) - %(color:green)%(authorname)%(color:reset) (%(color:red)%(committerdate:relative)%(color:reset)): %(color:bold blue)%(contents:subject)%(color:reset)'
+
+```
+
 
 ## Relative Commits
 ### Commits in branch `branch_A` that are not inz `branch_B`
