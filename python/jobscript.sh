@@ -11,5 +11,5 @@
 source settings-rhel9-2.sh
 module list
 
-python3 -m pycadre myparams/model_params.yaml
+python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}'
     
