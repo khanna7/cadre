@@ -8,23 +8,31 @@ class ErdosReyniNetwork:
         self.comm = comm
         self.context = ctx.SharedContext(self.comm)
         self.rank = self.comm.Get_rank()
-        #self.edge_prob = edge_prob
+        # self.edge_prob = edge_prob
         self.n_agents = n_agents
         self.target_mean_degree = target_mean_degree
-        self.edge_prob = self.calculate_edge_prob(n_agents, target_mean_degree)
+        self.edge_prob = self.calculate_edge_prob(
+            n_agents, target_mean_degree
+        )
 
     def calculate_edge_prob(self, n_agents, target_mean_degree):
-        edge_prob = target_mean_degree / (n_agents-1)
+        edge_prob = target_mean_degree / (n_agents - 1)
         return edge_prob
-    
+
     def mean_degree(self):
-        total_degrees = sum([degree for _, degree in self.network.graph.degree()])
+        total_degrees = sum(
+            [degree for _, degree in self.network.graph.degree()]
+        )
         num_nodes = self.get_num_agents()
         return total_degrees / num_nodes
 
     def init_network(self, n_agents):
-        network_init = nx.erdos_renyi_graph(n_agents, self.edge_prob, seed=random.default_rng)
-        self.network = network.UndirectedSharedNetwork("erdos_renyi_network", self.comm)
+        network_init = nx.erdos_renyi_graph(
+            n_agents, self.edge_prob, seed=random.default_rng
+        )
+        self.network = network.UndirectedSharedNetwork(
+            "erdos_renyi_network", self.comm
+        )
         self.context.add_projection(self.network)
         persons = []
         for node in network_init.nodes:
@@ -56,7 +64,7 @@ class ErdosReyniNetwork:
 
     def get_neighbors(self, node):
         return list(self.network.graph.neighbors(node))
-        
+
     def get_edges(self):
         return self.network.graph.edges
 

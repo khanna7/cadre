@@ -5,7 +5,7 @@ from repast4py.util import find_free_filename
 import pycadre.load_params as load_params
 from pycadre.cadre_network import ErdosReyniNetwork
 from pycadre.person_creator import init_person_creator
-from pycadre import cadre_logging 
+from pycadre import cadre_logging
 from repast4py import logging, schedule
 from mpi4py import MPI
 from dataclasses import dataclass
@@ -24,7 +24,8 @@ class Model:
         params: the simulation input parameters
 
     """
-    output_directory = None #class-level attribute for storing outputs
+
+    output_directory = None  # class-level attribute for storing outputs
 
     def __init__(self, comm: MPI.Intracomm, params: Dict):
         # create the schedule
@@ -35,7 +36,7 @@ class Model:
         self.runner.schedule_stop(params["STOP_AT"])
         # self.runner.schedule_end_event(self.log_network)
         self.runner.schedule_repeating_event(1, 10, self.log_network)
-        #self.runner.schedule_repeating_event(1, 1, self.log_incarceration)
+        # self.runner.schedule_repeating_event(1, 1, self.log_incarceration)
         self.runner.schedule_end_event(self.log_agents)
         self.runner.schedule_end_event(self.at_end)
 
@@ -44,28 +45,34 @@ class Model:
         self.person_creator = init_person_creator()
 
         # initialize network and add projection to context
-        self.network = ErdosReyniNetwork(comm, load_params.params_list["N_AGENTS"],
-                                         load_params.params_list["TARGET_MEAN_DEGREE"])
+        self.network = ErdosReyniNetwork(
+            comm,
+            load_params.params_list["N_AGENTS"],
+            load_params.params_list["TARGET_MEAN_DEGREE"],
+        )
 
         self.network.init_network(
             load_params.params_list["N_AGENTS"],
         )
 
         self.rank = comm.Get_rank()
-        
+
         # Set the base output directory
         self.output_directory = self.get_output_directory()
         self.update_output_paths()
 
-        cadre_logging.init_logging(self.network.get_num_agents(), comm, self.rank, self.output_directory)
-       
+        cadre_logging.init_logging(
+            self.network.get_num_agents(),
+            comm,
+            self.rank,
+            self.output_directory,
+        )
 
     def log_agents(self):
         tick = self.runner.schedule.tick
         for person in self.network.get_agents():
             cadre_logging.log_agent(person, tick)
         cadre_logging.agent_logger.write()
-    
 
     def get_instance_number(self):
         """
@@ -75,9 +82,11 @@ class Model:
         - int: Extracted instance number or raises an error if the pattern isn't found.
         """
         cwd = os.getcwd()
-        match = re.search(r'instance_(\d+)', cwd)
+        match = re.search(r"instance_(\d+)", cwd)
         if not match:
-            raise ValueError(f"Cannot extract instance number from current working directory: {cwd}")
+            raise ValueError(
+                f"Cannot extract instance number from current working directory: {cwd}"
+            )
         return int(match.group(1))
 
     def log_network(self):
@@ -88,8 +97,6 @@ class Model:
             agent2 = edge[1]
             cadre_logging.network_logger.log_row(tick, agent1.id, agent2.id)
         cadre_logging.network_logger.write()
-
-    
 
     def at_end(self):
         cadre_logging.data_set.close()
@@ -108,35 +115,90 @@ class Model:
         cadre_logging.data_set.log(tick)
 
         all_agents = self.network.get_agents()
-        white_male_count = sum([1 for agent in all_agents if agent.race == "White" and agent.female == 0])
-        black_male_count = sum([1 for agent in all_agents if agent.race == "Black" and agent.female == 0])
-        hispanic_male_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 0])
-        asian_male_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 0])
+        white_male_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "White" and agent.female == 0
+            ]
+        )
+        black_male_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Black" and agent.female == 0
+            ]
+        )
+        hispanic_male_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Hispanic" and agent.female == 0
+            ]
+        )
+        asian_male_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Asian" and agent.female == 0
+            ]
+        )
 
-        white_female_count = sum([1 for agent in all_agents if agent.race == "White" and agent.female == 1])
-        black_female_count = sum([1 for agent in all_agents if agent.race == "Black" and agent.female == 1])
-        hispanic_female_count = sum([1 for agent in all_agents if agent.race == "Hispanic" and agent.female == 1])
-        asian_female_count = sum([1 for agent in all_agents if agent.race == "Asian" and agent.female == 1])
+        white_female_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "White" and agent.female == 1
+            ]
+        )
+        black_female_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Black" and agent.female == 1
+            ]
+        )
+        hispanic_female_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Hispanic" and agent.female == 1
+            ]
+        )
+        asian_female_count = sum(
+            [
+                1
+                for agent in all_agents
+                if agent.race == "Asian" and agent.female == 1
+            ]
+        )
 
-        current_smoking_count = sum([1 for agent in all_agents if agent.smoker == "Current"])
-        current_AUD_count = sum([1 for agent in all_agents if agent.alc_use_status == 3])
+        current_smoking_count = sum(
+            [1 for agent in all_agents if agent.smoker == "Current"]
+        )
+        current_AUD_count = sum(
+            [1 for agent in all_agents if agent.alc_use_status == 3]
+        )
 
         race_sex_pop_counts = {
-            'WHITE_MALE': white_male_count,
-            'BLACK_MALE': black_male_count,
-            'HISPANIC_MALE': hispanic_male_count,
-            'ASIAN_MALE': asian_male_count,
-            'WHITE_FEMALE': white_female_count,
-            'BLACK_FEMALE': black_female_count,
-            'HISPANIC_FEMALE': hispanic_female_count,
-            'ASIAN_FEMALE': asian_female_count
-            }
+            "WHITE_MALE": white_male_count,
+            "BLACK_MALE": black_male_count,
+            "HISPANIC_MALE": hispanic_male_count,
+            "ASIAN_MALE": asian_male_count,
+            "WHITE_FEMALE": white_female_count,
+            "BLACK_FEMALE": black_female_count,
+            "HISPANIC_FEMALE": hispanic_female_count,
+            "ASIAN_FEMALE": asian_female_count,
+        }
 
-        race_sex_pop_props = {key: value / len(all_agents) for key, value in race_sex_pop_counts.items()}
-        
-        pct_smoking = current_smoking_count/len(all_agents)
-        pct_aud = current_AUD_count/len(all_agents) 
-        
+        race_sex_pop_props = {
+            key: value / len(all_agents)
+            for key, value in race_sex_pop_counts.items()
+        }
+
+        pct_smoking = current_smoking_count / len(all_agents)
+        pct_aud = current_AUD_count / len(all_agents)
+
         for person in self.network.get_agents():
             person.aging()
 
@@ -144,13 +206,13 @@ class Model:
             person.transition_smoking_status(tick)
             person.simulate_incarceration(
                 tick=tick,
-                model = self,
+                model=self,
                 probability_daily_incarceration=load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
-                race_sex_pop_props = race_sex_pop_props,
-                pct_smoking = pct_smoking,
-                pct_aud = pct_aud
+                race_sex_pop_props=race_sex_pop_props,
+                pct_smoking=pct_smoking,
+                pct_aud=pct_aud,
             )
             if person.current_incarceration_status == 1:
                 person.incarceration_duration += 1
@@ -164,9 +226,9 @@ class Model:
                 probability_daily_recidivism_males=load_params.params_list[
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["MALES"],
-                race_sex_pop_props = race_sex_pop_props,
-                pct_smoking = pct_smoking,
-                pct_aud = pct_aud
+                race_sex_pop_props=race_sex_pop_props,
+                pct_smoking=pct_smoking,
+                pct_aud=pct_aud,
             )
 
             incaceration_states.append(person.current_incarceration_status)
@@ -193,7 +255,6 @@ class Model:
                 self.network.remove_agent(p)
                 new = self.person_creator.create_person(tick=tick)
                 self.network.add(new)
-  
 
     def get_output_directory(self):
         """
@@ -201,51 +262,64 @@ class Model:
         """
         if self.output_directory:
             return self.output_directory  # If already defined, just return it
-        
-        turbine_output = os.environ.get('TURBINE_OUTPUT')
+
+        turbine_output = os.environ.get("TURBINE_OUTPUT")
 
         if turbine_output:
             # If running within EMEWS (Turbine)
-            if 'instance_' in os.getcwd():
+            if "instance_" in os.getcwd():
                 instance_number = self.get_instance_number()
-                self.output_directory = os.path.join(turbine_output, f"instance_{instance_number}", 'output')
+                self.output_directory = os.path.join(
+                    turbine_output, f"instance_{instance_number}", "output"
+                )
             else:
-                self.output_directory = os.path.join(turbine_output, 'output')
+                self.output_directory = os.path.join(turbine_output, "output")
         else:
             # Running in standalone mode
-            datetime_str = datetime.now().strftime('%Y%m%d_%H%M%S')
-            self.output_directory = os.path.join(os.getcwd(), f'output_{datetime_str}')
-            print(f"Running in standalone mode. Using output directory: {self.output_directory}")
+            datetime_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.output_directory = os.path.join(
+                os.getcwd(), f"output_{datetime_str}"
+            )
+            print(
+                f"Running in standalone mode. Using output directory: {self.output_directory}"
+            )
 
         return self.output_directory
 
-  
     def dump_parameters(self):
         # Get the output directory using the method we previously defined
         output_directory = self.get_output_directory()
-        
+
         # Create the output directory if it doesn't exist
         os.makedirs(output_directory, exist_ok=True)
-        
+
         # Construct path for the parameters file within the output directory
-        params_file = find_free_filename(os.path.join(output_directory, 'parameters.txt'))
+        params_file = find_free_filename(
+            os.path.join(output_directory, "parameters.txt")
+        )
 
         # Write the parameters
-        with open(params_file, 'w') as p:
+        with open(params_file, "w") as p:
             p.write(yaml.dump(load_params.params_list))
 
     def update_output_paths(self):
-        
         # Get the correct output directory
         output_directory = self.get_output_directory()
-        
+
         # Since load_params.params_list contains keys like 'agent_log_file', 'network_log_file', etc.
         # We update their paths to ensure they are saved in the same directory as the parameters
-        load_params.params_list['agent_log_file'] = os.path.join(self.output_directory, 'agent_log.csv')
-        load_params.params_list['network_log_file'] = os.path.join(self.output_directory, 'network_log.csv')
-        load_params.params_list['counts_log_file'] = os.path.join(self.output_directory, 'counts_log.csv')
-        load_params.params_list['incarceration_log_file'] = os.path.join(output_directory, 'incarceration_log.csv')
-
+        load_params.params_list["agent_log_file"] = os.path.join(
+            self.output_directory, "agent_log.csv"
+        )
+        load_params.params_list["network_log_file"] = os.path.join(
+            self.output_directory, "network_log.csv"
+        )
+        load_params.params_list["counts_log_file"] = os.path.join(
+            self.output_directory, "counts_log.csv"
+        )
+        load_params.params_list["incarceration_log_file"] = os.path.join(
+            output_directory, "incarceration_log.csv"
+        )
 
     def start(self):
         self.runner.execute()

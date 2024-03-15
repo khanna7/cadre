@@ -5,11 +5,11 @@ from repast4py import logging, parameters, util
 from dataclasses import dataclass
 from typing import Iterable, List
 
-class NullTabularLogger:
 
+class NullTabularLogger:
     def __init__(self):
-        raise(ValueError)
-        
+        raise (ValueError)
+
     def log_row(self, *args):
         pass
 
@@ -40,7 +40,9 @@ incarceration_logger = None
 
 def create_logger(output_dir, comm, key: str, header: List[str]):
     if key in parameters.params:
-        return logging.TabularLogger(comm, join(output_dir, parameters.params[key]), header)
+        return logging.TabularLogger(
+            comm, join(output_dir, parameters.params[key]), header
+        )
     else:
         return NullTabularLogger()
 
@@ -48,27 +50,46 @@ def create_logger(output_dir, comm, key: str, header: List[str]):
 def init_logging(num_agents, comm, rank, output_dir):
     global counts, data_set, agent_logger, network_logger, incarceration_logger
 
-    agent_logger = create_logger(output_dir, comm, "agent_log_file",[
-        "tick",
-        "id",
-        "age",
-        "race",
-        "female",
-        "alc_use_status",
-        "smoking_status",
-        "last_incarceration_tick",
-        "last_release_tick",
-        "current_incarceration_status",
-        "entry_at_tick",
-        "exit_at_tick",
-        "n_incarcerations",
-        "n_releases",
-        "n_smkg_stat_trans",
-        "n_alc_use_stat_trans",
-    ])
-    network_logger = create_logger(output_dir, comm, "network_log_file", ["tick", "p1", "p2"])
-    incarceration_logger = create_logger(output_dir, comm, "incarceration_log_file", 
-        ["tick", "id", "age", "race", "female", "alc_use_status", "smoking_status"])
+    agent_logger = create_logger(
+        output_dir,
+        comm,
+        "agent_log_file",
+        [
+            "tick",
+            "id",
+            "age",
+            "race",
+            "female",
+            "alc_use_status",
+            "smoking_status",
+            "last_incarceration_tick",
+            "last_release_tick",
+            "current_incarceration_status",
+            "entry_at_tick",
+            "exit_at_tick",
+            "n_incarcerations",
+            "n_releases",
+            "n_smkg_stat_trans",
+            "n_alc_use_stat_trans",
+        ],
+    )
+    network_logger = create_logger(
+        output_dir, comm, "network_log_file", ["tick", "p1", "p2"]
+    )
+    incarceration_logger = create_logger(
+        output_dir,
+        comm,
+        "incarceration_log_file",
+        [
+            "tick",
+            "id",
+            "age",
+            "race",
+            "female",
+            "alc_use_status",
+            "smoking_status",
+        ],
+    )
 
     # initialize the counts logging
     counts = CountsLog(
@@ -96,7 +117,6 @@ def init_logging(num_agents, comm, rank, output_dir):
     data_set = logging.ReducingDataSet(
         loggers, comm, parameters.params["counts_log_file"]
     )
-    
 
 
 def close_loggers():
@@ -128,8 +148,9 @@ def log_agent(person, tick):
         person.n_incarcerations,
         person.n_releases,
         person.n_smkg_stat_trans,
-        person.n_alc_use_stat_trans
+        person.n_alc_use_stat_trans,
     )
+
 
 def log_incarceration(person, tick, event_type):
     incarceration_logger.log_row(
@@ -140,9 +161,10 @@ def log_incarceration(person, tick, event_type):
         person.female,
         person.alc_use_status,
         person.smoker,
-        event_type
+        event_type,
     )
     incarceration_logger.write()
+
 
 """ 
 def log_persons(tick, context, type):
