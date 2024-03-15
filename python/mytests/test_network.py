@@ -9,7 +9,7 @@ from pycadre import load_params
 class TestNetwork(unittest.TestCase):
     def setUp(self):
         self.params_list = load_params.load_params(
-            "../python/test_data/test_params.yaml", ""
+            "../../python/test_data/test_params.yaml", ""
         )
 
     def test_mean_degree(self):
