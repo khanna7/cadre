@@ -7,9 +7,10 @@ from pycadre import load_params
 
 
 class TestNetwork(unittest.TestCase):
-    params_list = load_params.load_params(
-        "../../cadre/python/test_data/test_params.yaml", ""
-    )
+    def setUp(self):
+        self.params_list = load_params.load_params(
+            "../python/test_data/test_params.yaml", ""
+        )
 
     def test_mean_degree(self):
         n_agents = self.params_list['N_AGENTS']

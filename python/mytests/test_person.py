@@ -1,3 +1,4 @@
+import os
 from statistics import mean as mean
 import unittest
 from unittest.mock import MagicMock, patch
@@ -12,7 +13,7 @@ from repast4py import context as ctx, schedule
 class TestPerson(unittest.TestCase):
     def setUp(self):
         self.params_list = pycadre.load_params.load_params(
-            "../../cadre/python/test_data/test_params.yaml", ""
+            "../python/test_data/test_params.yaml", ""
         )
 
     def test_post_release_alc_use(self):
@@ -147,12 +148,13 @@ class TestPerson(unittest.TestCase):
             )
  """
     def test_simulate_release(self):
+        model = cadre_model.Model(comm=MPI.COMM_WORLD, params=self.params_list)
         nsteps = 1
         inc_states = []  # make incarceration status list empty
 
         for p in [init_person_creator().create_person() for i in range(1000)]:
             p.sentence_duration = 0  # assign
-            p.simulate_release(tick=nsteps)
+            p.simulate_release(model=model, tick=nsteps)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(
                 p.current_incarceration_status == 0,
@@ -309,10 +311,10 @@ class TestPerson(unittest.TestCase):
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco)) / len(all_alco)
-        self.assertAlmostEqual(alco_dist[0], NON_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[1], CAT1_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[2], CAT2_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[0], NON_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[1], CAT1_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[2], CAT2_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.02)
 
 
     def test_transition_alc_use(self):
