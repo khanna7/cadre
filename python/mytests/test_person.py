@@ -13,7 +13,7 @@ from repast4py import context as ctx, schedule
 class TestPerson(unittest.TestCase):
     def setUp(self):
         self.params_list = pycadre.load_params.load_params(
-            "../../python/test_data/test_params.yaml", ""
+            "./test_data/test_params.yaml", ""
         )
 
     def test_post_release_alc_use(self):
