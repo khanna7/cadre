@@ -1,20 +1,21 @@
 import os
+import copy
 from statistics import mean as mean
 import unittest
 from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
-from pycadre import cadre_model
+from pycadre import cadre_model, cadre_person
 from pycadre.person_creator import PersonCreator, init_person_creator
 import pycadre.load_params
 from mpi4py import MPI
-from repast4py import context as ctx, schedule
+from repast4py import context as ctx, schedule, network
 
 
 class TestPerson(unittest.TestCase):
     def setUp(self):
         self.params_list = pycadre.load_params.load_params(
-            "./test_data/test_params.yaml", ""
+            "./python/test_data/test_params.yaml", ""
         )
 
     def test_post_release_alc_use(self):
@@ -375,6 +376,54 @@ class TestPerson(unittest.TestCase):
                 result = sums[state] / N
                 self.assertAlmostEqual(expected, result, delta=0.006)
                 print(expected, result, abs(expected - result))
+
+    def test_transition_alc_use_regular_to_heavy_network_effect(self):
+        per_neighbor_factor = self.params_list[
+            "ALCOHOL_NETWORK_EFFECTS"
+        ]["ONSET"]["FIRST_DEGREE"]
+        ALC_USE_STATES = self.params_list["ALC_USE_STATES"]
+
+
+        starting_states = copy.deepcopy(ALC_USE_STATES[2])
+        starting_states[3] = starting_states[3] * per_neighbor_factor
+        expected_states = cadre_person.normalize_transitions(starting_states)
+
+        net = network.UndirectedSharedNetwork(
+            "test_network", MPI.COMM_WORLD
+        )
+
+        person_creator = init_person_creator()
+        person = person_creator.create_person()
+        person.alc_use_status =  2 # Starting in state 1
+        person.current_incarceration_status = 0  # Not incarcerated
+
+        neighbor = person_creator.create_person()
+        neighbor.alc_use_status = 3
+        neighbor.current_incarceration_status = 0
+
+        net.add(person)
+        net.add(neighbor)
+        net.add_edge(person, neighbor)
+        person.graph = net.graph
+        
+        N = 100000
+        sums = {}
+        for i in range(N):
+            person.alc_use_status = 2
+            new_state = person.get_new_alc_use_state(2)
+            if new_state in sums:
+                sums[new_state] += 1
+            else:
+                sums[new_state] = 1
+
+        for state in sums:
+            expected_state = expected_states[state]
+            result = sums[state] / N
+            self.assertAlmostEqual(expected_state, result, delta=0.0005)
+            print(state, expected_state, result, abs(expected_state - result))
+
+
+
 
     # def test_transition_alc_use_statistically(self):
     #     person_creator = init_person_creator()

@@ -1,6 +1,7 @@
 import unittest
 import random
 from mpi4py import MPI
+
 from pycadre import cadre_network
 from pycadre.person_creator import init_person_creator
 from pycadre import load_params
@@ -9,7 +10,7 @@ from pycadre import load_params
 class TestNetwork(unittest.TestCase):
     def setUp(self):
         self.params_list = load_params.load_params(
-            "./test_data/test_params.yaml", ""
+            "./python/test_data/test_params.yaml", ""
         )
 
     def test_mean_degree(self):

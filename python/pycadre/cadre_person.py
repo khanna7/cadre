@@ -12,6 +12,14 @@ import csv
 
 # read parameters
 
+def normalize_transitions(states):
+    tot = 0
+    for state in states:
+        tot += states[state]
+    scaled_states = {}
+    for state in states:
+        scaled_states[state] = states[state] / tot
+    return scaled_states
 
 class Person(core.Agent):
     """The Person Agent
@@ -105,15 +113,6 @@ class Person(core.Agent):
             increase *= pow(per_neighbor_factor, nincreases)
         return increase
 
-    def normalize_transitions(self, states):
-        tot = 0
-        for state in states:
-            tot += states[state]
-        scaled_states = {}
-        for state in states:
-            scaled_states[state] = states[state] / tot
-        return scaled_states
-
     def get_new_alc_use_state(self, current_state):
         trans_probs = []
         # Load all transition probabilities
@@ -125,7 +124,7 @@ class Person(core.Agent):
                 self.get_regular_to_heavy_alc_use_transition_network_influence()
             )
             states[3] = states[3] * increase
-        scaled_states = self.normalize_transitions(states)
+        scaled_states = normalize_transitions(states)
         # print("Scaled states: ", scaled_states)
 
         for state in scaled_states:
