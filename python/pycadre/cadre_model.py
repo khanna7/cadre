@@ -204,22 +204,13 @@ class Model:
 
             person.transition_alc_use()
             person.transition_smoking_status(tick)
+            
             person.simulate_incarceration(
                 tick=tick,
                 model=self,
-                probability_daily_incarceration=load_params.params_list[
+                probability_daily_incarceration = load_params.params_list[
                     "PROBABILITY_DAILY_INCARCERATION"
                 ],
-                race_sex_pop_props=race_sex_pop_props,
-                pct_smoking=pct_smoking,
-                pct_aud=pct_aud,
-            )
-            if person.current_incarceration_status == 1:
-                person.incarceration_duration += 1
-
-            person.simulate_recidivism(
-                tick=tick,
-                model=self,
                 probability_daily_recidivism_females=load_params.params_list[
                     "PROBABILITY_DAILY_RECIDIVISM"
                 ]["FEMALES"],
@@ -230,6 +221,9 @@ class Model:
                 pct_smoking=pct_smoking,
                 pct_aud=pct_aud,
             )
+            
+            if person.current_incarceration_status == 1:
+                person.incarceration_duration += 1
 
             incaceration_states.append(person.current_incarceration_status)
             smokers.append(person.smoker)
