@@ -18,6 +18,20 @@ class TestPerson(unittest.TestCase):
             "./python/test_data/test_params.yaml", ""
         )
 
+    def test_race_sex_smoking_alc_inc_prob(self):
+        person_creator = init_person_creator()
+        person = person_creator.create_person()
+
+        self.assertEqual(0,  person.get_race_sex_smoking_alc_inc_prob(0, 0.5, 0.5, 0.5, 0.5))
+        person.smoker = "Current"
+        person.alc_use_status = 3
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.25, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5))
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.25, 0.5, 0.5, 0.5))
+        person.alc_use_status = 2
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.75))
+        person.smoker = "Former"
+        self.assertEqual(4 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.75, 0.75))
+
     def test_post_release_alc_use(self):
         states = []
 

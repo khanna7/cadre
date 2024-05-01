@@ -194,5 +194,15 @@ network_file: 'network.txt'
 
 
     
+INCARCERATION_SMOKING_ASSOC:
+  MIN: 0.50
+  MAX: 0.80
+#Ives, et al. 2022. “Nine Years of...” Preventive Medicine Reports 29 (October): 101921.
+
+INCARCERATION_AUD_ASSOC: 
+  MALES: 0.26
+  FEMALES: 0.20
+# Fazel S, Yoon IA, Hayes AJ. Addiction. 2017 Oct;112(10):1725-1739. doi: 10.1111/add.13877. 
+
 
     
