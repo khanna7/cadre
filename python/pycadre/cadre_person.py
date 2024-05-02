@@ -302,7 +302,7 @@ class Person(core.Agent):
                 if self.female:
                     base_prob = probability_daily_recidivism_females
                 else:
-                    base_prob = probability_daily_recidivism_females
+                    base_prob = probability_daily_recidivism_males
 
         specific_prob = self.get_race_sex_smoking_alc_inc_prob(base_prob, race_sex_pop_prop, inc_race_sex_prop, pct_smoking, pct_aud)
         prob = random.default_rng.uniform(0, 1)
