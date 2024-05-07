@@ -37,7 +37,6 @@ git for-each-ref --sort=-committerdate refs/heads/ --format='%(color:yellow)%(re
 ### Fetched remote branches not in local
 ```
 git for-each-ref --sort=-committerdate refs/remotes/ --format='%(color:yellow)%(refname:short)%(color:reset) - %(color:green)%(authorname)%(color:reset) (%(color:red)%(committerdate:relative)%(color:reset)): %(color:bold blue)%(contents:subject)%(color:reset)'
-
 ```
 
 
