@@ -12,10 +12,13 @@ from mpi4py import MPI
 from repast4py import context as ctx, schedule, network
 
 
+print("Current person test class working directory:", os.getcwd())
+
+
 class TestPerson(unittest.TestCase):
     def setUp(self):
         self.params_list = pycadre.load_params.load_params(
-            "./python/test_data/test_params.yaml", ""
+            "test_data/test_params.yaml", ""
         )
 
     def test_race_sex_smoking_alc_inc_prob(self):
