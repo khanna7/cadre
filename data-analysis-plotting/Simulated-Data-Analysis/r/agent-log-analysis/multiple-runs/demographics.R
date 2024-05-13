@@ -5,8 +5,8 @@ rm(list=ls())
 
 # Load R environment ---------
 
-renv::activate()
-.libPaths()
+#renv::activate()
+#.libPaths()
 
 
 # Load packages ---------
@@ -102,6 +102,8 @@ p_race <- p_race_base +
                                                 label = sprintf("Target: %.3f", target_pct)), color = target_values_df$color, check_overlap = TRUE, size=5)
 
 p_race
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "race_distribution_plot.png"), plot = p_race, width = 10, height = 8, units = "in")
+
 
 
 
@@ -210,6 +212,7 @@ p_sex_distribution <-
 # Print the plot
 p_sex_distribution
 
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "sex_distribution_plot.png"), plot = p_sex_distribution, width = 10, height = 8, units = "in")
 
 
 
