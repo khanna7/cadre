@@ -14,7 +14,7 @@ library(yaml)
 
 
 # Base path for simulated data ------------
-base_sim_data_path <- "~/data/akhann16/cadre_simulated_data/random-seeds-30/"
+base_sim_data_path <- "/oscar/data/akhann16/akhann16/cadre_simulated_data/emews_experiments/post-review-run/"
 
 
 # Determine the number of instances ------------
