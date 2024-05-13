@@ -2,7 +2,7 @@ rm(list=ls())
   
 
 # Activate environment ------------
-#renv::activate()
+renv::activate()
 .libPaths()
 
 
