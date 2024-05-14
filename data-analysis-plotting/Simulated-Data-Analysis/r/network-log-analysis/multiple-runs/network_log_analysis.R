@@ -41,7 +41,7 @@ network_dt <- one_instance_network_data[["network_dt"]]
 one_instance_agent_data <- all_instances_agent_data[[1]]
 agent_dt <- one_instance_agent_data[["agent_dt"]]
 
-input_params <- one_instance_data[["input_params"]]
+input_params <- one_instance_network_data[["input_params"]]
 
 
 # Last tick focus ---------
@@ -128,7 +128,7 @@ prevalence_ego_aud
 
 # Multiple instance analysis ---------
 
-num_instances <- length(all_instances_nework_data)
+num_instances <- length(all_instances_network_data)
 
 
 # Initialize vectors to store metrics for each instance
