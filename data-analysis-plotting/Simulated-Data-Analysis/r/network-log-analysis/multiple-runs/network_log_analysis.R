@@ -3,7 +3,12 @@ rm(list=ls())
 
 # Environment activation ----------
 
-renv::activate()
+if (is.null(Sys.getenv("RENV_PROJECT"))) {
+  renv::activate()
+} else {
+  message("renv is already activated.")
+}
+
 .libPaths()
 
 

@@ -18,8 +18,7 @@ mkdir -p logs
 mkdir -p rds-outs
 
 echo "Point 3"
-module load R/4.2.0                     # Load R module 
-module load gcc/10.2 pcre2/10.35 intel/2020.2 texlive/2018
+module load r/4.4.0-yycctsj                    # Load R module 
 
 echo "Point 4"
 cd /oscar/home/akhann16/code/cadre/data-analysis-plotting/Simulated-Data-Analysis/r/
