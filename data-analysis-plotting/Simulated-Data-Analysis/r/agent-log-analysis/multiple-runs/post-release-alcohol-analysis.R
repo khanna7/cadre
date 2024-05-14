@@ -2,7 +2,7 @@
 
 rm(list=ls())
   
-renv::activate()
+#renv::activate()
 
 
 # Load packages ---------
@@ -299,5 +299,21 @@ p <- p_legend +
   labs(title = "",
        x = "Time After Release",
        y = "Proportion of Agents in Category III Alcohol Use",
-       color = "Population") 
+       color = "Population") +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title.x = element_text(size = 16, face = "bold"),
+    axis.title.y = element_text(size = 16, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold", angle = 90, hjust = 1),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text = element_text(size = 14),
+    axis.ticks.length = unit(0.5, "cm"),
+    axis.ticks = element_line(linewidth = 1),
+    axis.line = element_line(linewidth = 1.5),
+  )
 p
+
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "postrelease_alcohol.png"), 
+       plot = p, 
+       width = 10, height = 8, units = "in")

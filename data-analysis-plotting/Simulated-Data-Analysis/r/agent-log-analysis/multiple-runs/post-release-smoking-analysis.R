@@ -3,7 +3,11 @@
 
 # Load R environment ---------
 
-renv::activate()
+if (is.null(Sys.getenv("RENV_PROJECT"))) {
+  renv::activate()
+} else {
+  message("renv is already activated.")
+}
 
 
 # Load packages ---------
@@ -150,6 +154,21 @@ p_base <-
   theme_minimal() +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
 
-p_base
+p <- p_base + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title.x = element_text(size = 16, face = "bold"),
+    axis.title.y = element_text(size = 16, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold", angle = 90, hjust = 1),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text = element_text(size = 14),
+    axis.ticks.length = unit(0.5, "cm"),
+    axis.ticks = element_line(linewidth = 1),
+    axis.line = element_line(linewidth = 1.5),
+  )
 
 
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "post_release_smoking.png"), 
+       plot = p, 
+       width = 10, height = 8, units = "in")

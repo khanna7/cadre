@@ -137,6 +137,6 @@ smoking_time_plot_base_labels <-
 smoking_time_plot_base_labels
 
 
-ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "smoking_time_plot_base_labels"), 
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "smoking_time_plot_base_labels.png"), 
        plot = smoking_time_plot_base_labels, 
        width = 10, height = 8, units = "in")
