@@ -2,6 +2,13 @@
 
 Welcome to the CADRE code repository, maintained by researchers at The Brown University School of Public Health! 
 
+## Badges
+[![ci](https://github.com/khanna-lab/cadre/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/khanna-lab/cadre/actions/workflows/python-app.yml)
+
+[![codecov](https://codecov.io/gh/khanna-lab/cadre/branch/master/graph/badge.svg?token=FI7VUOTLCH)](https://codecov.io/gh/khanna-lab/cadre)
+
+
+
 ## About CADRE
 
 This codebase was developed for NIH-funded projects that aim to model the social networks of persons involved with the criminal legal system (PCLS).
@@ -45,5 +52,4 @@ We would like to thank the following entities:
 * THe [EMEWS](https://web.cels.anl.gov/projects/emews/tutorial/) project
 * The [Repast4Py](https://repast.github.io/repast4py.site/index.html) project
 * The [nextworkx](https://networkx.org/) project
-
 

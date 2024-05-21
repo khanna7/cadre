@@ -23,22 +23,37 @@ RACE_DISTRIBUTION:
 FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 
 ALC_USE_PROPS: 
-  A: 0.083 #abstainer
-  O: 0.729 #ocassional user
-  R: 0.132 #regular user
-  D: 0.056 #heavydrinker /AU Disorder 
-  #REF see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
+  0: 0.35 #no drinkgs in last 12m
+  1: 0.55 #<= 40gpd for M,  <= 20gpd for F
+  2: 0.05 #41-60 for M, 21-40 for F
+  3: 0.05 #>= 61 for M, >= 41 for F 
+  # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
 
 ALC_USE_STATES:
-  # level up
-  TRANS_PROB_0_1: 0
-  TRANS_PROB_1_2: 0.0072
-  TRANS_PROB_2_3: 0.05
-  # LEVEL DOWN
-  TRANS_PROB_1_0: 0
-  TRANS_PROB_2_1: 0.04
-  TRANS_PROB_3_2: 0.1178
-# REF: https://docs.google.com/document/d/1bCyglQwCkY6k9D5W28kTQLoE0ZnzGLzb4z-ME64PQ3s/edit#bookmark=id.ym6j6jyv731k
+  # from N
+  0:
+    0: 0.993684
+    1: 0.0002604598
+    2: 0.0006111654
+    3: 0.0002886173
+  1:
+    0: 0.0001665947
+    1: 0.9997175
+    2: 6.936145e-05
+    3: 3.584933e-05
+  2:
+    0: 3.307502e-05
+    1: 0.001020066
+    2: 0.996866
+    3: 0.001217685
+  3:
+    0: 1.098082e-05
+    1: 0.0004387222
+    2: 0.001076249
+    3: 0.9982205
+
+# REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; PMCID: PMC9722571.
+# apply bionomial probability to compute daily rates
 
 PROBABILITY_DAILY_INCARCERATION: 0.10 #hypothetical
 #PROBABILITY_DAILY_INCARCERATION: 0.001223976
@@ -179,5 +194,15 @@ network_file: 'network.txt'
 
 
     
+INCARCERATION_SMOKING_ASSOC:
+  MIN: 0.50
+  MAX: 0.80
+#Ives, et al. 2022. “Nine Years of...” Preventive Medicine Reports 29 (October): 101921.
+
+INCARCERATION_AUD_ASSOC: 
+  MALES: 0.26
+  FEMALES: 0.20
+# Fazel S, Yoon IA, Hayes AJ. Addiction. 2017 Oct;112(10):1725-1739. doi: 10.1111/add.13877. 
+
 
     

@@ -1,4 +1,6 @@
 ---
+BASE_SEED: 1
+
 STOP_AT: 10950
 N_AGENTS: 10000
 #EDGE_PROB: 0.001
@@ -25,22 +27,64 @@ FEMALE_PROP: 0.513 # REF: https://www.census.gov/quickfacts/RI
 NUM_RELEASE_ALCOHOL_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 
 ALC_USE_PROPS: 
-  A: 0.083 #abstainer
-  O: 0.729 #ocassional user
-  R: 0.132 #regular user
-  D: 0.056 #heavydrinker /AU Disorder 
-  #REF see derivation in file:///Volumes/GoogleDrive/My%20Drive/code/cadre/r/explain-population-initialization.nb.html
+  0: 0.35 #no drinkgs in last 12m
+  1: 0.55 #<= 40gpd for M,  <= 20gpd for F
+  2: 0.05 #41-60 for M, 21-40 for F
+  3: 0.05 #>= 61 for M, >= 41 for F 
+  # REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; Table 1
+  
+
+# ALC_USE_STATES:
+#   # from N
+#   0:
+#     #0: 0.993684
+#     0: 0.9988398 #subtract sum from 1
+#     1: 0.0002604598
+#     2: 0.0006111654
+#     3: 0.0002886173
+#   1:
+#     0: 0.0001665947
+#     #1: 0.9997175
+#     1: 0.9997282 #sutract sum from 1
+#     2: 6.936145e-05
+#     3: 3.584933e-05
+#   2:
+#     0: 3.307502e-05
+#     1: 0.001020066
+#     #2: 0.996866
+#     2: 0.9977292 #subtract sum from 1
+#     3: 0.001217685
+#   3:
+#     0: 1.098082e-05
+#     1: 0.0004387222
+#     2: 0.001076249
+#    #3: 0.9982205
+#     3: 0.998474 #subtract sum from 1
+# REF: Puka K, Addiction. 2023 Jan;118(1):61-70. doi: 10.1111/add.16024. Epub 2022 Aug 28. PMID: 35975709; PMCID: PMC9722571.
+# apply bionomial probability to compute daily rates
 
 ALC_USE_STATES:
-  # level up
-  TRANS_PROB_0_1: 0
-  TRANS_PROB_1_2: 0.0072
-  TRANS_PROB_2_3: 0.05
-  # LEVEL DOWN
-  TRANS_PROB_1_0: 0
-  TRANS_PROB_2_1: 0.04
-  TRANS_PROB_3_2: 0.1178
-# REF: https://docs.google.com/document/d/1bCyglQwCkY6k9D5W28kTQLoE0ZnzGLzb4z-ME64PQ3s/edit#bookmark=id.ym6j6jyv731k
+  # from N
+  0:
+    0: 1 
+    1: 0
+    2: 0
+    3: 0
+  1:
+    0: 0
+    1: 1
+    2: 0
+    3: 0
+  2:
+    0: 0
+    1: 0
+    2: 1
+    3: 0
+  3:
+    0: 0
+    1: 0
+    2: 0
+    3: 1
 
 # PROBABILITY_DAILY_INCARCERATION: 0.001223976
 # Derived from Macmadu 2021 
@@ -51,9 +95,9 @@ PROBABILITY_DAILY_INCARCERATION: 0.00000685
 # See alternate deriviation at: https://docs.google.com/document/d/1qXm5yMeMbNMohJQAxr4JaFESKrrZswK1UTqHV4Fo-lc/edit?usp=sharing
 
 PROBABILITY_DAILY_RECIDIVISM: 
-  FEMALES: 0.0004074851
-  MALES: 0.0006512489
-# REF: Derived from Macmadu 2021
+  FEMALES: 0.00010275
+  MALES: 0.00010275
+# REF: Derived from BJS and FBI's UCR data
 # See deriviation at: https://docs.google.com/document/d/1ujap_t4hBBcYDWJP9xvgtzxYbh4R4kP94yoSBItOfhk/edit?usp=sharing
 
 RECIDIVISM_UPDATED_PROB_LIMIT: 1095
@@ -82,8 +126,10 @@ SENTENCE_DURATION_EMP:
 SMOKING_CATS: ["Current", "Former", "Never"]
 NUM_RELEASE_SMOKING_INCREASES: 1 #ASSUMPTION (Sensitivity analysis)
 RELEASE_SMOKING_INCREASE:
-  MALES: 1.7
-  FEMALES: 1.61
+  #MALES: 1.7
+  MALES: 1
+  #FEMALES: 1.61
+  FEMALES: 1
 # Per National Survey of  American Life (Bailey 2015).
 
 SMOKING_PREV:
@@ -168,16 +214,54 @@ ALCOHOL_NETWORK_EFFECTS:
     THIRD_DEGREE: 1.05
 #REF: Rosenquist JN, Ann Intern Med. 2010;152(7):426-433, W141.
 
+## REMOVE NETWORK EFFECTS
+# ALCOHOL_NETWORK_EFFECTS:
+#   ONSET:
+#     FIRST_DEGREE: 1
+#     SECOND_DEGREE: 1
+#     THIRD_DEGREE:  1
+#   DISCONTINUATION:
+#     FIRST_DEGREE: 1
+#     SECOND_DEGREE: 1
+#     THIRD_DEGREE: 1
+
+
 MAX_N_NEIGHBORS_EFFECT:
   SMOKING: 3
   ALCOHOL: 3
 # HOW MANY NETWORK MEMBERS INFLUENCE SOMEONE'S SMOKING OR DRINKING
 # ASSUMPTION - NO DATA ON THIS
 
+INC_RACE_SEX_PROP:
+  WHITE_MALE: 0.34038
+  BLACK_MALE: 0.36921
+  HISPANIC_MALE: 0.21111
+  ASIAN_MALE: 0.0093
+  WHITE_FEMALE: 0.02562
+  BLACK_FEMALE: 0.02352
+  HISPANIC_FEMALE: 0.01589
+  ASIAN_FEMALE: 0.0007
+# Data from BJS https://spi-data.bjs.ojp.gov/dashboard
+# Data from other race categories were distributed uniformly among white and black
+# https://www.notion.so/a5df7fb2488e48d088de5eca3bd489cb?pvs=4#6d7391bd775d461082a721f853dceb7e
+
+INCARCERATION_SMOKING_ASSOC:
+  MIN: 0.50
+  MAX: 0.80
+#Ives, et al. 2022. “Nine Years of...” Preventive Medicine Reports 29 (October): 101921.
+
+INCARCERATION_AUD_ASSOC: 
+  MALES: 0.26
+  FEMALES: 0.20
+# Fazel S, Yoon IA, Hayes AJ. Addiction. 2017 Oct;112(10):1725-1739. doi: 10.1111/add.13877. 
+
 agent_log_file: 'output/agent_log.csv'
 counts_log_file: 'output/counts_log.csv'
 network_log_file: 'output/network_log.csv'
+incarceration_log_file: 'output/incarceration_log.csv'
 network_file: 'network.txt'
+network_file: 'network.txt'
+
 
 
 

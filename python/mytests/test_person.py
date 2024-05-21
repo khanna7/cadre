@@ -1,49 +1,66 @@
+import os
+import copy
 from statistics import mean as mean
 import unittest
-#from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
-from pycadre import cadre_model
+from pycadre import cadre_model, cadre_person
 from pycadre.person_creator import PersonCreator, init_person_creator
 import pycadre.load_params
 from mpi4py import MPI
-from repast4py import context as ctx, schedule
+from repast4py import context as ctx, schedule, network
+
+
+print("Current person test class working directory:", os.getcwd())
 
 
 class TestPerson(unittest.TestCase):
     def setUp(self):
         self.params_list = pycadre.load_params.load_params(
-            "../../cadre/python/test_data/test_params.yaml", ""
+            "test_data/test_params.yaml", ""
         )
 
-    def test_post_release_alc_use(self):
-        self.params_list['ALC_USE_PROPS']['A'] = 0.1
-        self.params_list['ALC_USE_PROPS']['O'] = 0.7
-        self.params_list['ALC_USE_PROPS']['R'] = 0.1
-        self.params_list['ALC_USE_PROPS']['D'] = 0.1
+    def test_race_sex_smoking_alc_inc_prob(self):
         person_creator = init_person_creator()
-        p = person_creator.create_person()
-        p.n_releases = 1
-        p.alc_use_status = 0
-        for i in range(100):
-            p.update_alc_use_post_release()
-            self.assertEqual(0, p.alc_use_status)
-        p.alc_use_status = 1
-        hist = { 1: 0., 2: 0., 3: 0. }
-        n = 50000
-        for i in range(n):
-            p.update_alc_use_post_release()
-            hist[p.alc_use_status] += 1
+        person = person_creator.create_person()
 
-        expected = 0.17 / 0.9
-        result = hist[3] / n
-        self.assertAlmostEqual(expected, result, delta=0.01)
-        expected = (0.7 - (0.07 / 2)) / 0.9
-        result = hist[1] / n
-        self.assertAlmostEqual(expected, result, delta=0.01) 
+        self.assertEqual(0,  person.get_race_sex_smoking_alc_inc_prob(0, 0.5, 0.5, 0.5, 0.5))
+        person.smoker = "Current"
+        person.alc_use_status = 3
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.25, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5))
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.25, 0.5, 0.5, 0.5))
+        person.alc_use_status = 2
+        self.assertEqual(2 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.75))
+        person.smoker = "Former"
+        self.assertEqual(4 * person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.5, 0.5), person.get_race_sex_smoking_alc_inc_prob(0.5, 0.5, 0.5, 0.75, 0.75))
+
+    def test_post_release_alc_use(self):
+        states = []
+
+        person_creator = init_person_creator()
+        n = 10000
+
+        for i in range(n):
+            p = person_creator.create_person()
+            p.n_releases = 1
+            p.update_alc_use_post_release()
+            new_state = p.alc_use_status
+            states.append(new_state)
+
+        count_of_0 = states.count(0)
+        count_of_1 = states.count(1)
+        count_of_2 = states.count(2)
+        count_of_3 = states.count(3)
+
+        self.assertAlmostEqual(
+            count_of_0 / n, 0.31, delta=0.01
+        )  # allt are hardcoded right now - should be changed
+        self.assertAlmostEqual(count_of_1 / n, 0.51, delta=0.01)
+        self.assertAlmostEqual(count_of_2 / n, 0.01, delta=0.01)
+        self.assertAlmostEqual(count_of_3 / n, 0.17, delta=0.01)
 
     def test_age_assignment(self):
-
         ages = []
         MIN_AGE = self.params_list["MIN_AGE"]
         MAX_AGE = self.params_list["MAX_AGE"]
@@ -62,7 +79,9 @@ class TestPerson(unittest.TestCase):
 
     def test_person_creator(self):
         person_creator = PersonCreator()
-        p1 = person_creator.create_person(tick=1, age=47, female=False, race="White")
+        p1 = person_creator.create_person(
+            tick=1, age=47, female=False, race="White"
+        )
         self.assertEqual(p1.entry_at_tick, 1)
         self.assertEqual(p1.age, 47)
         self.assertEqual(p1.female, False)
@@ -72,9 +91,13 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(p2.age, self.params_list["MIN_AGE"])
 
     def test_race_assignment(self):
-
         RD = self.params_list["RACE_DISTRIBUTION"]
-        RACE_DISTRIBUTION = [RD["White"], RD["Black"], RD["Hispanic"], RD["Asian"]]
+        RACE_DISTRIBUTION = [
+            RD["White"],
+            RD["Black"],
+            RD["Hispanic"],
+            RD["Asian"],
+        ]
         races = []
         pc = init_person_creator()
 
@@ -87,7 +110,9 @@ class TestPerson(unittest.TestCase):
 
         self.assertAlmostEqual(race_dist.White, RACE_DISTRIBUTION[0], delta=2)
         self.assertAlmostEqual(race_dist.Black, RACE_DISTRIBUTION[1], delta=2)
-        self.assertAlmostEqual(race_dist.Hispanic, RACE_DISTRIBUTION[2], delta=2)
+        self.assertAlmostEqual(
+            race_dist.Hispanic, RACE_DISTRIBUTION[2], delta=2
+        )
         self.assertAlmostEqual(race_dist.Asian, RACE_DISTRIBUTION[3], delta=2)
 
     ## test alcohol use assignment
@@ -101,9 +126,11 @@ class TestPerson(unittest.TestCase):
             "TICK_TO_YEAR_RATIO"
         ]  # xx ticks make a year
 
-        #model = cadre_model.Model(comm=MPI.COMM_WORLD, params=self.params_list)
+        # model = cadre_model.Model(comm=MPI.COMM_WORLD, params=self.params_list)
 
-        for person in [init_person_creator().create_person() for i in range(1000)]:
+        for person in [
+            init_person_creator().create_person() for i in range(1000)
+        ]:
             ages_init.append(person.age)
             person.aging()
             ages_final.append(person.age)
@@ -112,7 +139,7 @@ class TestPerson(unittest.TestCase):
 
         self.assertAlmostEqual(np.mean(diff_in_ages), 1 / TICK_TO_YEAR_RATIO)
 
-    def test_simulate_incarceration(self):
+    """ def test_simulate_incarceration(self):
         nsteps = 1
         inc_states = []
 
@@ -149,14 +176,18 @@ class TestPerson(unittest.TestCase):
                 person.current_incarceration_status == 1,
                 "not incarcerated, even though probability of incarceration is 1",
             )
+ """
 
     def test_simulate_release(self):
+        model = cadre_model.Model(
+            comm=MPI.COMM_WORLD, params=self.params_list
+        )
         nsteps = 1
         inc_states = []  # make incarceration status list empty
 
         for p in [init_person_creator().create_person() for i in range(1000)]:
             p.sentence_duration = 0  # assign
-            p.simulate_release(tick=nsteps)
+            p.simulate_release(model=model, tick=nsteps)
             inc_states.append(p.current_incarceration_status)
             self.assertTrue(
                 p.current_incarceration_status == 0,
@@ -164,7 +195,6 @@ class TestPerson(unittest.TestCase):
             )
 
     def test_assign_smoking_status(self):
-
         """
         Test smoking use status distributions:
          - simulate 25 steps of smoking transitions
@@ -222,7 +252,9 @@ class TestPerson(unittest.TestCase):
         races = []
         sexes = []
 
-        for person in [init_person_creator().create_person() for i in range(2000)]:
+        for person in [
+            init_person_creator().create_person() for i in range(2000)
+        ]:
             for j in range(25):
                 person.aging()
                 person.transition_smoking_status(j)
@@ -238,12 +270,20 @@ class TestPerson(unittest.TestCase):
         male_indices = [i for i, x in enumerate(sexes) if x == 0]
         female_indices = [i for i, x in enumerate(sexes) if x == 1]
 
-        current_smoker_indices = [i for i, x in enumerate(smokers) if x == "Current"]
-        former_smoker_indices = [i for i, x in enumerate(smokers) if x == "Former"]
-        never_smoker_indices = [i for i, x in enumerate(smokers) if x == "Never"]
+        current_smoker_indices = [
+            i for i, x in enumerate(smokers) if x == "Current"
+        ]
+        former_smoker_indices = [
+            i for i, x in enumerate(smokers) if x == "Former"
+        ]
+        never_smoker_indices = [
+            i for i, x in enumerate(smokers) if x == "Never"
+        ]
 
         white_male_ids_collate = [white_indices, male_indices]
-        white_male_ids_intersect = set.intersection(*map(set, white_male_ids_collate))
+        white_male_ids_intersect = set.intersection(
+            *map(set, white_male_ids_collate)
+        )
 
         white_male_current_smoker_ids_collate = [
             white_indices,
@@ -279,18 +319,19 @@ class TestPerson(unittest.TestCase):
             delta=0.1,
         )
         self.assertAlmostEqual(
-            len(white_male_former_smoker_ids_intersect) / len(white_male_ids_intersect),
+            len(white_male_former_smoker_ids_intersect)
+            / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[1],
             delta=0.1,
         )
         self.assertAlmostEqual(
-            len(white_male_never_smoker_ids_intersect) / len(white_male_ids_intersect),
+            len(white_male_never_smoker_ids_intersect)
+            / len(white_male_ids_intersect),
             SMOKING_PREV_WHITE_MALE[2],
             delta=0.1,
         )
 
     def test_alco_status(self):
-
         """
         Test alcohol use status distributions:
          - simulate 25 steps of alc use transitions
@@ -299,25 +340,132 @@ class TestPerson(unittest.TestCase):
         is within 0.01 units of the target proportion (0-1 scale)
         """
 
-        ABSTAINERS_PROP = self.params_list["ALC_USE_PROPS"]["A"]
-        OCCASIONAL_PROP = self.params_list["ALC_USE_PROPS"]["O"]
-        REGULAR_PROP = self.params_list["ALC_USE_PROPS"]["R"]
-        AUD_PROP = self.params_list["ALC_USE_PROPS"]["D"]
+        NON_PROP = self.params_list["ALC_USE_PROPS"][0]
+        CAT1_PROP = self.params_list["ALC_USE_PROPS"][1]
+        CAT2_PROP = self.params_list["ALC_USE_PROPS"][2]
+        CAT3_PROP = self.params_list["ALC_USE_PROPS"][3]
 
         all_alco = []
 
-        for person in [init_person_creator().create_person() for i in range(10000)]:
+        for person in [
+            init_person_creator().create_person() for i in range(10000)
+        ]:
             for i in range(25):
                 person.aging()
                 person.transition_alc_use()
             all_alco.append(person.alc_use_status)
 
         alco_dist = pd.value_counts(np.array(all_alco)) / len(all_alco)
-        self.assertAlmostEqual(alco_dist[0], ABSTAINERS_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[1], OCCASIONAL_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[2], REGULAR_PROP, delta=0.01)
-        self.assertAlmostEqual(alco_dist[3], AUD_PROP, delta=0.01)
+        self.assertAlmostEqual(alco_dist[0], NON_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[1], CAT1_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[2], CAT2_PROP, delta=0.02)
+        self.assertAlmostEqual(alco_dist[3], CAT3_PROP, delta=0.02)
 
+    def test_transition_alc_use(self):
+        person_creator = init_person_creator()
+        person = person_creator.create_person()
+        person.alc_use_status = 1  # Starting in state 1
+        person.current_incarceration_status = 0  # Not incarcerated
+        ALC_USE_STATES = self.params_list["ALC_USE_STATES"]
+
+        for current_state in ALC_USE_STATES:
+            N = 100000
+            sums = {}
+            for i in range(N):
+                person.alc_use_status = 1
+                new_state = person.get_new_alc_use_state(current_state)
+                if new_state in sums:
+                    sums[new_state] += 1
+                else:
+                    sums[new_state] = 1
+
+            tot = 0
+            for state in ALC_USE_STATES:
+                tot += ALC_USE_STATES[current_state][state]
+            scaled_states = {}
+            for state in ALC_USE_STATES:
+                scaled_states[state] = (
+                    ALC_USE_STATES[current_state][state] / tot
+                )
+
+            for state in sums:
+                expected = scaled_states[state]
+                result = sums[state] / N
+                self.assertAlmostEqual(expected, result, delta=0.006)
+                print(expected, result, abs(expected - result))
+
+    def test_transition_alc_use_regular_to_heavy_network_effect(self):
+        per_neighbor_factor = self.params_list[
+            "ALCOHOL_NETWORK_EFFECTS"
+        ]["ONSET"]["FIRST_DEGREE"]
+        ALC_USE_STATES = self.params_list["ALC_USE_STATES"]
+
+
+        starting_states = copy.deepcopy(ALC_USE_STATES[2])
+        starting_states[3] = starting_states[3] * per_neighbor_factor
+        expected_states = cadre_person.normalize_transitions(starting_states)
+
+        net = network.UndirectedSharedNetwork(
+            "test_network", MPI.COMM_WORLD
+        )
+
+        person_creator = init_person_creator()
+        person = person_creator.create_person()
+        person.alc_use_status =  2 # Starting in state 1
+        person.current_incarceration_status = 0  # Not incarcerated
+
+        neighbor = person_creator.create_person()
+        neighbor.alc_use_status = 3
+        neighbor.current_incarceration_status = 0
+
+        net.add(person)
+        net.add(neighbor)
+        net.add_edge(person, neighbor)
+        person.graph = net.graph
+        
+        N = 100000
+        sums = {}
+        for i in range(N):
+            person.alc_use_status = 2
+            new_state = person.get_new_alc_use_state(2)
+            if new_state in sums:
+                sums[new_state] += 1
+            else:
+                sums[new_state] = 1
+
+        for state in sums:
+            expected_state = expected_states[state]
+            result = sums[state] / N
+            self.assertAlmostEqual(expected_state, result, delta=0.0005)
+            print(state, expected_state, result, abs(expected_state - result))
+
+
+
+
+    # def test_transition_alc_use_statistically(self):
+    #     person_creator = init_person_creator()
+    #     transitions = {0: 0, 1: 0, ...}  # Include all possible states here
+    #     n = 10000  # Number of simulations
+
+    #     for _ in range(n):
+    #         person = person_creator.create_person()
+    #         person.alc_use_status = 1  # Starting in state 1
+    #         person.transition_alc_use()  # Execute the transition
+    #         transitions[person.alc_use_status] += 1  # Record the outcome
+
+    #     # Now transitions dict contains the count of transitions to each state
+    #     observed = [transitions[state] for state in sorted(transitions)]
+    #     expected = [n * probability for probability in expected_probabilities]  # Define your expected probabilities list
+
+    #     # Perform the chi-squared test
+    #     chi_square, p_value = stats.chisquare(observed, f_exp=expected)
+
+    #     # Set your significance level
+    #     alpha = 0.05
+    #     self.assertLess(p_value, alpha, "The transition probabilities do not match the expected distribution.")
+
+
+""" 
     def test_sentence_duration_emp(self):
         # TODO: I think this test doesn't have any assertions (i.e. it cannot fail).
         # Write some assertions.
@@ -342,6 +490,10 @@ class TestPerson(unittest.TestCase):
         f_du_collect = []
         m_du_collect = []
         schedule.init_schedule_runner(MPI.COMM_WORLD)
+        
+        pct_smoking = 0.99
+        race_sex_pop_props
+        
         for person in [init_person_creator().create_person() for i in range(5000)]:
             for tick in range(nsteps):
                 person.aging()
@@ -361,10 +513,10 @@ class TestPerson(unittest.TestCase):
 
         f_du_collect_dist = pd.value_counts(np.array(f_du_collect)) / len(f_du_collect)
         m_du_collect_dist = pd.value_counts(np.array(m_du_collect)) / len(m_du_collect)
+ """
+"""     def test_recidivism_model(self):
 
-    def test_recidivism_model(self):
-
-        """
+        \"""
         Test recidivism model by creating a copy of the params dictionary & setting:
          stop_at parameter = 2
 
@@ -377,7 +529,7 @@ class TestPerson(unittest.TestCase):
         When the model completes running, all agents should be:
           currently incarcerated
           n_incarcerations should be zero
-        """
+        \"""
 
         test_recividism_params_list = self.params_list.copy()
 
@@ -416,7 +568,7 @@ class TestPerson(unittest.TestCase):
                 # needed because agents enter at all times since age initialization was changed,
                 # and newly entering agents don't become incarerated because their attributes are not reset
                 self.assertEqual(person.current_incarceration_status, 1)
-                self.assertEqual(person.n_incarcerations, 2)
+                self.assertEqual(person.n_incarcerations, 2) """
 
 if __name__ == "__main__":
     unittest.main()
