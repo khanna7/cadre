@@ -51,6 +51,12 @@ ldd  <your venv directory>/lib/python3.9/site-packages/mpi4py/MPI.cpython-39-x86
 
 ## Install repast4py
 
+### macos with homebrew
+brew install mpich
+
+### ubuntu
+sudo apt install mpich
+
 ```
  env CC=mpicxx pip3 install repast4py
 ```
