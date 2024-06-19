@@ -39,7 +39,11 @@ source new_cadre_env_3/bin/activate
 
 ```
 pip3 install --no-cache-dir mpi4py
+
 ```
+
+## Installing on OSCAR
+
 
 (The `--no-cache-dir` is to make sure that the mpi isn't installed just from the cache.)
 
