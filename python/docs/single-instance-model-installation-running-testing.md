@@ -1,3 +1,11 @@
+# Virtual Environment
+
+Use existing
+
+```
+source /gpfs/data/akhann16/sfw/pyenvs/repast4py-py3.11/bin/activate
+```
+
 # Installation
 
 ```
@@ -20,8 +28,10 @@ env CC=mpicxx pip install repast4py
 or from the requirements:
 
 ```
-env CC=mpicxx pip install repast4py
+env CC=mpicxx pip install -r requirements.txt
 ```
+
+
 
 # Running (Single instance)
 
@@ -30,6 +40,7 @@ python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}'
 ```
 
 (Note `python3 ...` does not work!!!)
+
 
 # Running in batch mode
 
