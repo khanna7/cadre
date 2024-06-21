@@ -1,3 +1,13 @@
+## Introduction  
+- Georgiev (2014), Cambridge: https://perma.cc/5Q85-VR8F
+
+## Generators 
+- https://networkx.org/documentation/stable/reference/generators.html#module-networkx.generators.random_graphs 
+
+## Random graph modeling (karate club dataset)   
+- https://perma.cc/3ZFY-GR2B
+
+## Small Worlds
 ### Donglei Du, University of New Brunswick
 - Slides: https://perma.cc/M4JL-N2K8
 
@@ -9,5 +19,3 @@
 
 ### Girvan and Newman, PNAS 2002:
 - Structrure of biological and social networks: https://www.pnas.org/doi/abs/10.1073/pnas.1912328117
-
-
