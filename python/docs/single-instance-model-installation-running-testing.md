@@ -31,6 +31,17 @@ python -m pycadre myparams/model_params.yaml '{"STOP_AT": 12, "N_AGENTS": 13}'
 
 (Note `python3 ...` does not work!!!)
 
+# Running in batch mode
+
+Currently:
+
+```
+sbatch settings-rhel9-2.sh
+```
+
+from `/oscar/home/akhann16/code/cadre/python`
+
+
 # Testing 
 
 ## Run all tests:
