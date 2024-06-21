@@ -3,8 +3,6 @@
 ## Installing EMEWS:
 - See [here](https://emews.github.io) for general instructions from the EMEWS dev team.  
 
-- See instructions [here](https://github.com/khanna-lab/alc-smoking-transition-use/blob/main/misc/oscar_setup.md) from Noah on installing EMEWS on OSCAR.
-
 ## Reference for general repast4py model from Nick
 
 [Here](https://github.com/khanna-lab/cadre/blob/master/python/docs/emews_instructions.md)
@@ -13,7 +11,6 @@
 
 - The EMEWS root has been moved in the project [directory](https://github.com/khanna-lab/cadre/tree/network-analysis/emews).
 
-- The module set-up is explained [here](https://github.com/khanna-lab/cadre/blob/network-analysis/python/docs/mpi-and-virtualenvs.md).
 
 ### Filetree
 
@@ -66,8 +63,8 @@ The `turbine-output -> /oscar/home/akhann16/code/cadre/emews/experiments/testY` 
 - Update [lines](https://github.com/khanna-lab/cadre/blob/74a45608342f5e7e090cbe6671d62d3b15a6416f/python/docs/emews_test/scripts/run_model_pycadre.sh#L35-L38) with the Python and `venv` information:
 
 ```bash
-module load python/3.9.0
-source /gpfs/home/akhann16/code/cadre/python/new_cadre_env_4/bin/activate
+module load python/3.11.0s-ixrhc3q
+source /gpfs/data/akhann16/sfw/pyenvs/repast4py-py3.11/bin/activate
 ```
 
 - Update [arg_array](https://github.com/khanna-lab/cadre/blob/c1915e1c8a9ed3329c81ea54d517135333b0ad8a/python/docs/emews_test/scripts/run_model_pycadre.sh#L58) with the command to execute the model.
