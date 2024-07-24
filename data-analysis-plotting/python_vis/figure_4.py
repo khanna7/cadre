@@ -39,7 +39,7 @@ agent_dt = agent_log_env
 print("Data head:\n", agent_dt.head())
 print("Columns:\n", agent_dt.columns)
 
-# Ticks of interest
+#Taking final data after run
 selected_ticks = list(range(1, agent_dt["tick"].max() + 1, 10))
 last_tick = agent_dt["tick"].max()
 print("Selected ticks:", selected_ticks)
