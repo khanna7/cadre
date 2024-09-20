@@ -42,6 +42,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Aditya Khanna](https://github.com/khanna7) for code reviews and feedback.
 
 
+## Running the Model
+
+- Instructions for running a [single instance](https://github.com/khanna-lab/cadre/blob/master/python/docs/single-instance-model-installation-running-testing.md)
+
+- Instructions for running [multiple instances](https://github.com/khanna-lab/cadre/blob/master/python/docs/EMEWS-working-instructions.md) through EMEWS
+
+## Reproducing Plots
+Set working directory as 
+```cadre/data-analysis-plotting/Simulated-Data-Analysis/r```.
+There is an Rproj at this location that can run the various agent, incarceration, and network logs to produce outputs.
+
 ## Acknowledgments
 
 We would like to thank the following entities:
