@@ -1,5 +1,11 @@
 # Analyze simulated demographic data 
 
+################################################################
+## To be run from:
+## "cadre/data-analysis-plotting/Simulated-Data-Analysis/r#
+## I requested 64g of memory on interactive node to run the code
+####################################################################
+
 rm(list=ls())
 
 
@@ -88,9 +94,15 @@ p_race_base <- ggplot() +
   geom_ribbon(data = race_proportions_stats_df, aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = race), alpha = 0.3) +
   scale_fill_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
   # Next, plot the mean proportions as lines
-  geom_line(data = aggregated_race_proportions_df, aes(x = tick/365, y = mean_proportion, color = race, group = race)) +
+  geom_line(data = aggregated_race_proportions_df, aes(x = tick/365, y = mean_proportion, color = race, group = race, linewidth = 1.5)) +
   scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
   theme(legend.title = element_blank())+
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+      legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+      axis.title.y = element_text(size = 16, face = "bold")) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
   labs(title = "",
        x = "Time (Days)",
@@ -102,7 +114,7 @@ p_race <- p_race_base +
                                                 label = sprintf("Target: %.3f", target_pct)), color = target_values_df$color, check_overlap = TRUE, size=5)
 
 p_race
-ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "race_distribution_plot.png"), plot = p_race, width = 10, height = 8, units = "in")
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "race_distribution_plot.png"), plot = p_race, width = 10, height = 8, units = "in", dpi = 400)
 
 
 
@@ -179,7 +191,8 @@ p_sex_distribution_base <-
   scale_fill_manual(values = colors) +
   # Mean proportion lines
   geom_line(data = aggregated_gender_proportions_df, 
-            aes(x = tick/365, y = mean_proportion, color = gender, group = gender)) +
+            aes(x = tick/365, y = mean_proportion, color = gender, group = gender),
+            linewidth=1.5) +
   scale_color_manual(values = colors) 
 
 p_sex_distribution_base
@@ -201,18 +214,64 @@ p_sex_distribution <-
        fill = "Gender",
        color = "Gender") +
   theme_minimal() +
-  # theme(legend.title = element_blank(),
-  #       axis.text.x = element_text(size = 14, face = "bold"),  
-  #       axis.text.y = element_text(size = 14, face = "bold"),  
-  #       legend.text = element_text(size = 14),
-  #       axis.title.x = element_text(size = 16, face = "bold"),
-  #       axis.title.y = element_text(size = 16, face = "bold")) +
+  theme(legend.title = element_blank(),
+         axis.text.x = element_text(size = 14, face = "bold"),  
+         axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+         axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold")) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
 
 # Print the plot
 p_sex_distribution
 
-ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "sex_distribution_plot.png"), plot = p_sex_distribution, width = 10, height = 8, units = "in")
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "sex_distribution_plot.png"), plot = p_sex_distribution, width = 10, height = 8, units = "in", dpi=400)
+
+# Plot under a Common Theme ------
+
+# Create a common theme object
+common_theme <- theme_minimal() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.grid.major = element_line(color = "black", linewidth=0.1),  # Set major grid lines to black
+        panel.grid.minor = element_line(color = "black", linewidth=0.05)
+        ) 
+
+# Race distribution plot
+p_race_base <- ggplot() +
+  geom_ribbon(data = race_proportions_stats_df, aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = race), alpha = 0.3) +
+  scale_fill_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  geom_line(data = aggregated_race_proportions_df, aes(x = tick/365, y = mean_proportion, color = race, group = race), size = 1.5) +
+  scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  common_theme +  # Apply the common theme
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+  labs(x = "Time (Days)", y = "Proportion")
+
+p_race <- p_race_base + 
+  geom_text(data = target_values_df, aes(x = half_time, y = target_pct + 0.03,
+                                                label = sprintf("Target: %.3f", target_pct)), color = target_values_df$color, check_overlap = TRUE, size = 5)
+
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "race_distribution_plot.png"), plot = p_race, width = 10, height = 8, units = "in", dpi = 400)
+
+# Sex distribution plot
+p_sex_distribution_base <- ggplot() +
+  geom_ribbon(data = gender_proportions_stats_df, aes(x = tick/365, ymin = min_proportion, ymax = max_proportion, fill = gender), alpha = 0.3) +
+  scale_fill_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  geom_line(data = aggregated_gender_proportions_df, aes(x = tick/365, y = mean_proportion, color = gender, group = gender), size = 1.5) +
+  scale_color_manual(values = c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")) +
+  common_theme +  # Apply the common theme
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+  labs(x = "Time (Years)", y = "Proportion")
+
+p_sex_distribution <- p_sex_distribution_base + 
+  geom_text(data = target_sex_distribution_df, aes(x = half_time, y = label_y, label = sprintf("Target: %.3f", target_pct)), color = target_sex_distribution_df$color, size = 5)
+
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "sex_distribution_plot.png"), plot = p_sex_distribution, width = 10, height = 8, units = "in", dpi = 400)
 
 
 
