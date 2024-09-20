@@ -49,9 +49,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Instructions for running [multiple instances](https://github.com/khanna-lab/cadre/blob/master/python/docs/EMEWS-working-instructions.md) through EMEWS
 
 ## Reproducing Plots
+
 Set working directory as 
 ```cadre/data-analysis-plotting/Simulated-Data-Analysis/r```.
 There is an Rproj at this location that can run the various agent, incarceration, and network logs to produce outputs.
+
+Plots for the paper are in the `multiple-runs` subdirectories under `agent-log-analysis`, `incarceration-log-analysis` and `network-log-analysis`.
 
 ## Acknowledgments
 
