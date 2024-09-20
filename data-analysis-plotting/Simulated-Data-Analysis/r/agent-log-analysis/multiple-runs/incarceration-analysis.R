@@ -55,14 +55,27 @@ aggregated_summary <- combined_summary[, .(mean_rate_per_100k = mean(rate_per_10
 
 # Plotting
 
+# Create a common theme object
+common_theme <- theme_minimal() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.grid.major = element_line(color = "black", linewidth=0.1),  # Set major grid lines to black
+        panel.grid.minor = element_line(color = "black", linewidth=0.05)
+        ) 
+
+# Apply common theme to the mean incarceration rate plot
 ggplot(aggregated_summary, aes(x = tick, y = mean_rate_per_100k)) +
   geom_line() +
   geom_errorbar(aes(ymin = mean_rate_per_100k - sd_rate_per_100k, ymax = mean_rate_per_100k + sd_rate_per_100k), width = 0.5) +
-  theme_minimal() +
+  common_theme +  # Apply the common theme
   labs(title = "Mean Incarceration Rate Over Time",
-      x = "Time (Days)",
-      y = "Mean Incarceration Rate (per 100,000 persons)") +
-  theme(text = element_text(face = "bold")) +
+       x = "Time (Days)",
+       y = "Mean Incarceration Rate (per 100,000 persons)") +
   ylim(c(0, 500))
 
 # Plotting with individual trajectories and standard deviation
@@ -79,19 +92,14 @@ p_inc_traj <-
                 aes(x = tick/365, ymin = mean_rate_per_100k - sd_rate_per_100k, 
                     ymax = mean_rate_per_100k + sd_rate_per_100k), 
                 fill = "blue", alpha = 0.3) +
-    # Aesthetics and theme
-    theme_minimal() +
+    # Apply common theme
+    common_theme +
     labs(title = "",
-        x = "Years",
-        y = "Incarceration Rate (per 100,000 persons)",
-        color = "Legend") +
-    theme(text = element_text(face = "bold"),
-          legend.position = "bottom") +
-    guides(color = guide_legend(title = "Trajectories")) +
-    scale_color_manual(values = c("Mean Rate" = "black", "Individual Trajectories" = "gray80", 
-                                  "+/- 1 SD" = "blue"))
+         x = "Years",
+         y = "Incarceration Rate (per 100,000 persons)") +
+    theme(legend.position = "bottom")
 
+# Save the plot with 400 DPI
 ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "incarceration_trajs.png"), 
-  plot = p_inc_traj, 
-  width = 10, height = 8, units = "in")
-
+       plot = p_inc_traj, 
+       width = 10, height = 8, units = "in", dpi = 400)
