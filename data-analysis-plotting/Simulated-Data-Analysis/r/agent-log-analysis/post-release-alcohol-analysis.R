@@ -127,15 +127,28 @@ heavy_use_AUD_df <- data.frame(Time = time_periods,
                                )
 
 
+# Create a common theme object
+common_theme <- theme_minimal() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.grid.major = element_line(color = "black", linewidth=0.1),  # Set major grid lines to black
+        panel.grid.minor = element_line(color = "black", linewidth=0.05)
+        ) 
+
 ggplot(heavy_use_AUD_df, aes(x = Time, y = Proportion, group = 1)) +
-  geom_line() +
+  geom_line(linewidth=1.5) +
   geom_point() +
   scale_x_continuous(breaks = time_periods, labels = labels) +
   scale_y_continuous(breaks = seq(0, 0.5, 0.1), limits = c(0, 0.5)) +
   labs(title = "",
        x = "Time After Release",
        y = "Proportion of Agents with AUD") +
-  theme_minimal()+
+  common_theme +  # Apply the common theme
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
@@ -167,23 +180,29 @@ general_population <- data.frame(
   Proportion = last_combined_rate_df$Proportion)
 
 
-# Plotting both datasets
+
+
+# Plotting both datasets with common theme applied
 p <- 
   ggplot() +
   geom_line(data = heavy_use_AUD_df, aes(x = Time, y = Proportion, color = "Previously Incarcerated"), linewidth=1.5) +
-  geom_line(data = general_population, aes(x = Time, y = Proportion, color = "Overall"), linewidth=1.5)+
-  ylim(c(0,1))+
+  geom_line(data = general_population, aes(x = Time, y = Proportion, color = "Overall"), linewidth=1.5) +
+  ylim(c(0, 1)) +
   scale_color_manual(values = c("Previously Incarcerated" = "blue", "Overall" = "red")) +
-  theme_minimal() +
+  common_theme +  # Apply the common theme
   labs(title = "",
        x = "Time After Release",
        y = "Proportion",
        color = "Population") +
   scale_x_continuous(breaks = heavy_use_AUD_df$Time, labels = heavy_use_AUD_df$Labels) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        #text = element_text(size = 12, face = "bold"))
-        text = element_text(size = 12))
-        
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Print the plot
 p
+
+# Save the plot with 400 DPI
+ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "post-release-heavy-alcohol.png"), 
+       plot = p, 
+       width = 10, height = 8, units = "in", dpi = 400)
 
 

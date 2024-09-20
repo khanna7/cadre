@@ -135,23 +135,38 @@ overall_sd_smoking <- sd(smoking_ratios_vector, na.rm = TRUE)
 
 # Add to Plot
 
+# Create a common theme object
+common_theme <- theme_minimal() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.grid.major = element_line(color = "black", linewidth=0.1),  # Set major grid lines to black
+        panel.grid.minor = element_line(color = "black", linewidth=0.05)
+        ) 
+# Apply the common theme to the plot
+
 p_base <- 
   ggplot(aggregated_smoking_data, aes(x = Time, y = Mean)) +
   geom_line(aes(color = "Previously Incarcerated")) +
   geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD, fill = "Previously Incarcerated"), alpha = 0.3) +
   geom_hline(aes(yintercept = overall_mean_smoking, color = "Overall Population")) +
   geom_ribbon(aes(ymin = overall_mean_smoking - overall_sd_smoking, ymax = overall_mean_smoking + overall_sd_smoking, fill = "Overall Population"), alpha = 0.3) +
-  scale_color_manual(values = c("Previously Incarcerated" = "blue", "Overall Population" = "red"), 
+  # Switch the labels in scale_color_manual and scale_fill_manual
+  scale_color_manual(values = c("Overall Population" = "red", "Previously Incarcerated" = "blue"), 
                      name = "Group", 
-                     labels = c("Previously Incarcerated", "Overall Population")) +
-  scale_fill_manual(values = c("Previously Incarcerated" = "blue", "Overall Population" = "red"), 
+                     labels = c("Overall Population", "Previously Incarcerated")) +
+  scale_fill_manual(values = c("Overall Population" = "red", "Previously Incarcerated" = "blue"), 
                     name = "Group", 
-                    labels = c("Previously Incarcerated", "Overall Population")) +
+                    labels = c("Overall Population", "Previously Incarcerated")) +
   scale_x_continuous(breaks = time_periods, labels = labels) +
   labs(title = "",
        x = "Time After Release",
        y = "Proportion of Current Smoking") +
-  theme_minimal() +
+  common_theme +  # Apply the common theme
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
 
 p <- p_base + 
@@ -165,10 +180,11 @@ p <- p_base +
     legend.text = element_text(size = 14),
     axis.ticks.length = unit(0.5, "cm"),
     axis.ticks = element_line(linewidth = 1),
-    axis.line = element_line(linewidth = 1.5),
+    axis.line = element_line(linewidth = 1.5)
   )
 
-
+# Save the plot with 400 DPI
 ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "post_release_smoking.png"), 
        plot = p, 
-       width = 10, height = 8, units = "in")
+       width = 10, height = 8, units = "in", dpi = 400)
+

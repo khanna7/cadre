@@ -92,6 +92,19 @@ aggregated_smoking_proportions_df <- as.data.frame(aggregated_smoking_proportion
 
 # Plot ----------------------
 
+# Create a common theme object
+common_theme <- theme_minimal() +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 14, face = "bold"),  
+        axis.text.y = element_text(size = 14, face = "bold"),  
+        legend.text = element_text(size = 14),
+        axis.title.x = element_text(size = 16, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.grid.major = element_line(color = "black", linewidth=0.1),  # Set major grid lines to black
+        panel.grid.minor = element_line(color = "black", linewidth=0.05)
+        ) 
+
 # Define colors for each category of smoking
 smoking_colors <- c("Current" = "#377eb8", "Former" = "#ff7f00", 
                 "Never" = "#4daf4a"
@@ -115,12 +128,11 @@ target_smoking_df <- data.frame(
 smoking_time_plot_base <- 
   ggplot(aggregated_smoking_proportions_df, aes(x = tick/365, y = mean_proportion, color = smoking_status, group = smoking_status)) +
   geom_ribbon(aes(ymin = min_proportion, ymax = max_proportion, fill = smoking_status), alpha = 0.3) +
-  geom_line() +
+  geom_line(linewidth=1.5) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1))
 
-smoking_time_plot_base
 
-
+# Add labels and apply common theme
 smoking_time_plot_base_labels <- 
   smoking_time_plot_base + 
   geom_text(data = target_smoking_df, 
@@ -129,14 +141,14 @@ smoking_time_plot_base_labels <-
   labs(title = "",
        x = "Time (Years)",
        y = "Proportion") +
-  theme_minimal() +
-  theme(legend.title = element_blank()) +
+  common_theme +  # Apply the common theme
   guides(color = guide_legend(override.aes = list(alpha = 1)))
 
 
+# Print the plot
 smoking_time_plot_base_labels
 
-
+# Save the plot with 400 DPI
 ggsave(filename = here("agent-log-analysis", "multiple-runs", "plots", "smoking_time_plot_base_labels.png"), 
        plot = smoking_time_plot_base_labels, 
-       width = 10, height = 8, units = "in")
+       width = 10, height = 8, units = "in", dpi = 400)
